@@ -11,7 +11,12 @@ class UserResource
     @editorRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/editor/:editor/:action"
     @editorListRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/editor/list"
     @pageRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/page/:page"
-    @blockRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/page/:page/block/:block"
+    @blockRes = @$resource("#{window.ap_base_uri}/caas/owner/:owner/project/:project/page/:page/block/:block", {},
+      {
+        put: {method: 'PUT', isArray: false}
+        get: {method: 'GET', isArray: false}
+      }
+    )
     @cardRes = @$resource "#{window.ap_base_uri}/caas/account/card/:action"
     @planRes = @$resource "#{window.ap_base_uri}/caas/account/plan/:action"
     @accountRes = @$resource "#{window.ap_base_uri}/caas/account/:action"
@@ -70,6 +75,21 @@ class UserResource
       'owner': @owner
       'project': @project
 
+  # Same thing as add path
+  putPath: (load) ->
+    PutObj = @$resource "#{window.ap_base_uri}#{load.path}"
+    putObj = new PutObj()
+    putObj.apCookie = @APGlobalState.get 'cookie'
+    for key, value of load.body
+      putObj[key] = value
+    putObj.$save()
+
+  deletePath: (load) ->
+    DeleteRes = @$resource "#{window.ap_base_uri}#{load.path}/delete"
+    deleteRes = new DeleteRes()
+    deleteRes.apCookie = @APGlobalState.get 'cookie'
+    deleteRes.$save()
+
   # Returns a promise
   #owner, projectName, pageName
   getPage: (overload) =>
@@ -95,7 +115,7 @@ class UserResource
       'page': @page
 
   # Returns a promise
-  #owner, projectName, pageName
+  # owner, projectName, pageName
   getBlock: (block, overload) =>
     @blockRes.get {
       'owner': @owner

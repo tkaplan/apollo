@@ -1,5 +1,5 @@
-<div class="row">
-  <div class="col-md-6">
+<div class="row" style="position:relative;">
+  <div class="col-md-6" style="height: 100%">
     <div treecontrol class="tree-light"
        tree-model="data"
        options="treeOptions"
@@ -9,17 +9,17 @@
     </div>
     <br/>
     <alert ng-show="alert.msg" type="{{alert.type}}">{{alert.msg}}</alert>
+    <br/>
     <br ng-hide="alert.msg"/>
     <br ng-hide="alert.msg"/>
-    <br ng-hide="alert.msg"/>
-    <div style="margin-bottom:0px">
-      <button type="button" class="btn btn-danger" ng-disabled="!selected" ng-click="delete()">{{deleteBtn.msg}}</button>
-      <button type="button" class="btn btn-primary" ng-click="addProject()">Add Project</button>
+    <div style="bottom:0px; position: absolute; display: block;">
+      <button type="button" class="btn btn-danger" ng-disabled="!deleteType" ng-click="delete()">Delete {{deleteType}}</button>
+      <button type="button" class="btn btn-primary" ng-click="addProject()">Add {{addType}}</button>
       <button type="button" class="btn btn-info" ng-disabled="node" ng-click="addItem()">{{addItem.msg}}</button>
     </div>
   </div>
   <div class="col-md-6" style="overflow:true">
-    <div ap-block block-id="coolBlock">
+    <div ap-block block-target="apProjectManagement">
     </div>
   </div>
 </div>

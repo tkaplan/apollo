@@ -66828,9 +66828,11 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
   var CMSProjectManagementCtrl;
 
   CMSProjectManagementCtrl = (function() {
-    function CMSProjectManagementCtrl($scope, $rootScope, UserResource) {
+    function CMSProjectManagementCtrl($scope, $rootScope, $timeout, UserResource) {
+      var getProjectLists;
       this.$scope = $scope;
       this.$rootScope = $rootScope;
+      this.$timeout = $timeout;
       this.UserResource = UserResource;
       $scope.treeOptions = {
         nodeChildren: "children",
@@ -66846,26 +66848,85 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           labelSelected: "a8"
         }
       };
-      (function() {
+      getProjectLists = function() {
         return UserResource.listProjects().then(function(value) {
           return $scope.data = value.tree;
         }, function(err) {
           return console.log(err);
         });
-      })();
+      };
+      getProjectLists();
+      $scope.addType = 'Project';
+      $scope.apProjectManagement = {
+        content: '<h1>Choose block to edit content</h1>',
+        path: '',
+        id: ''
+      };
+      $scope.alert = {};
+      $scope.count = 0;
       $scope.deleteBtn = {
         msg: 'Delete'
       };
-      $scope.showSelected = function(node) {
-        if (node.type === "Block") {
-          UserResource.customPost("" + node.path + "/get").then(function(value) {
-            return console.log(value);
-          }, function(reason) {
-            return console.log(reason);
+      $scope["delete"] = function() {
+        if (this.count % 2 === 0) {
+          this.deleteBtn.msg = 'Confirm';
+          this.alert.msg = 'Are you sure you want to delete this item?';
+        } else {
+          this.count = 0;
+          this.deleteBtn.msg = 'Delete';
+          UserResource.deletePath(this.apProjectManagement).then(function() {
+            $scope.alert.msg = "Delete Successful!";
+            $timeout(function() {
+              return $scope.alert.msg = void 0;
+            }, 3000);
+            return getProjectLists();
+          }, function(err) {
+            $scope.alert.msg = err.data;
+            $timeout(function() {
+              return $scope.alert.msg = void 0;
+            }, 3000);
+            return getProjectLists();
           });
         }
+        return this.count++;
+      };
+      $scope.content = "Hey this worked!";
+      $scope.showSelected = function(node) {
         this.count = 0;
-        return console.log(node);
+        $scope.deleteType = "" + node.type + ": " + node.value;
+        switch (node.type) {
+          case 'Owner':
+            this.addType = 'Project';
+            $scope.deleteType = void 0;
+            $scope.apProjectManagement.path = node.path;
+            $scope.apProjectManagement.id = node.value;
+            break;
+          case 'Project':
+            this.addType = 'Page';
+            $scope.deleteType = 'Project';
+            $scope.apProjectManagement.path = node.path;
+            $scope.apProjectManagement.id = node.value;
+            break;
+          case 'Page':
+            this.addType = 'Block';
+            $scope.deleteType = 'Page';
+            $scope.apProjectManagement.path = node.path;
+            $scope.apProjectManagement.id = node.value;
+            break;
+          case 'Block':
+            this.addType = 'Block';
+            UserResource.customPost("" + node.path + "/get").then(function(value) {
+              console.log(value);
+              $scope.apProjectManagement.content = value.content;
+              $scope.apProjectManagement.path = node.path;
+              return $scope.apProjectManagement.id = node.value;
+            }, function(reason) {
+              return console.log(reason);
+            });
+            break;
+          default:
+            return $scope.deleteType = void 0;
+        }
       };
       $scope.addItem = {
         msg: 'hello'
@@ -66885,7 +66946,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
   }
 
   window.apInject.CMSProjectManagementCtrl = function(app) {
-    return app.controller('CMSProjectManagementCtrl', ['$scope', '$rootScope', 'UserResource', CMSProjectManagementCtrl]);
+    return app.controller('CMSProjectManagementCtrl', ['$scope', '$rootScope', '$timeout', 'UserResource', CMSProjectManagementCtrl]);
   };
 
   window.CMSControllers.CMSProjectManagementCtrl = CMSProjectManagementCtrl;
@@ -66982,41 +67043,64 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           replace: false,
           transclude: false,
           restrict: 'EAC',
-          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\' style=\'min-height:10px\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'htmlContent\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'htmlContent\'>\n    </ap-render-html>\n  </div>\n</div>',
+          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\' style=\'min-height:10px\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'block.content\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'block.content\'>\n    </ap-render-html>\n  </div>\n</div>',
           scope: {
             classId: '@',
             blockId: '@',
-            editor: '@'
+            blockTarget: '='
           },
           link: function(scope, ele, attrs, controller) {
             var block, saveBlock;
-            scope.htmlContent;
-            if (APGlobalState.get('set-block-content') == null) {
-              APGlobalState.set('set-block-content', {});
-            }
-            block = APGlobalState.get('set-block-content');
-            block[scope.blockId] = function(content) {
-              scope.htmlContent = content;
+            scope.block = {
+              content: ''
             };
-            if (APGlobalState.get('get-block-content') == null) {
-              APGlobalState.set('get-block-content', {});
+            if (scope.blockId != null) {
+              scope.block.id = scope.blockId;
+              if (APGlobalState.get('set-block-content') == null) {
+                APGlobalState.set('set-block-content', {});
+              }
+              block = APGlobalState.get('set-block-content');
+              block[scope.block.id] = function(content) {
+                scope.block.content = content;
+              };
+              if (APGlobalState.get('get-block-content') == null) {
+                APGlobalState.set('get-block-content', {});
+              }
+              block = APGlobalState.get('get-block-content');
+              block[scope.block.id] = function(key) {
+                return scope.block.content;
+              };
+            } else if (scope.blockTarget != null) {
+              scope.block = scope.blockTarget;
+              scope.editMode = scope.blockTarget.id !== '' ? true : false;
+              scope.$watch('block.id', function() {
+                return scope.editMode = scope.block.id !== '' ? true : false;
+              });
             }
-            block = APGlobalState.get('get-block-content');
-            block[scope.blockId] = function(key) {
-              return scope.htmlContent;
-            };
 
             /* Set up event handlers */
             saveBlock = function() {
-              return UserResource.putBlock(scope.blockId, scope.htmlContent);
+              var payload;
+              if (scope.block.path != null) {
+                payload = {
+                  path: scope.block.path,
+                  body: {}
+                };
+                payload.body[scope.block.id] = {
+                  content: scope.block.content
+                };
+                return UserResource.putPath(payload);
+              } else {
+                return UserResource.putBlock(scope.block.id, scope.block.content);
+              }
             };
             $rootScope.$on('page-save', function() {
               return saveBlock();
             });
-            $rootScope.$on("" + scope.blockId + "-save", function() {
+            $rootScope.$on("" + scope.id + "-save", function() {
               return saveBlock();
             });
-            scope.htmlContent = scope.htmlContent != null ? scope.htmlContent : window.apBlocks[attrs.blockId];
+            scope.block.content = scope.block.content != null ? scope.block.content : window.apBlocks[attrs.blockId];
             scope.mouseoverB = false;
             this.editMode = APGlobalState.get('edit_mode');
             if (this.editMode == null) {
@@ -67034,7 +67118,6 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
               if (!scope.editMode) {
                 scope.active = false;
               }
-              scope.htmlContent = scope.htmlContent;
               scope.$apply();
             });
             scope.$on('edit_mode', function(event, value) {
@@ -67266,7 +67349,16 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
       this.editorRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/editor/:editor/:action");
       this.editorListRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/editor/list");
       this.pageRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/page/:page");
-      this.blockRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/page/:page/block/:block");
+      this.blockRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/page/:page/block/:block", {}, {
+        put: {
+          method: 'PUT',
+          isArray: false
+        },
+        get: {
+          method: 'GET',
+          isArray: false
+        }
+      });
       this.cardRes = this.$resource("" + window.ap_base_uri + "/caas/account/card/:action");
       this.planRes = this.$resource("" + window.ap_base_uri + "/caas/account/plan/:action");
       this.accountRes = this.$resource("" + window.ap_base_uri + "/caas/account/:action");
@@ -67333,6 +67425,27 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
         'owner': this.owner,
         'project': this.project
       });
+    };
+
+    UserResource.prototype.putPath = function(load) {
+      var PutObj, key, putObj, value, _ref;
+      PutObj = this.$resource("" + window.ap_base_uri + load.path);
+      putObj = new PutObj();
+      putObj.apCookie = this.APGlobalState.get('cookie');
+      _ref = load.body;
+      for (key in _ref) {
+        value = _ref[key];
+        putObj[key] = value;
+      }
+      return putObj.$save();
+    };
+
+    UserResource.prototype.deletePath = function(load) {
+      var DeleteRes, deleteRes;
+      DeleteRes = this.$resource("" + window.ap_base_uri + load.path + "/delete");
+      deleteRes = new DeleteRes();
+      deleteRes.apCookie = this.APGlobalState.get('cookie');
+      return deleteRes.$save();
     };
 
     UserResource.prototype.getPage = function(overload) {

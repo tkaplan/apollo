@@ -177,7 +177,7 @@ exports.putBlock = function(req, res){
   );
 };
 
-exports.deleteBlock = function(req, res){
+exports.delete = function(req, res){
   var validatePage, 
       owner = req.params.owner,
       projectName = req.params.project,

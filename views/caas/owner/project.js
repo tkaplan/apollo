@@ -11,6 +11,7 @@ var rootPath = "../../../",
   businessRules = require(rootPath + "business_rules/business"),
   models,
   initializeModels,
+  _ = require('lodash'),
   validate = require(rootPath + 'validate/validate'),
   aws = require(rootPath + 'aws/aws'),
   helper = {
@@ -130,6 +131,78 @@ exports.list = function(req, res) {
     }
   );
 }
+
+// To delete the project you must first be an owner
+exports.delete = function(req, res) {
+  var owner = req.params.owner,
+      projectName = req.params.project;
+
+  if(owner != req.user.username) {
+    res.status(400).send(JSON.stringify('No permissions'));
+    return;
+  }
+
+  req.app.db.models.Project.findOne({owner: req.user.id,name: projectName})
+  .exec()
+  .then(
+    function(project) {
+      var deleteKeys = [];
+      var pageKeys = Object.keys(project.pages);
+      for(var i = 0; i < pageKeys.length; i ++) {
+        var page = project.pages[pageKeys[i]];
+        var blockKeys = Object.keys(page.blocks);
+        for(var j = 0; j < blockKeys.length; j ++) {
+          var block = page.blocks[blockKeys[j]];
+          deleteKeys.push(block.key);
+        }
+      }
+
+      aws.deleteBlocks(
+        deleteKeys,
+        function() {
+          async.parallel(
+            [function(cb) {
+              return req.app.db.models.User.findOneAndUpdate({id: req.user.id},{$pull:{projects:project.id}})
+              .exec()
+              .then(
+                function(results) {
+                  cb();
+                },
+                function(err) {
+                  cb(err);
+                }
+              );
+            }, function() {
+              return req.app.db.models.Project.findByIdAndRemove(project.id)
+              .exec()
+              .then(
+                function(results) {
+                  cb();
+                },
+                function(err) {
+                  cb(err);
+                }
+              );
+            }],
+            function(err) {
+              if(err) {
+                res.status(400).send(JSON.stringify(err));
+              } else {
+                res.status(204).send();
+              }
+            }
+          );
+        },
+        function(err) {
+          res.status(400).send(JSON.stringify(err));
+        }
+      )
+    },
+    function(err) {
+      res.status(400).send(err);
+    }
+  );
+};
 
 exports.createProject = function(req, res){
   var owner = req.params.owner,

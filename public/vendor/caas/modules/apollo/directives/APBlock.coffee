@@ -17,11 +17,11 @@ window.apInject.APBlock = (app) ->
       template: '''
       <div ng-mouseleave='mouseleave()' ng-mouseover='mouseover()' ng-init='active = false' style='min-height:10px'>
         <div ng-show='active' ng-init='active = false' class='editor'>
-          <text-angular ng-model='htmlContent'>
+          <text-angular ng-model='block.content'>
           </text-angular>
         </div>
         <div ng-show='!active' class='render'>
-          <ap-render-html render='htmlContent'>
+          <ap-render-html render='block.content'>
           </ap-render-html>
         </div>
       </div>
@@ -29,43 +29,66 @@ window.apInject.APBlock = (app) ->
       scope:
         classId: '@'
         blockId: '@'
-        editor: '@'
+        blockTarget: '='
 
       link: (scope, ele, attrs, controller) ->
-        scope.htmlContent
+        scope.block =
+          content: ''
 
-        if !APGlobalState.get('set-block-content')?
-          APGlobalState.set 'set-block-content', {}
+        # This should probably go in a different function
+        if scope.blockId?
+          scope.block.id = scope.blockId
+          # Functions that allow for setting outside block
+          # Content
+          if !APGlobalState.get('set-block-content')?
+            APGlobalState.set 'set-block-content', {}
 
-        block = APGlobalState.get 'set-block-content'
+          block = APGlobalState.get 'set-block-content'
 
-        block[scope.blockId] = (content) ->
-          scope.htmlContent = content
-          return
+          block[scope.block.id] = (content) ->
+            scope.block.content = content
+            return
+          ###############################################
 
-        if !APGlobalState.get('get-block-content')?
-          APGlobalState.set 'get-block-content', {}
+          # Functions that allow for outside functions
+          # to get block content
+          if !APGlobalState.get('get-block-content')?
+            APGlobalState.set 'get-block-content', {}
 
-        block = APGlobalState.get 'get-block-content'
+          block = APGlobalState.get 'get-block-content'
 
-        block[scope.blockId] = (key) ->
-          scope.htmlContent
+          block[scope.block.id] = (key) ->
+            scope.block.content
+          ############################################
+        else if scope.blockTarget?
+          scope.block = scope.blockTarget
+          scope.editMode = if scope.blockTarget.id isnt '' then true else false
+          scope.$watch 'block.id', () ->
+            scope.editMode = if scope.block.id isnt '' then true else false
 
         ##############################
         ### Set up event handlers ###
         saveBlock = () ->
-          UserResource.putBlock scope.blockId, scope.htmlContent
+          if scope.block.path?
+            payload =
+              path: scope.block.path
+              body: {}
+            payload.body[scope.block.id] =
+              content: scope.block.content
+            UserResource.putPath payload
+          else
+            UserResource.putBlock scope.block.id, scope.block.content
 
         $rootScope.$on 'page-save', () ->
           saveBlock()
 
-        $rootScope.$on "#{scope.blockId}-save", () ->
+        $rootScope.$on "#{scope.id}-save", () ->
           saveBlock()
         ###########################
 
-        # If htmlContent has already been set, probably do to page loading
+        # If content has already been set, probably do to page loading
         # then ignore the content inside html
-        scope.htmlContent = if scope.htmlContent? then scope.htmlContent else window.apBlocks[attrs.blockId]
+        scope.block.content = if scope.block.content? then scope.block.content else window.apBlocks[attrs.blockId]
         
         scope.mouseoverB = false
 
@@ -86,7 +109,6 @@ window.apInject.APBlock = (app) ->
             scope.active = false
           if !scope.editMode
             scope.active = false
-          scope.htmlContent = scope.htmlContent
           scope.$apply()
           return
 

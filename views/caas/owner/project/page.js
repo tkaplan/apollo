@@ -4,6 +4,7 @@ var rootPath = "../../../../",
     validate = require(rootPath + 'validate/validate'),
     Q = require('q'),
     _ = require('lodash'),
+    aws = require(rootPath + 'aws/aws'),
     projectProcedure = require('../project').helper.projectProcedure;
 
 var pageProcedure = function(owner, projectName, pageName, business, req, res) {
@@ -88,6 +89,53 @@ exports.getPage = function(req, res){
     }
   );
   
+};
+
+exports.delete = function(req, res) {
+  var owner = req.params.owner,
+      projectName = req.params.project,
+      pageName = req.params.page;
+  if(owner != req.user.username) {
+    res.status(400).send(JSON.stringify('No permissions'));
+    return;
+  }
+  req.app.db.models.Project.findOne({owner: req.user.id,name: projectName})
+  .exec()
+  .then(
+    function(project) {
+      var deleteKeys = [];
+      if(!project.pages[pageName]) {
+        res.status(400).send('Page does not exist');
+        return;
+      }
+      var page = project.pages[pageName];
+      var blockKeys = Object.keys(page.blocks);
+      for(var i = 0; i < blockKeys.length; i ++) {
+        var block = page.blocks[blockKeys[i]];
+        deleteKeys.push(block.key);
+      }
+      aws.deleteBlocks(
+        deleteKeys,
+        function() {
+          delete project.pages[pageName];
+          project.markModified('pages');
+          project.save(function(err) {
+            if(err) {
+              res.status(400).send(JSON.stringify(err));
+            } else {
+              res.status(200).send();
+            }
+          });
+        },
+        function(err) {
+          res.status(400).send(JSON.stringify(err));
+        }
+      )
+    },
+    function(err) {
+      res.status(400).send(err);
+    }
+  );
 };
 
 exports.createPage = function(req, res){

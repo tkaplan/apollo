@@ -239,11 +239,11 @@ exports = module.exports = function(app, passport) {
 
   // project management /////////////
   // authenticate ///////////////////
-  app.post('/caas/owner/project/list', ensureAuthenticatedCaas);
-  // app.post('/caas/owner/:owner/project/:project/delete', ensureAuthenticatedCaas);
-  // app.post('/caas/owner/:owner/project/:project/page/:page/delete', ensureAuthenticatedCaas);
-  // app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', ensureAuthenticatedCaas);
-  // app.post('/caas/owner/:owner/project/:project/transfer', ensureAuthenticatedCaas);
+  app.post('/caas/owner/*', ensureAuthenticatedCaas);
+  app.post('/caas/owner/:owner/project/:project/delete', require('./views/caas/owner/project').delete);
+  app.post('/caas/owner/:owner/project/:project/page/:page/delete', require('./views/caas/owner/project/page').delete);
+  app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', require('./views/caas/owner/project/page/block').delete);
+  //app.put('/caas/owner/:owner/project/:project/transfer', require('./views/caas/owner/project').transfer);
   //////////////////////////////////
   app.post('/caas/owner/project/list', require('./views/caas/owner/project').list);
   // app.post('/caas/owner/:owner/project/:project/delete', require('./views/caas/owner/project').delete);

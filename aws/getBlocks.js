@@ -28,6 +28,7 @@ exports = module.exports = function(page, resolve, reject) {
   async.each(blockKeys, function(key, done) {
     params.Key = key.awsKey;
     s3.getObject(params, function(err, data) {
+      data = data ? data : {Body: {}};
       pageContent[key.blockName] = {
         content: data.Body.toString()
       };

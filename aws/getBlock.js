@@ -13,6 +13,7 @@ exports = module.exports = function(block, resolve, reject) {
       if(err) {
         reject(err);
       } else {
+        data = data ? data : {Body:{}};
         resolve({
           content: data.Body.toString()
         });

@@ -1,4 +1,4 @@
 <span ng-init="$parent.$parent.page = 'Verify Account'"></span>
 <p>An email has been sent to your account. You must verify your email before you are allowed to edit.</p>
 <p class="alert alert-danger" ng-show="alert.msg" ng-bind="alert.msg"></p>
-<button type="button" class="btn btn-primary" ng-click="$parent.eventFnxs['verify']()">Continue</button>
+<button type="button" class="btn btn-primary" ui-sref="^">Continue</button>

@@ -27,13 +27,7 @@ src_files =
   ]
   bower_js: [
     'misc/stripe.js'
-    
-    # 'bower_components/CodeMirror/lib/codemirror.js'
-    # 'bower_components/CodeMirror/addon/edit/matchbrackets.js'
-    # 'bower_components/CodeMirror/mode/xml/xml.js'
-    # 'bower_components/CodeMirror/fold/brace-fold.js'
-    # 'bower_components/CodeMirror/fold/fold-code.js'
-    # 'bower_components/CodeMirror/keymap/sublime.js'
+
     'bower_components/ace-builds/src-noconflict/ace.js'
     'bower_components/ace-builds/src-noconflict/mode-markdown.js'
     'bower_components/ace-builds/src-noconflict/theme-twilight.js'
@@ -42,8 +36,6 @@ src_files =
     'bower_components/lodash/dist/lodash.js'
     'bower_components/angular/angular.js'
     
-
-    #'bower_components/angular-ui-codemirror/ui-codemirror.js'
     'bower_components/angular-ui-ace/ui-ace.min.js'
 
     'bower_components/angucomplete/angucomplete.js'

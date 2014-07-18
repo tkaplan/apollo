@@ -1,0 +1,9 @@
+<pre>
+You are approaching you storage limit of {{limit}}. You are currently using {{usage}} GB's of your plan. You can either:
+            1) Free up storage by squashing your commits
+            2) Free up storage by deleting content
+            3) Or upgrade your plan
+To stop recieving this notice please check the box bellow.
+</pre>
+<input ng-model="notify.status" type="checkbox"></input>
+<button type="button" class="btn btn-primary" ng-click="continue()">Continue</button>

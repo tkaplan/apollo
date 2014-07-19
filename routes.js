@@ -206,18 +206,19 @@ exports = module.exports = function(app, passport) {
 
   //caas page
   // create project
-  app.post('/owner/:owner/project/:project/page/:page', ensureAuthenticatedCaas);
-  app.get('/owner/:owner/project/:project/page/:page', require('./views/caas/owner/project/page').getPage);
-  app.post('/owner/:owner/project/:project/page/:page', require('./views/caas/owner/project/page').createPage);
+  app.post('/caas/owner/:owner/project/:project/page/:page', ensureAuthenticatedCaas);
+  app.get('/caas/owner/:owner/project/:project/page/:page', require('./views/caas/owner/project/page').getPage);
+  app.post('/caas/owner/:owner/project/:project/page/:page', require('./views/caas/owner/project/page').createPage);
 
   //caas block
-  app.all('/owner/:owner/project/:project/page/:page/block/:block', ensureAuthenticatedCaas);
+  app.all('/caas/owner/:owner/project/:project/page/:page/block/:block', ensureAuthenticatedCaas);
   //app.get('/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').getBlock);
-  app.post('/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').putBlock);
-  app.delete('/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').deleteBlock);
+  app.post('/caas/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').putBlock);
+  app.delete('/caas/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').deleteBlock);
 
+  app.all('/caas/account/*', ensureAuthenticatedCaas);
   // Account actions
-  app.post('/account/verify', require('./views/caas/owner/account/verify').verify);
+  app.post('/caas/account/verify', require('./views/caas/owner/account/verify').verify);
 
 
   //route not found

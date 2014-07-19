@@ -1,3 +1,3 @@
 <p>An email has been sent to your account. You must verify your email before you are allowed to edit.</p>
-<alert type="alert.type" ng-bind="alert.msg"></alert>
+<p class="alert alert-danger" ng-show="alert.msg" ng-bind="alert.msg"></p>
 <button type="button" class="btn btn-primary" ng-click="verify(verificationCode)">Continue</button>

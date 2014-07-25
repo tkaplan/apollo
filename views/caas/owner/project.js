@@ -104,6 +104,8 @@ exports.getProject = function(req, res){
       params: {}
     };
 
+  res.header('Content-Type','application/json');
+
   // Need to make a promise to synchronize code
   helper.projectProcedure(owner, project, business, req, res).
   then(function resolve(projectInst) {
@@ -127,6 +129,8 @@ exports.createProject = function(req, res){
     };
     project.name = projectName;
 
+  res.header('Content-Type', 'application/json');
+
   // Need to make a promise to synchronize code
   helper.projectProcedure(owner, projectName, business, req, res).
   then(function resolve(projectInst) {
@@ -136,7 +140,7 @@ exports.createProject = function(req, res){
       ]
     });
   }, function reject(reason) {
-    if(reason == null) {
+    if(reason.toString() == 'Error: No project found') {
       // Check if owner is the same as logged in user
       helper.checkOwnerSameAsLoggedIn(owner, req).then(
         function resolve() {
@@ -163,7 +167,6 @@ exports.createProject = function(req, res){
         }
       );
     } else {
-      console.log('projectProcedure rejected for this reason: ' + reason);
       res.status(400).send({
         errors: [
           reason

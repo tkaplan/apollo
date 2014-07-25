@@ -1,0 +1,269 @@
+/*
+Theme Name: captaincreative
+*/
+
+/* main elements */
+.post .more-link span {
+    background: url("images/bullet2.png") no-repeat scroll 100% 4px transparent;
+    padding: 0 10px 0 0;
+}
+.image-list li.border {
+    background: none;
+    border: none;
+}
+ul.image-list iframe{
+    margin:0;
+    padding:0;
+    vertical-align: top;
+}
+span.no_next{
+    background: url("images/bg-next.png") no-repeat scroll 0 -87px transparent;
+    display: block;
+    height: 29px;
+    overflow: hidden;
+    text-indent: -9999px;
+    width: 28px;
+}
+span.no_prev{
+    background: url("images/bg-prev.png") no-repeat scroll 0 -87px transparent;
+    display: block;
+    height: 29px;
+    overflow: hidden;
+    text-indent: -9999px;
+    width: 28px;
+}
+#content iframe{
+    background: none repeat scroll 0 0 #F6EFE5;
+    border: 1px solid #C6AC8A;
+    margin: 0 0 20px;
+    padding: 4px;
+    vertical-align: top;
+}
+.sidebar-box .avatar {
+	vertical-align:top;
+	border:1px solid #c6ac8a;
+	padding:4px;
+	background:#f6efe5;
+	margin:6px 0 10px 15px;
+	float:right;
+}
+.comment-section .avatar {
+    background: none repeat scroll 0 0 #F6EFE5;
+    border: 1px solid #C6AC8A;
+    float: right;
+    margin: 2px 0 0 20px;
+    padding: 4px;
+    vertical-align: top;
+}
+/* contact form 7 */
+div.wpcf7 {
+	margin: 0;
+	padding: 0;
+}
+
+div.wpcf7-mail-sent-ok {
+	border: none;
+        background: url(images/bg-pleasethanks.png) no-repeat scroll 0 -41px transparent;
+        color: #7CC576;
+        padding: 0 0 0 32px;
+        height: 39px;
+        font-size: 14px;
+        line-height: 17px;
+        margin: 0 0 0 184px;
+}
+
+div.wpcf7-mail-sent-ok span{
+        background: url(images/bg-pleasethanks.png) no-repeat scroll 100% 0 transparent;
+        display: block;
+        padding: 11px 4px 12px;
+        height: 16px;
+}
+
+div.wpcf7-spam-blocked,
+div.wpcf7-mail-sent-ng,
+div.wpcf7-validation-errors {
+	border: none;
+        background: url(images/bg-pleasethanks.png) no-repeat scroll 0 -123px transparent;
+        color: #B42724;
+        padding: 0 0 0 32px;
+        height: 39px;
+        font-size: 14px;
+        line-height: 17px;
+        margin: 0 0 0 184px;
+}
+
+div.wpcf7-spam-blocked span,
+div.wpcf7-mail-sent-ng span,
+div.wpcf7-validation-errors span{
+        background: url(images/bg-pleasethanks.png) no-repeat scroll 100% -82px transparent;
+        display: block;
+        padding: 11px 4px 12px;
+        height: 16px;
+}
+
+span.wpcf7-form-control-wrap {
+	position: relative;
+}
+
+span.wpcf7-not-valid-tip {
+	position: absolute;
+	top: -5px;
+	left: 0px;
+	z-index: 100;
+	width: 280px;
+	padding: 2px;
+        font-size: 14px;
+        line-height: 17px;
+        color: #B42724;
+        height: 25px;
+        padding: 10px 0 0 15px;
+}
+
+span.wpcf7-not-valid-tip-no-ajax {
+	color: #f00;
+	font-size: 10pt;
+	display: block;
+}
+
+.wpcf7-display-none {
+	display: none;
+}
+
+div.wpcf7 img.ajax-loader {
+        display:none;
+}
+
+div.wpcf7 .watermark {
+	color: #888;
+}
+/* message form */
+.wpcf7-form {
+	width:610px;
+	margin:0 0 100px;
+	padding:10px 0 0;
+}
+#content .wpcf7-form p {margin:0 0 27px;}
+.wpcf7-form .row {
+	overflow:hidden;
+	margin:0 0 9px;
+	color:#4c3120;
+	font-size:16px;
+	line-height:19px;
+}
+.wpcf7-form label {
+	font-weight:bold;
+	width:157px;
+	float:left;
+	margin:11px 5px 0 0;
+}
+.wpcf7-form .require {color:#9f7d5d;}
+.wpcf7-form .text {
+	background:url(images/bg-messagetext.png) no-repeat 20px 0;
+	width:283px;
+	height:41px;
+	float:left;
+	overflow:hidden;
+	border-left:1px solid #ccb191;
+	padding:0 0 0 20px;
+}
+.wpcf7-form .row .error {background-position:20px -41px;}
+.wpcf7-form .text input {
+	background:none;
+	border:none;
+	font-size:16px;
+	line-height:24px;
+	padding:9px 11px;
+	width:261px;
+	color:#555;
+        outline:none;
+}
+.wpcf7-form .row .textarea {
+	background:url(images/bg-messagetextarea.png) no-repeat 20px 0;
+	width:425px;
+	height:350px;
+	float:left;
+	overflow:hidden;
+	border-left:1px solid #ccb191;
+	padding:0 0 0 20px;
+        outline:none;
+}
+.wpcf7-form .row .textarea1 {
+	background:url(images/bg-messagetextarea1.png) no-repeat 20px 0;
+	height:214px;
+}
+.wpcf7-form .textarea textarea {
+	background:none;
+	border:none;
+	font-size:16px;
+	line-height:24px;
+	padding:10px 0 10px 10px;
+	width:415px !important;
+	height:330px !important;
+        outline:none;
+}
+.wpcf7-form .textarea1 textarea {height:194px !important;}
+.wpcf7-form .row1 {
+	overflow:hidden;
+	margin:16px 0 27px 183px;
+}
+*+html .wpcf7-form .row1 {
+	margin-left:0;
+	padding-left:183px;
+}
+.wpcf7-form .btn-comment,
+.wpcf7-form .btn-send {
+	background:url(images/btn-send.png) no-repeat;
+	width:172px;
+	height:50px;
+	border:none;
+	float:left;
+	text-indent:-9999px;
+	overflow:hidden;
+	cursor:pointer;
+	padding:0;
+	margin:0 10px 0 0;
+}
+.wpcf7-form .btn-comment {background:url(images/btn-comment.png) no-repeat;}
+*+html .wpcf7-form .btn-comment,
+*+html .wpcf7-form .btn-send {
+	font-size:0;
+	line-height:0;
+}
+.wpcf7-form .btn-comment:hover,
+.wpcf7-form .btn-send:hover {background-position:0 -50px;}
+.wpcf7-form .btn-comment:active,
+.wpcf7-form .btn-send:active{background-position:0 -100px;}
+.wpcf7-form .required {
+	float:right;
+	font-size:11px;
+	line-height:15px;
+	color:#9f7d5d;
+	font-weight:bold;
+	margin:3px 3px 0 0;
+	white-space:nowrap;
+}
+.wpcf7-form .text-block {
+	margin:0 0 0 184px;
+	font-size:14px;
+	line-height:17px;
+}
+.wpcf7-form .please,
+.wpcf7-form .thanks {
+	padding:0 0 0 32px;
+	background:url(images/bg-pleasethanks.png) no-repeat 0 -41px;
+	color:#7cc576;
+}
+.wpcf7-form .please {
+	background-position:0 -123px;
+	color:#b42724;
+	display:none;
+}
+.wpcf7-form .please span,
+.wpcf7-form .thanks span {
+	display:block;
+	background:url(images/bg-pleasethanks.png) no-repeat 100% 0;
+	padding:10px 4px 12px;
+}
+.wpcf7-form .please span {background-position:100% -82px;}
+.wpcf7-form .error .please {display:block;}
+.wpcf7-form .error .thanks {display:none;}

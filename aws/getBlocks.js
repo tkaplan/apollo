@@ -1,22 +1,43 @@
-var async = require('async'),
-  AWS = require('aws-sdk'),
-  params = {
-    Bucket: require('./aws-global-vars').bucketName
-  };
+var _ = require('lodash'), 
+    async = require('async'),
+    AWS = require('aws-sdk'),
+    params = {
+      Bucket: require('./aws-global-vars').bucketName
+    };
 
-exports = module.exports = function(blockKeys, callback) {
+function extractKeys(page) {
+  var blockNames = Object.keys(page.blocks),
+      blockKeys = [];
+
+  _(blockNames).forEach(function(blockName) {
+    blockKeys.push({
+      awsKey: page.blocks[blockName].key,
+      blockName: blockName
+    });
+  });
+
+  return blockKeys;
+};
+
+exports = module.exports = function(page, resolve, reject) {
   var s3 = new AWS.S3(),
-      dataArray = [];
+      errors = [],
+      pageContent = {},
+      blockKeys = extractKeys(page);
+
   async.each(blockKeys, function(key, done) {
-    params.Key = key;
+    params.Key = key.awsKey;
     s3.getObject(params, function(err, data) {
-      if(err)
-        console.log(err);
-        //errors.push(err);
-      dataArray.push(data);
-      done();
+      pageContent[key.blockName] = {
+        content: data.Body.toString()
+      };
+      done(err);
     });
   }, function(err) {
-    callback(dataArray);
+    if(err) {
+      reject(err);
+    } else {
+      resolve({blocks:pageContent});
+    }
   });
 };

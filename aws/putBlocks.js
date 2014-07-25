@@ -11,7 +11,7 @@ exports = module.exports = function(blockData, resolve, reject) {
       params.Body = block.content;
       params.ACL = 'public-read';
       s3.putObject(params, function(err, data) {
-        done(err, data);
+        done(err);
       });
     }
     , function(err) {

@@ -29,34 +29,61 @@ exports.pageProcedure = pageProcedure;
 exports.getPage = function(req, res){
 	var validatePage, 
       owner = req.params.owner,
-		  project = req.params.project,
-		  page = req.params.page,
+		  projectName = req.params.project,
+		  pageName = req.params.page,
       business = {
         rule: 'getPage',
         params: {}
       };
 
-  pageProcedure(owner,project,page, business, req, res).then(
+  res.header('Content-Type', 'application/json');
+
+  pageProcedure(owner, projectName, pageName, business, req, res).then(
     function resolve(project) {
-      if(project.pages[page]) {
-        res.status(200).send(
-          project.pages[page]
-        );
-      } else {
-        res.status(404).send(
-          {
-            errors: [
-              'Page not found'
-            ]
-          }
-        );
-      }
+      var projectID = project._id;
+      project.getPageContent(pageName).then(
+        function _resolve(pageContent) {
+          
+          //////////// Start Increment Gets ////////////////////////
+
+          req.app.db.models.User.
+          findOne({username: owner},'roles.account', function(err, user) {
+            if(err) {
+              res.status(400).send(err);
+            } else {
+              req.app.db.models.Account.
+              findOne({_id: user.roles.account}, function(err, account) {
+                if(err) {
+                  res.status(400).send(err);
+                } else {
+                  var blockKeys = Object.keys(pageContent.blocks);
+                  var keys = _.map(blockKeys, function(key) {
+                    return projectID + pageName + key; 
+                  });
+
+                  // Set our keys
+                  account.setGets(keys).then(
+                    function() {
+                      res.status(200).send(JSON.stringify(pageContent));
+                    },
+                    function(reason) {
+                      res.status(400).send(reason.toString());
+                    }
+                  );
+                }
+              });
+            }
+          });
+
+          ///////////// End Increment Gets //////////////////////
+
+        },
+        function _reject(reason) {
+          res.status(400).send(reason.toString());
+        }
+      );
     },
     function reject(reason) {
-      if(!reason) {
-        reason = 'Project not found'
-      }
-
       res.status(404).send(reason.toString());
     }
   );
@@ -73,6 +100,9 @@ exports.createPage = function(req, res){
         params: {}
       },
       pageName = Object.keys(page)[0];
+
+  res.header('Content-Type', 'application/json');
+
   pageProcedure(owner, projectName, pageName, business, req, res).then(
     function resolve(project) {
       var userId = req.user._id;
@@ -86,7 +116,6 @@ exports.createPage = function(req, res){
             res.status(200).send();
           },
           function reject(reason) {
-            console.log(reason);
             res.status(400).send({
               errors: [reason]
             });

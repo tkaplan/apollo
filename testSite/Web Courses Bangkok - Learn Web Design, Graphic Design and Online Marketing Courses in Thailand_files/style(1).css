@@ -1,0 +1,740 @@
+/*
+
+Theme Name: Web Courses Bangkok
+
+Theme URI: http://www.webcoursesbangkok.com/
+
+Description: Custom theme for Web Courses Bangkok
+
+Version: 1.0
+
+Author: Sam, Zack, Carl
+
+Author URI: http://webcoursesbangkok.com/
+
+
+
+*/
+
+
+
+#wpcf7-f17136-p17123-o1 .wpcf7 input{ width:490px;
+
+
+
+div#main-content-blog{overflow:auto;}
+
+
+
+.action{
+
+		font-weight:bold;
+
+		border:1px solid gray;
+
+		background:url(/wp-content/uploads/2011/11/icon-dw.png) 10px 10px no-repeat #f4f5f4;
+
+		padding:10px 10px 5px 50px !important;
+
+		-webkit-border-radius: 6px;
+
+		-moz-border-radius: 6px;
+
+		border-radius: 6px;
+
+		min-height:50px
+
+	}
+
+
+
+div#callus span {font-size:12px; margin-top:5px;}
+
+
+
+
+
+.alignright { float:right; }
+
+div#main-content-blog li.widget{font-size:14px;}
+
+
+
+#header div.logo-text{margin-left:145px;}
+
+/* Slider css
+
+-------------------------------------------------------------- */
+
+#slider{
+
+	margin:0 auto !important;
+	width:960px;
+	height:368px;
+	position:relative;
+}
+
+
+
+#slider .slide-content{
+	height:300px;
+}
+
+
+
+#slider .slider_header{
+
+	padding-left:320px;
+
+	font-size:40px;
+
+	font-weight:normal;
+
+	text-shadow: 1px 1px 1px #b3b3b3;
+
+	filter: dropshadow(color=#b3b3b3, offx=1, offy=1);
+
+}
+
+
+
+#slider .slider_header p{
+
+		font-size:21px;
+
+}
+
+
+
+#slider .slider_banner{
+
+	margin-left: 475px;
+
+	margin-top: 70px;
+
+}
+
+
+
+#slider .slider_banner ul{
+
+	margin-top:20px;
+
+	list-style-type:disc;
+
+}
+
+
+
+
+
+#slider .slider_banner img{
+
+	margin-left:215px;
+
+	margin-top:-19px;
+
+}
+
+
+
+
+
+#slider .slide-content {
+
+	font-size: 18px;
+
+	color:white;
+
+}
+
+
+
+#slider .slide-content h2{
+
+	color:white;
+
+} 
+
+
+
+
+
+
+
+		
+
+/* ================= ABOUT CSS ============================= */
+
+
+
+
+
+  #about-bg{	
+
+		background:url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/the-journey.gif) repeat-y top center !important; 
+
+
+
+	}
+
+	
+
+
+
+	ul#about-team{		
+
+		overflow:hidden;
+
+		padding-top:30px;
+
+		}	
+
+	
+
+		ul#about-team img{
+
+			background:none;
+
+			
+
+		}
+
+		
+
+		ul#about-team img, 
+
+		ul#about-team a{
+
+			margin:-1px;
+
+			padding:0px;
+
+			float:left;
+
+			-moz-transition:all 0.2s linear;
+
+			-webkit-transition:all 0.2s linear;
+
+			-o-transition:all 0.2s linear;
+
+		}
+
+		
+
+		ul#about-team img:hover{
+
+			margin-top:-70px;
+
+			
+
+		}
+
+		
+
+			ul#about-team a.one{ /* Carl */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/United-Kingdom.png) 15px 266px no-repeat;
+
+			}
+
+			ul#about-team a.two{ /* Taya */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/Thailand.png) 15px 258px no-repeat;
+
+			}
+  
+  
+
+			ul#about-team a.three{ /* Aram */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2012/03/iran1.png) 15px 278px no-repeat;
+
+			}
+
+			ul#about-team a.four{ /* Mike */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/Wales.png) 15px 258px no-repeat;
+
+			}
+
+			ul#about-team a.five{ /* Zack */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/Thailand.png) 15px 248px no-repeat;
+
+			}
+
+			ul#about-team a.six{ /* Ben */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/Australia.png) 15px 278px no-repeat;
+
+			}
+
+			ul#about-team a.seven{ /* Adam */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/United-Kingdom.png) 15px 290px no-repeat;
+
+			}
+
+			ul#about-team a.eight{ /* Seth */
+
+				background:url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/Canada.png) 15px 258px no-repeat;
+
+			}
+
+			ul#about-team a.nine{ /* Pete */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/12/flag-british.png) 15px 282px no-repeat;
+
+			}
+
+			ul#about-team a.ten{ /* Tom */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/11/Italy-Flag-50x50.png) 15px 278px no-repeat;
+
+			}
+
+			ul#about-team a.eleven{ /* Koen */
+
+				background: url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/11/dutch_50.jpg) 15px 282px no-repeat;
+
+			}
+
+		
+
+		ul#about-team a{
+
+			display:block;
+
+			width:84px;
+
+			height:335px;
+
+			
+
+			
+
+		}
+
+
+
+/* ========== ABOUT BOX ============== */
+
+		
+
+.about-box{
+
+	margin:90px auto 0 auto;
+
+	border:1px solid #ccc;
+
+	height:400px;
+
+	position:relative;
+
+	width:880px;
+
+	padding:20px;
+
+	background-image:url(/web/20120816134905/http://www.webcoursesbangkok.com/wp-content/uploads/2011/07/bg-20.png);
+
+}
+
+
+
+	.about-box img.tab{
+
+			position:absolute;
+
+			right:10px;
+
+			top:-10px;
+
+	}
+
+
+
+	#content ul.about-nav{
+
+		margin:0 auto 20px auto;
+
+		list-style:none;
+
+		overflow:hidden;
+
+	}
+
+	
+
+			#content ul.about-nav li{
+
+				display:inline;
+
+				margin:0 16px;
+
+				font-size:18px;
+
+				height:40px;
+
+			}
+
+			
+
+			#content ul.about-nav li a{
+
+				font-size:16px;
+
+			}
+
+
+
+	.about-box div.col{
+
+		width:440px;
+
+		float:left;
+
+	}
+
+	
+
+	.about-box .right{overflow:hidden;}
+
+	.about-box .right{font-size:16px;}
+
+	
+
+	.about-box .left{
+
+		position:relative;
+
+		height:500px;
+
+	}
+
+	
+
+		.about-box .left img{
+
+			position:absolute;
+
+			-webkit-transition: all 1s ease;
+
+			-moz-transition: all 1s ease;
+
+			-o-transition: all 1s ease;
+
+			transition: all 1s ease;
+
+		}
+
+		.about-box .left img:hover{
+
+			-moz-transform: scale(1) rotate(0deg) translate(0px, 0px) skew(0deg, 0deg);
+
+			-webkit-transform: scale(1) rotate(0deg) translate(0px, 0px) skew(0deg, 0deg);
+
+			-o-transform: scale(1) rotate(0deg) translate(0px, 0px) skew(0deg, 0deg);
+
+			-ms-transform: scale(1) rotate(0deg) translate(0px, 0px) skew(0deg, 0deg);
+
+			transform: scale(1) rotate(0deg) translate(0px, 0px) skew(0deg, 0deg);
+
+			
+
+		}
+
+
+
+			.about-box .left img.one{left:10px; top:50px; z-index:2;}
+
+		
+
+			.about-box .left img.two{left:50px; top:200px; z-index:3}
+
+			
+
+			.about-box .left img.three{left:90px; top:350px; z-index:1}
+
+			
+
+			.about-box .left img.four{left:90px; top:550px; z-index:4}
+
+
+
+	
+
+	.about-box .shadow{
+
+		border:5px solid white;
+
+		-moz-box-shadow: 0px 0px 10px #999;
+
+		-webkit-box-shadow: 0px 0px 10px #999;
+
+        box-shadow: 0px 0px 10px #999;
+
+	}
+
+	
+
+	.about-box .rotate20{
+
+		-moz-transform: scale(1) rotate(20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+		-webkit-transform: scale(1) rotate(20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+		-o-transform: scale(1) rotate(20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+		-ms-transform: scale(1) rotate(20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+		transform: scale(1) rotate(20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+	}
+
+	.about-box .rotate-20{
+
+		-moz-transform: scale(1) rotate(-20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+	-webkit-transform: scale(1) rotate(-20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+	-o-transform: scale(1) rotate(-20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+	-ms-transform: scale(1) rotate(-20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+	transform: scale(1) rotate(-20deg) translate(0px, 0px) skew(0deg, 0deg);
+
+	}
+
+	
+
+
+
+ 	#whatwedo{
+
+	 	height:820px;
+
+	}
+
+	
+
+	#howweteach{
+
+		height:1020px;
+
+	}
+
+	
+
+	#our-promise{
+
+		height:820px;
+
+	}
+
+	
+
+	#our-responsibility{
+
+		height:820px;
+
+	}
+
+	
+
+	#thank-you{
+
+		height:800px;
+
+	}
+
+	
+
+/* ================= Footer Logo's CSS ============================= */
+
+	
+
+	.logo {
+
+		margin-bottom: 10px;
+
+	}	    
+
+	
+
+	
+
+/* ================= Contact Form CSS ============================= */
+
+
+
+	#inputcaptcha {width: 100px;
+
+	}
+
+	
+
+/* ================= New Products page CSS ============================= */
+
+
+
+	.new_product img{
+
+	padding:39px 42px 95px 20px
+
+	}
+
+
+
+	div#content .new_product h3{
+
+	font-size:18px;
+
+	padding: 20px;
+
+	}
+
+
+
+	.new_product div#button-courses-lrg{
+
+	padding-bottom: 35px;
+
+	padding-top: 35px;
+
+	}
+
+
+
+/* ================= One day photography page CSS ============================= */
+
+
+
+	#photographylogo {
+
+	margin: 12px 25px 51px 18px;
+
+	}
+
+	
+
+
+
+/* ================= Contact page CSS ============================= */
+
+
+
+	div#content .adress h3 {
+
+	font-size: 23px;
+
+	}	
+
+ 
+
+/* ================= FAQ page CSS ============================= */    
+
+
+
+/* ================= Widget CSS ===============================*/
+
+
+
+/* li.widget ul li {
+
+vertical-align: middle !important;
+
+}
+
+
+
+div.mc-field-group input {
+
+margin-top: 0px;
+
+margin-bottom: 0px;
+
+}
+
+*/
+
+/* navigatin bar dropdown menu arrow alignment */
+
+  ul#menu-main-navigation li:first-child {
+  padding: 10px -1px;
+  }  
+
+  /* ================= UX-User experience page ===============================*/
+  
+div#main-content-page .col2 div#content h1{
+    font-size:37px;
+  }
+  
+/* ================= logo ===============================*/  
+  
+  div.logo-text{
+  	width:40%;
+  }
+  
+/* ================= Comment Form ================= */ 
+
+div.comments-template { margin-top: 15px; border-top: 1px dashed #d3d3d3; padding-top: 15px; color:#585858;  }
+
+div.comments-template h3, div#respond h3 { font-size: 20px; font-weight: normal; margin: 10px 0px; color:#585858; }
+
+
+
+form#commentform { padding: 10px; line-height: 24px; color: #585858; border: 1px dashed #d3d3d3; padding: 10px; background: #f9f9f9; -webkit-border-radius: 4px; -moz-border-radius: 4px; padding: 20px;   }
+
+form#commentform p { margin-bottom: 5px; }
+
+form#commentform input { margin-bottom:15px; color:#999; font-size:16px; background:url(i/sign-up-input.png) no-repeat scroll 0 0 #FFFFFF; border:1px solid #DBDBDB; padding:5px 6px; vertical-align:middle; } 
+
+form#commentform input#submit { background: url(i/o-button-grad.png) repeat-x; border: 1px solid #fff; text-shadow: 1px 1px 1px #444; color: #fff; font-size: 14px; padding: 10px; font-weight: bold; -webkit-border-radius: 4px; -moz-border-radius: 4px;  } 
+
+form#commentform textarea { display:block; margin-bottom:15px; color:#999; font-size:16px; background:url(i/sign-up-input.png) no-repeat scroll 0 0 #FFFFFF;  border:1px solid #DBDBDB; padding:5px 3px; vertical-align:middle; width:558px;  } div.comment-cite { font-size: 16px; font-style: normal;  }
+
+
+
+div.vcard { float: left; margin: 10px; border: 1px solid #d3d3d3; }
+
+cite.fn { font-style: normal; }
+
+div.comment-cite a {text-decoration: underline; }
+
+li.thread-even div.comment-box, li.even div.comment-box { background: #f0f0f0 url(i/comment-grad.png) top repeat-x; float: right; width: 100%; padding: 0px; border: 1px solid #d3d3d3;  }
+
+li.thread-odd div.comment-box, li.odd div.comment-box { background: #fff; float: right; width: 100%; padding: 0px; border: 1px solid #d3d3d3;  }
+
+ol.commentlist  li ul.children li { margin-left: 30px; }
+
+div.comment-box p { padding-top: 10px; padding-right: 10px; padding-left: 10px; }
+
+div.comment-box span.comment-meta { float: right; padding: 5px 10px; background: url(i/comment-meta-border.png) no-repeat top left; font-style: italic;}
+
+div.comment-box span.comment-meta a { color:#c7c7c7; }
+
+div.comment-box span.reply { padding: 5px 10px; float: left; background: url(i/reply-border.png) no-repeat top right; }
+
+div.comment-box span.reply a { color:#707070; }
+
+ol.commentlist li.comment { margin-top: 10px; }
+
+li.even div.comment-arrow { position: relative; top: 1px; left: 10px; background: url(i/comment-arrow.png) no-repeat top; width: 20px; height: 15px; }
+
+li.odd div.comment-arrow { position: relative; top: 1px; left: 10px; background: url(i/comment-arrow-white.png) no-repeat top; width: 23px; height: 17px;  }
+
+li.thread-odd div.comment-arrow { position: relative; top: 1px; left: 10px; background: url(i/comment-arrow-white.png) no-repeat top; width: 23px; height: 17px;  }
+
+/* Sub Nav Courses Page */
+
+ul.sub-page-list li { display:block; float: left; text-decoration: none; margin: 8px 10px 5px 10px; padding:  3px 5px; border-bottom: 3px solid #ececec; }
+
+ul.sub-page-list li a { padding: 2px; color: #585858; font-weight: bold;  }
+
+ul.sub-page-list { background: #ececec; }
+
+ul.sub-page-list li:hover { border-bottom: 3px solid #6daf03; }
+
+ul.sub-page-list li.current_page_item, ul.sub-page-list li.current_page_parent { border-bottom: 3px solid #6daf03; }
+

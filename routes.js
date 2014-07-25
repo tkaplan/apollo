@@ -197,11 +197,11 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/google/disconnect/', require('./views/account/settings/index').disconnectGoogle);
 
   //caas project
-  app.get('/owner/:owner/project/:project', ensureAuthenticatedCaas);
-  app.post('/owner/:owner/project/:project', ensureAuthenticatedCaas);
+  app.get('/caas/owner/:owner/project/:project', ensureAuthenticatedCaas);
+  app.post('/caas/owner/:owner/project/:project', ensureAuthenticatedCaas);
   //app.get('/owner/:owner/project/:project', require('./views/caas/owner/project').getProject);
   //app.options('/owner/:owner/project/:project', cors());
-  app.post('/owner/:owner/project/:project', require('./views/caas/owner/project').createProject);
+  app.post('/caas/owner/:owner/project/:project', require('./views/caas/owner/project').createProject);
 
 
   //caas page

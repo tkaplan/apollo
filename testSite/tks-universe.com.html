@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!-- saved from url=(0024)http://tks-universe.com/ -->
+<html class="js no-touch webp gumby-no-touch"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}</style>
+	<meta charset="utf-8">
+	<!-- Links -->
+	<link rel="stylesheet" type="text/css" href="./tks-universe.com_files/gumby.css">
+	<script src="./tks-universe.com_files/modernizr-2.6.2.min.js"></script>
+	</head>
+	<body ng-app="app" class="ng-scope">
+
+		<center>
+			<img src="./tks-universe.com_files/loading.gif" class="splash fade fade-hide display-none" ng-loading="">
+		</center>
+
+		<!-- Main Middle Content -->
+		<div class="main ng-scope" ng-controller="mainCtrl">
+			
+			<div id="container" class="container ng-scope" ng-controller="containerCtrl">
+					<div class="upper-layer" style="width: auto;">
+						<img src="./tks-universe.com_files/blank.png" class="taylor">
+						<img src="./tks-universe.com_files/blank.png" class="scroll_text">
+						<img src="./tks-universe.com_files/point_down.png" class="center">
+						<img src="./tks-universe.com_files/blank.png" class="city_float_bottom">
+					</div>
+					<div class="content-holder" style="height: 930px;">
+						<!-- ngInclude:  --><div ng-include="" src="templateContent.url" class="ng-scope"><div class="modal ng-scope" id="contact">
+	<div class="content" style="width:640px;height:500px;">
+		<a class="close switch" gumby-trigger="|div#contact"><i class="icon-cancel"></i></a>
+		<h2 style="float:left"> Contact me! </h2>
+		<br>
+		<br>
+		<br>
+		<span class="form-items">Name &nbsp;</span>
+		<br>
+		<input id="name" type="text" class="form-items input ng-pristine ng-valid" placeholder="name" ng-model="mail.from">
+		<br>
+		<span class="form-items">Email  &nbsp; &nbsp;</span>
+		<br>
+		<input id="email" class="form-items input ng-pristine ng-valid ng-valid-email" type="email" placeholder="email" ng-model="mail.email">
+		<br>
+		<span class="form-items">Message</span>
+		<br>
+		<textarea id="message" class="form-items input ng-pristine ng-valid" rows="4" cols="50" placeholder="message" ng-model="mail.message"></textarea>
+		<br>
+		<br>
+		<br>
+		<button style="clear:both;float:left;" ng-click="mail()"> Submit </button>
+		<br>
+		<br>
+		<ul>
+			<li>
+				Email: taylor_kaplan@yahoo.com
+			</li>
+			<li>
+				Phone: 702-601-7208
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div id="content-height" class="ng-scope">
+	<div class="place-holder">
+		<nav class="row navbar metro fixed" gumby-fixed="top" style="top: 0px;">
+			<center>
+				<ul>
+					<li ng-click="scrollToContent(&#39;#about&#39;)"><a href="http://tks-universe.com/#">About Me</a></li>
+					<li ng-click="scrollToContent(&#39;#resume&#39;)"><a href="http://tks-universe.com/#">Resume</a></li>
+					<li ng-click="scrollToContent(&#39;#blogs&#39;)"><a href="http://tks-universe.com/#">Blogs</a></li>
+					<li ng-click="scrollToContent(&#39;#projects&#39;)"><a href="http://tks-universe.com/#">Projects</a></li>
+					<li class="btn primary medium"><a href="http://tks-universe.com/#" class="switch" gumby-trigger="#contact">Contact Me</a></li>
+				</ul>
+			</center>
+		</nav>
+	</div>
+	<div id="about" class="section">
+		<div class="section-title">
+			<center>
+				<h1>Hi, my name is Taylor and I'm a full-stack web developer!</h1>
+			</center>
+		</div>
+		<div class="section-content">
+			<h3> About the non-technical me: </h3>
+			<p>
+				What can I say about myself? At the time of this writting I'm 23, love traveling, and I enjoy playing sports but not watching them. I've also had the pleasurable experience of working my first start-up (2013, Care Monk) as a lead developer.
+			</p>
+			<p>
+				I have a dog, Apollo, who keeps me busy when I am at home. He enjoys chasing rabbits and can be a bit a of a trouble maker at times. My favorite hobby is cycling, but unfortunately it is difficult to do that in Las Vegas (where I live). I also used to do a bit of mountain biking, but then someone stole my bike ;(
+			</p>
+			<p>
+				I am looking to move someplace else that is more conducive to my outdoor needs like drop in soccer, hiking, and cycling. For now I pretty much just play racquet ball whenever the courts aren't occupied.
+			</p>
+			<h3> About the technical me: </h3>
+			<p>
+				I <b>love, love, love!!!</b> developing interesting applications and learning about new technologies to build bigger bad ass web app's! Since have been programming my entire life I have dealt with just about every walk of computer science related development from computational physics, security, firmware, to my current mistress ... web development:)
+			</p>
+			<p>
+				I develop web app's with PHP5 using Symfony, however I am currently learning Ruby on Rails and Spring for Java. For developing client side web apps, I am a big fan of Angularjs/jQuery(javascript) and Gumby/Bootstrap(HTML/CSS). I also use tools like SASS and Compass to help build my CSS.
+			</p>
+		</div>
+	</div>
+
+	<div class="parallax second-layer" gumby-parallax=".8" gumby-offset="-100" style="background-position: 50% 163.9000000000001px;">
+		<div class="parallax first-layer" gumby-parallax="-.1" gumby-offset="500" style="background-position: 50% 39.51249999999999px;"></div>
+	</div>
+
+	<div id="resume" class="section">
+		<div class="section-title">
+			<h1>Resume</h1>
+		</div>
+		<div class="section-content">
+			If you would like to view my resume you can access it here: <a href="http://tks-universe.com/Portfolio/MEDIA/MISC/resume.pdf">Resume.</a> I plan to make an interactive resume for this section soon enough.
+		</div>
+	</div>
+
+	<div class="parallax second-layer" gumby-parallax=".8" gumby-offset="300" style="background-position: 50% 364.8000000000002px;">
+		<div class="parallax first-layer" gumby-parallax="-.1" gumby-offset="2500" style="background-position: 50% 174.4px;"></div>
+	</div>
+
+	<div id="blogs" class="section">
+		<div class="section-title">
+			<h1>Blogs</h1>
+		</div>
+		<div class="section-content">
+			<p>
+				I am currently writting a blog in developing a PHP5 enterprise website from start to finish. Although there is a lot of amazing material out there on how to create code, people are still inexperienced in the development process when joining the workforce. My blog will hopefully shine some light on working with team projects.
+				Although my blog is still a work in progress and has not been proof read, you can still find my main blog here: <a href="http://tksdeveloper.blogspot.com/">My Blog</a>
+			</p>	
+		</div>
+	</div>
+
+	<div class="parallax second-layer" gumby-parallax=".8" gumby-offset="700" style="background-position: 50% 617.7px;">
+		<div class="parallax first-layer" gumby-parallax="-.1" gumby-offset="4500" style="background-position: 50% 302.7875px;"></div>
+	</div>
+	
+	<div id="projects" class="section">
+		<div class="section-title">
+			<h1>Projects</h1>
+		</div>
+		<div class="section-content">
+			<p>
+				I have worked on a lot of projects and I will get to listing them at a later date but you can check out my public git repository here: <a href="https://github.com/tkaplan?tab=repositories">Git Portfolio</a>
+			</p>
+		</div>
+	</div>
+</div>
+</div>
+					</div>
+					<div class="lower-layer" style="width: auto;">
+						<img src="./tks-universe.com_files/blank.png" class="city_float_upper">
+					</div>
+			</div>
+		</div>
+		<!-- End of Main Middle Content -->
+
+		<!-- Scripts -->
+		<script src="./tks-universe.com_files/jquery.min.js"></script>
+		<script src="./tks-universe.com_files/angular.min.js"></script>
+		<script src="./tks-universe.com_files/gumby.min.js"></script>
+		<script src="./tks-universe.com_files/gumby.parallax.js"></script>
+		
+		<!-- LIB -->
+		<script src="./tks-universe.com_files/jquery-ui-1.8.22.custom.min.js"></script>
+		<script src="./tks-universe.com_files/jquery.hover-transitions-1.0.min.js"></script>
+		<script src="./tks-universe.com_files/jquery.mousewheel.js"></script>
+
+		<!-- Import jQuery -->
+		<script src="./tks-universe.com_files/jquery.taylor.checkers.js"></script>
+		<script src="./tks-universe.com_files/jquery.taylor.transition-website.js"></script>
+
+		<!-- Import Angular -->
+		<script src="./tks-universe.com_files/app.js"></script>
+		<script src="./tks-universe.com_files/container.js"></script>
+	
+</body></html>

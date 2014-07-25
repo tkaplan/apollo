@@ -4,6 +4,7 @@ var _ = require('lodash'),
     Q = require('q'),
     async = require('async'),
     Project,
+    validate = require('../validate/validate'),
     Helper = require('./Helper'),
     aws = require('../aws/aws');
 
@@ -38,7 +39,6 @@ exports = module.exports = function(app, mongoose) {
     var _this = this;
     var Project = app.db.model('Project');
     var helper = Helper.initialize(app, mongoose);
-
     return Q.Promise(function(resolve, reject, notify) {
 
       helper.getProject(owner, project.name).then(
@@ -46,25 +46,58 @@ exports = module.exports = function(app, mongoose) {
           reject(new Error('project already exists'));
         },
         function _reject(err) {
-          if(err) {
+          if(err.toString() != 'Error: No project found') {
             reject(err);
           } else {
             _this.findOne({'username': owner}, function(err, user) {
               if(err || !user) {
+                err = !user ? new Error('No user found') : err;
                 reject(err);
               } else {
-                var newProject = new Project(project);
-                // extract data blocks
-                var dataBlocks = helper.extractDataBlocksFromProject(newProject);
-                newProject.save(function(err) {
-                  _this.addProject(user, newProject).then(
-                    function _resolve_(value) {
-                      aws.putBlocks(dataBlocks, resolve, reject);
-                    },
-                    function _reject_(reason) {
-                      reject(reason);
+                // validate project name
+                var validation = validate.project(project.name);
+                if(validation.error) {
+                  reject(validation.error);
+                  return;
+                }
+
+                // Create fresh projectDB instance
+                var projectDB = new Project({
+                  name: project.name,
+                  owner: user._id,
+                  pages: {}
+                });
+
+                // Validate and get page names
+                if(project.pages) {
+                  var pageNames = Object.keys(project.pages);
+                  for(var i = 0; i < pageNames.length; i ++) {
+                    var validation = validate.page(pageNames[i]);
+                    if(validation.error){
+                      reject(validation.error);
+                      return;
                     }
-                  );
+                    projectDB.pages[pageNames[i]] = {
+                      blocks: {}
+                    };
+                  }
+                }
+
+                // Save both sides of user and project
+                projectDB.save(function(err, savedProject) {
+                  if(err) {
+                    reject(err)
+                  } else {
+                    savedProject.markModified('pages');
+                    _this.addProject(user, savedProject).then(
+                      function() {
+                        resolve();
+                      },
+                      function(reason) {
+                        reject(reason);
+                      }
+                    );
+                  }
                 });
               }
             });
@@ -167,6 +200,51 @@ exports = module.exports = function(app, mongoose) {
           reject(reason);
         }
       );
+    });
+  };
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Crud for project management :
+  // project == project instance passed from client
+  // owner == username
+  userSchema.methods.createProject = function(project) {
+    var _this = this,
+        Project = app.db.model('Project'),
+        helper = Helper.initialize(app, mongoose);
+
+    return Q.Promise(function(resolve, reject, notify) {
+      var newProject = new Project(project);
+      // extract data blocks
+      var dataBlocks = helper.extractDataBlocksFromProject(newProject);
+      newProject.save(function(err) {
+        _this.addProject(user, newProject).then(
+          function _resolve_(value) {
+            aws.putBlocks(dataBlocks, resolve, reject);
+          },
+          function _reject_(reason) {
+            reject(reason);
+          }
+        );
+      }); 
+    });
+  };
+
+  userSchema.methods.getAccount = function() {
+    var _this = this,
+        Account = app.db.model('Account'),
+        accountId = this.roles.account;
+
+    return Q.Promise(function(resolve, reject, notify) {
+
+      Account.findOne({_id: accountId}, function(err, account) {
+        if(err) {
+          reject(err);
+        } else {
+          resolve(account);
+        }
+      });
+
     });
   };
 

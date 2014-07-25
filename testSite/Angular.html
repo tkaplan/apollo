@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)https://docs.angularjs.org/guide -->
+<html lang="en" ng-app="docsApp" ng-controller="DocsController" class="ng-scope"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-animate){display:none !important;}ng\:form{display:block;}</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="Description" content="AngularJS is what HTML would have been, had it been designed for building web-apps.
+                 Declarative templates with data-binding, MVC, dependency injection and great
+                 testability story all implemented with pure client-side JavaScript!">
+  <meta name="fragment" content="!">
+  <title ng-bind-template="AngularJS: Developer Guide: Developer Guide" class="ng-binding">AngularJS: Developer Guide: Developer Guide</title>
+
+  <script type="text/javascript" async="" src="./Angular_files/ga.js"></script><script type="text/javascript">
+    // dynamically add base tag as well as css and javascript files.
+    // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources
+    // before the base attribute is added, causing 404 and terribly slow loading of the docs app.
+    (function() {
+      var indexFile = (location.pathname.match(/\/(index[^\.]*\.html)/) || ['', ''])[1],
+          rUrl = /(#!\/|api|guide|misc|tutorial|error|index[^\.]*\.html).*$/,
+          baseUrl = location.href.replace(rUrl, indexFile),
+          production = location.hostname === 'docs.angularjs.org',
+          headEl = document.getElementsByTagName('head')[0],
+          sync = true;
+
+      addTag('base', {href: baseUrl});
+
+
+      addTag('link', {rel: 'stylesheet', href: 'components/bootstrap-3.1.1/css/bootstrap.min.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'components/open-sans-fontface-1.0.4/open-sans.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'css/prettify-theme.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'css/docs.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'css/animations.css', type: 'text/css'});
+      
+
+      addTag('script', {src: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.15/angular.min.js' }, sync);
+      addTag('script', {src: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.15/angular-resource.min.js' }, sync);
+      addTag('script', {src: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.15/angular-route.min.js' }, sync);
+      addTag('script', {src: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.15/angular-cookies.min.js' }, sync);
+      addTag('script', {src: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.15/angular-sanitize.min.js' }, sync);
+      addTag('script', {src: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.15/angular-touch.min.js' }, sync);
+      addTag('script', {src: '//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.15/angular-animate.min.js' }, sync);
+      addTag('script', {src: 'components/marked-0.3.1/lib/marked.js' }, sync);
+      addTag('script', {src: 'js/angular-bootstrap/bootstrap.js' }, sync);
+      addTag('script', {src: 'js/angular-bootstrap/bootstrap-prettify.js' }, sync);
+      addTag('script', {src: 'js/angular-bootstrap/dropdown-toggle.js' }, sync);
+      addTag('script', {src: 'components/lunr.js-0.4.2/lunr.min.js' }, sync);
+      addTag('script', {src: 'components/google-code-prettify-1.0.1/src/prettify.js' }, sync);
+      addTag('script', {src: 'components/google-code-prettify-1.0.1/src/lang-css.js' }, sync);
+      addTag('script', {src: 'js/versions-data.js' }, sync);
+      addTag('script', {src: 'js/pages-data.js' }, sync);
+      addTag('script', {src: 'js/docs.js' }, sync);
+      
+
+      function addTag(name, attributes, sync) {
+        var el = document.createElement(name),
+            attrName;
+
+        for (attrName in attributes) {
+          el.setAttribute(attrName, attributes[attrName]);
+        }
+
+        sync ? document.write(outerHTML(el)) : headEl.appendChild(el);
+      }
+
+      function outerHTML(node){
+        // if IE, Chrome take the internal method otherwise build one
+        return node.outerHTML || (
+            function(n){
+                var div = document.createElement('div'), h;
+                div.appendChild(n);
+                h = div.innerHTML;
+                div = null;
+                return h;
+            })(node);
+      }
+    })();
+
+
+    // force page reload when new update is available
+    window.applicationCache && window.applicationCache.addEventListener('updateready', function(e) {
+      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+        window.applicationCache.swapCache();
+        window.location.reload();
+      }
+    }, false);
+
+    // GA asynchronous tracker
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-8594346-3']);
+    _gaq.push(['_setDomainName', '.angularjs.org']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script><!--<base href="https://docs.angularjs.org/">--><base href="."><link rel="stylesheet" href="./Angular_files/bootstrap.min.css" type="text/css"><link rel="stylesheet" href="./Angular_files/open-sans.css" type="text/css"><link rel="stylesheet" href="./Angular_files/prettify-theme.css" type="text/css"><link rel="stylesheet" href="./Angular_files/docs.css" type="text/css"><link rel="stylesheet" href="./Angular_files/animations.css" type="text/css"><script src="./Angular_files/angular.min.js"></script><script src="./Angular_files/angular-resource.min.js"></script><script src="./Angular_files/angular-route.min.js"></script><script src="./Angular_files/angular-cookies.min.js"></script><script src="./Angular_files/angular-sanitize.min.js"></script><script src="./Angular_files/angular-touch.min.js"></script><script src="./Angular_files/angular-animate.min.js"></script><script src="./Angular_files/marked.js"></script><script src="./Angular_files/bootstrap.js"></script><script src="./Angular_files/bootstrap-prettify.js"></script><script src="./Angular_files/dropdown-toggle.js"></script><script src="./Angular_files/lunr.min.js"></script><script src="./Angular_files/prettify.js"></script><script src="./Angular_files/lang-css.js"></script><script src="./Angular_files/versions-data.js"></script><script src="./Angular_files/pages-data.js"></script><script src="./Angular_files/docs.js"></script>
+</head>
+<body>
+  <div id="wrapper">
+    <header class="header header-fixed">
+      <section class="navbar navbar-inverse docs-navbar-primary ng-scope" ng-controller="DocsSearchCtrl">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-9 header-branding">
+              <a class="brand navbar-brand" href="http://angularjs.org/">
+                <img class="logo" src="./Angular_files/angularjs-for-header-only.svg">
+              </a>
+              <ul class="nav navbar-nav">
+                <li class="divider-vertical"></li>
+                <li><a href="http://angularjs.org/"><i class="icon-home icon-white"></i> Home</a></li>
+                <li class="divider-vertical"></li>
+                <li class="dropdown ng-isolate-scope">
+                  <a href="https://docs.angularjs.org/#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="icon-eye-open icon-white"></i> Learn <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li class="disabled"><a href="http://angularjs.org/">Why AngularJS?</a></li>
+                    <li><a href="http://www.youtube.com/user/angularjs">Watch</a></li>
+                    <li><a href="https://docs.angularjs.org/tutorial">Tutorial</a></li>
+                    <li><a href="http://builtwith.angularjs.org/">Case Studies</a></li>
+                    <li><a href="https://github.com/angular/angular-seed">Seed App project template</a></li>
+                    <li><a href="https://docs.angularjs.org/misc/faq">FAQ</a></li>
+                  </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="dropdown active ng-isolate-scope">
+                  <a href="https://docs.angularjs.org/#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="https://docs.angularjs.org/tutorial">Tutorial</a></li>
+                    <li><a href="./Angular_files/Angular.html">Developer Guide</a></li>
+                    <li><a href="https://docs.angularjs.org/api">API Reference</a></li>
+                    <li><a href="https://docs.angularjs.org/error">Error Reference</a></li>
+                    <li><a href="https://docs.angularjs.org/misc/contribute">Contribute</a></li>
+                    <li><a href="http://code.angularjs.org/">Download</a></li>
+                  </ul>
+                </li>
+                <li class="divider-vertical"></li>
+                <li class="dropdown ng-isolate-scope">
+                  <a href="https://docs.angularjs.org/#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="icon-comment icon-white"></i> Discuss <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="http://blog.angularjs.org/">Blog</a></li>
+                    <li><a href="http://groups.google.com/group/angular">Mailing List</a></li>
+                    <li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4">Chat Room</a></li>
+                    <li class="divider"></li>
+                    <li><a href="https://twitter.com/#!/angularjs">Twitter</a></li>
+                    <li><a href="https://plus.google.com/110323587230527980117">Google+</a></li>
+                    <li class="divider"></li>
+                    <li><a href="https://github.com/angular/angular.js">GitHub</a></li>
+                    <li><a href="https://github.com/angular/angular.js/issues">Issue Tracker</a></li>
+                  </ul>
+                </li>
+                <li class="divider-vertical"></li>
+              </ul>
+            </div>
+            <form ng-class="{focus:focus}" class="navbar-search col-md-3 docs-search ng-pristine ng-valid" ng-submit="submit()">
+              <span class="glyphicon glyphicon-search search-icon"></span>
+              <input type="text" name="as_q" class="search-query ng-pristine ng-untouched ng-valid" placeholder="Click or press / to search" ng-focus="focus=true" ng-blur="focus=false" ng-change="search(q)" ng-model="q" docs-search-input="" autocomplete="off">
+            </form>
+          </div>
+        </div>
+        <div class="search-results-container ng-hide" ng-show="hasResults">
+          <div class="container">
+            <a href="" ng-click="hideResults()" class="search-close">
+              <span class="glyphicon glyphicon-remove search-close-icon"></span> Close
+            </a>
+            <div class="search-results-frame">
+              <!-- ngRepeat: (key, value) in results -->
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="sup-header">
+        <div class="container main-grid main-header-grid">
+          <div class="grid-left">
+            <div ng-controller="DocsVersionsCtrl" class="picker version-picker ng-scope">
+              <select ng-options="v as (&#39;v&#39; + v.version + (v.isSnapshot ? &#39; (snapshot)&#39; : &#39;&#39;)) group by getGroupName(v) for v in docs_versions" ng-model="docs_version" ng-change="jumpToDocsVersion(docs_version)" class="docs-version-jump ng-pristine ng-untouched ng-valid"><optgroup label="Latest"><option value="0">v1.3.0-build.2959 (snapshot)</option><option value="17">v1.2.20</option><option value="40">v1.1.5</option><option value="46">v1.0.8</option></optgroup><optgroup label="Unstable"><option value="1">v1.3.0-beta.16</option><option value="2">v1.3.0-beta.15</option><option value="3">v1.3.0-beta.14</option><option value="4">v1.3.0-beta.13</option><option value="5">v1.3.0-beta.12</option><option value="6">v1.3.0-beta.11</option><option value="7">v1.3.0-beta.10</option><option value="8">v1.3.0-beta.9</option><option value="9">v1.3.0-beta.8</option><option value="10">v1.3.0-beta.7</option><option value="11">v1.3.0-beta.6</option><option value="12">v1.3.0-beta.5</option><option value="13">v1.3.0-beta.4</option><option value="14">v1.3.0-beta.3</option><option value="15">v1.3.0-beta.2</option><option value="16">v1.3.0-beta.1</option><option value="38">v1.2.0-rc.3</option><option value="39">v1.2.0-rc.2</option><option value="41">v1.1.4</option><option value="42">v1.1.3</option><option value="43">v1.1.2</option><option value="44">v1.1.1</option><option value="45">v1.1.0</option><option value="55">v1.0.0-rc2</option></optgroup><optgroup label="Stable"><option value="18">v1.2.19</option><option value="19">v1.2.18</option><option value="20">v1.2.17</option><option value="21">v1.2.16</option><option value="22">v1.2.15</option><option value="23">v1.2.14</option><option value="24">v1.2.13</option><option value="25">v1.2.12</option><option value="26">v1.2.11</option><option value="27">v1.2.10</option><option value="28">v1.2.9</option><option value="29">v1.2.8</option><option value="30">v1.2.7</option><option value="31">v1.2.6</option><option value="32">v1.2.5</option><option value="33">v1.2.4</option><option value="34">v1.2.3</option><option value="35">v1.2.2</option><option value="36">v1.2.1</option><option value="37">v1.2.0</option><option value="47">v1.0.7</option><option value="48">v1.0.6</option><option value="49">v1.0.5</option><option value="50">v1.0.4</option><option value="51">v1.0.3</option><option value="52">v1.0.2</option><option value="53">v1.0.1</option><option value="54">v1.0.0</option></optgroup></select>
+            </div>
+          </div>
+          <div class="grid-right">
+            <ul class="nav-breadcrumb">
+              <!-- ngRepeat: crumb in breadcrumb --><li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list ng-scope">
+                <span class="divider"> /</span>
+                <a ng-href="guide" class="ng-binding" href="./Angular_files/Angular.html">Developer Guide</a>
+              </li><!-- end ngRepeat: crumb in breadcrumb -->
+            </ul>
+          </div>
+        </div>
+      </section>
+    </header>
+
+    <section role="main" class="container main-body">
+      <div class="main-grid main-body-grid">
+        <div class="grid-left">
+          <a class="btn toc-toggle visible-xs" ng-click="toc=!toc">Show / Hide Table of Contents</a>
+          <div class="side-navigation ng-hide" ng-show="toc==true">
+            <ul class="nav-list naked-list">
+              <!-- ngRepeat: navGroup in currentArea.navGroups track by navGroup.name --><li ng-repeat="navGroup in currentArea.navGroups track by navGroup.name" class="nav-index-group ng-scope">
+                <a href="./Angular_files/Angular.html" ng-class="navClass(navGroup)" class="nav-index-group-heading ng-binding active">Developer Guide</a>
+                <ul class="aside-nav">
+                  <!-- ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/$location" class="ng-binding">Using $location</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/animations" class="ng-binding">Animations</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/bootstrap" class="ng-binding">Bootstrap</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/compiler" class="ng-binding">HTML Compiler</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/concepts" class="ng-binding">Conceptual Overview</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/controller" class="ng-binding">Controllers</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/css-styling" class="ng-binding">Working With CSS</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/databinding" class="ng-binding">Data Binding</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/di" class="ng-binding">Dependency Injection</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/directive" class="ng-binding">Directives</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/e2e-testing" class="ng-binding">E2E Testing</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/expression" class="ng-binding">Expressions</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/filter" class="ng-binding">Filters</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/forms" class="ng-binding">Forms</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/i18n" class="ng-binding">i18n and l10n</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/ie" class="ng-binding">Internet Explorer Compatibility</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/introduction" class="ng-binding">Introduction</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/migration" class="ng-binding">Migrating from Previous Versions</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/module" class="ng-binding">Modules</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/providers" class="ng-binding">Providers</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/scope" class="ng-binding">Scopes</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/services" class="ng-binding">Services</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/templates" class="ng-binding">Templates</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems --><li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing ng-scope active">
+                    <!-- ngIf: navItem.extra.href -->
+                    <a tabindex="2" ng-class="linkClass(navItem)" href="https://docs.angularjs.org/guide/unit-testing" class="ng-binding">Unit Testing</a>
+                  </li><!-- end ngRepeat: navItem in navGroup.navItems -->
+                </ul>
+              </li><!-- end ngRepeat: navGroup in currentArea.navGroups track by navGroup.name -->
+            </ul>
+            <a href="" ng-click="toc=false" class="toc-close visible-xs">
+              <span class="glyphicon glyphicon-remove toc-close-icon"></span> Close
+            </a>
+          </div>
+        </div>
+        <div class="grid-right">
+          <div id="loading" ng-show="loading" class="ng-hide">Loading...</div>
+          <!-- ngInclude: currentPage.outputPath || 'Error404.html' --><div ng-hide="loading" ng-include="currentPage.outputPath || &#39;Error404.html&#39;" onload="afterPartialLoaded()" autoscroll="" class="ng-scope"><a href="http://github.com/angular/angular.js/edit/master/docs/content/guide/index.ngdoc" class="improve-docs btn btn-primary ng-scope"><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this doc</a>
+
+
+<h1 id="guide-to-angularjs-documentation" class="ng-scope">Guide to AngularJS Documentation</h1>
+<p class="ng-scope">Everything you need to know about AngularJS</p>
+<ul class="ng-scope">
+<li><a href="https://docs.angularjs.org/guide/introduction">What is AngularJS?</a></li>
+<li><a href="https://docs.angularjs.org/guide/concepts">Conceptual Overview</a></li>
+</ul>
+<h2 id="tutorials" class="ng-scope">Tutorials</h2>
+<ul class="ng-scope">
+<li><a href="https://docs.angularjs.org/tutorial/index">Official AngularJS Tutorial</a></li>
+<li><a href="http://www.sitepoint.com/10-reasons-use-angularjs/">10 Reasons Why You Should Use AngularJS</a></li>
+<li><a href="http://wintellect.com/blogs/jlikness/10-reasons-web-developers-should-learn-angularjs">10 Reasons Why Developers Should Learn AngularJS</a></li>
+<li><a href="https://www.youtube.com/watch?v=HCR7i5F5L8c">Design Principles of AngularJS (video)</a></li>
+<li><a href="http://www.youtube.com/watch?v=i9MHigUZKEM">Fundamentals in 60 Minutes (video)</a></li>
+<li><a href="http://stackoverflow.com/questions/14994391/how-do-i-think-in-angularjs-if-i-have-a-jquery-background">For folks with a jQuery background</a></li>
+</ul>
+<h2 id="core-concepts" class="ng-scope">Core Concepts</h2>
+<h3 id="templates" class="ng-scope">Templates</h3>
+<p class="ng-scope">In Angular applications, you move the job of filling page templates with data from the server to the client.  The result is a system better structured for dynamic page updates.  Below are the core features you'll use.</p>
+<ul class="ng-scope">
+<li><a href="https://docs.angularjs.org/guide/databinding">Data binding</a></li>
+<li><a href="https://docs.angularjs.org/guide/expression">Expressions</a></li>
+<li><a href="https://docs.angularjs.org/guide/directive">Directives</a></li>
+<li><a href="https://docs.angularjs.org/api/ngRoute/service/$route">Views and routes (see the example)</a></li>
+<li><a href="https://docs.angularjs.org/guide/filter">Filters</a></li>
+<li><a href="https://docs.angularjs.org/guide/forms">Forms</a> and <a href="http://mrbool.com/the-concepts-of-angularjs-forms/29117">Concepts of AngularJS Forms</a></li>
+</ul>
+<h3 id="application-structure" class="ng-scope">Application Structure</h3>
+<ul class="ng-scope">
+<li><strong>Blog post: </strong><a href="http://kirkbushell.me/when-to-use-directives-controllers-or-services-in-angular/">When to use directives, controllers or services</a></li>
+<li><strong>App wiring:</strong> <a href="https://docs.angularjs.org/guide/di">Dependency injection</a></li>
+<li><strong>Exposing model to templates:</strong> <a href="https://docs.angularjs.org/guide/scope">Scopes</a></li>
+<li><strong>Communicating with servers:</strong> <a href="https://docs.angularjs.org/api/ng/service/$http">$http</a>, <a href="https://docs.angularjs.org/api/ngResource/service/$resource">$resource</a></li>
+</ul>
+<h3 id="other-angularjs-features" class="ng-scope">Other AngularJS Features</h3>
+<ul class="ng-scope">
+<li><strong>Animation:</strong> <a href="https://docs.angularjs.org/guide/animations">Core concepts</a>, <a href="https://docs.angularjs.org/api/ngAnimate">ngAnimate API</a>, and <a href="http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html">Animation in AngularJS 1.2</a></li>
+<li><strong>Security:</strong> <a href="https://docs.angularjs.org/api/ng/service/$sce">Strict Contextual Escaping</a>, <a href="https://docs.angularjs.org/api/ng/directive/ngCsp">Content Security Policy</a>, <a href="https://docs.angularjs.org/api/ngSanitize/service/$sanitize">$sanitize</a>, <a href="https://www.youtube.com/watch?v=18ifoT-Id54">video</a></li>
+<li><strong>Internationalization and Localization:</strong> <a href="https://docs.angularjs.org/guide/i18n">Angular Guide to i18n and l10n</a>, <a href="https://docs.angularjs.org/api/ng/filter/date">date filter</a>, <a href="https://docs.angularjs.org/api/ng/filter/currency">currency filter</a>, <a href="http://www.novanet.no/blog/hallstein-brotan/dates/2013/10/creating-multilingual-support-using-angularjs/">Creating multilingual support</a></li>
+<li><strong>Mobile:</strong> <a href="https://docs.angularjs.org/api/ngTouch">Touch events</a></li>
+</ul>
+<h3 id="testing" class="ng-scope">Testing</h3>
+<ul class="ng-scope">
+<li><strong>Unit testing:</strong> <a href="http://www.youtube.com/watch?v=YG5DEzaQBIc">Using Karma (video)</a>, <a href="https://docs.angularjs.org/guide/dev_guide.unit-testing">Unit testing</a>, <a href="https://docs.angularjs.org/guide/dev_guide.services.testing_services">Testing services</a>, <a href="http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/">Karma in Webstorm</a></li>
+<li><strong>Scenario testing:</strong> <a href="https://github.com/angular/protractor">Protractor</a></li>
+</ul>
+<h2 id="specific-topics" class="ng-scope">Specific Topics</h2>
+<ul class="ng-scope">
+<li><strong>Login: </strong><a href="https://developers.google.com/+/photohunt/python">Google example</a>, <a href="http://blog.brunoscopelliti.com/facebook-authentication-in-your-angularjs-web-app">Facebook example</a>, <a href="http://blog.brunoscopelliti.com/deal-with-users-authentication-in-an-angularjs-web-app">authentication strategy</a>, <a href="http://frederiknakstad.com/authentication-in-single-page-applications-with-angular-js/">unix-style authorization</a></li>
+<li><strong>Mobile:</strong> <a href="http://www.ng-newsletter.com/posts/angular-on-mobile.html">Angular on Mobile Guide</a>, <a href="http://devgirl.org/2013/06/10/quick-start-guide-phonegap-and-angularjs/">PhoneGap</a></li>
+<li><strong>Other Languages:</strong> <a href="http://www.coffeescriptlove.com/2013/08/angularjs-and-coffeescript-tutorials.html">CoffeeScript</a>, <a href="https://github.com/angular/angular.dart.tutorial/wiki">Dart</a></li>
+<li><strong>Realtime: </strong><a href="http://www.creativebloq.com/javascript/angularjs-collaboration-board-socketio-2132885">Socket.io</a>, <a href="https://github.com/jeffbcross/omnibinder">OmniBinder</a></li>
+<li><strong>Visualization:</strong> <a href="http://gaslight.co/blog/angular-backed-svgs">SVG</a>, <a href="http://www.ng-newsletter.com/posts/d3-on-angular.html">D3.js</a></li>
+<li><strong>Local Storage and session:</strong> <a href="https://github.com/gsklee/ngStorage">ngStorage</a></li>
+</ul>
+<h2 id="tools" class="ng-scope">Tools</h2>
+<ul class="ng-scope">
+<li><strong>Debugging:</strong> <a href="https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en">Batarang</a></li>
+<li><strong>Testing:</strong> <a href="http://karma-runner.github.io/">Karma</a>, <a href="https://github.com/angular/protractor">Protractor</a></li>
+<li><strong>Editor support:</strong> <a href="http://plugins.jetbrains.com/plugin/6971">Webstorm</a> (and <a href="http://www.youtube.com/watch?v=LJOyrSh1kDU">video</a>), <a href="https://github.com/angular-ui/AngularJS-sublime-package">Sublime Text</a>, <a href="http://madskristensen.net/post/angularjs-intellisense-in-visual-studio-2012">Visual Studio</a></li>
+<li><strong>Workflow:</strong> <a href="https://github.com/yeoman/generator-angular">Yeoman.io</a> and <a href="http://www.sitepoint.com/kickstart-your-angularjs-development-with-yeoman-grunt-and-bower/">Angular Yeoman Tutorial</a></li>
+</ul>
+<h2 id="complementary-libraries" class="ng-scope">Complementary Libraries</h2>
+<p class="ng-scope">This is a short list of libraries with specific support and documentation for working with Angular.  You can find a full list of all known Angular external libraries at <a href="http://ngmodules.org/">ngmodules.org</a>.</p>
+<ul class="ng-scope">
+<li><strong>Internationalization:</strong> <a href="http://angular-translate.github.io/">angular-translate</a>, <a href="http://angular-gettext.rocketeer.be/">angular-gettext</a></li>
+<li><strong>RESTful services:</strong> <a href="https://github.com/mgonto/restangular">Restangular</a></li>
+<li><strong>SQL and NoSQL backends:</strong> <a href="http://www.breezejs.com/">BreezeJS</a>, <a href="http://angularfire.com/">AngularFire</a></li>
+<li><strong>UI Widgets: </strong><a href="http://kendo-labs.github.io/angular-kendo/#/">KendoUI</a>, <a href="http://angular-ui.github.io/bootstrap/">UI Bootstrap</a>, <a href="http://wijmo.com/tag/angularjs-2/">Wijmo</a>, <a href="https://github.com/mbenford/ngTagsInput">ngTagsInput</a></li>
+<li><strong>Advanced Routing:</strong> <a href="https://github.com/angular-ui/ui-router">UI-Router</a></li>
+<li><strong>Maps:</strong> <a href="https://github.com/angular-ui/ui-map">UI-Map (Google Maps)</a></li>
+</ul>
+<h2 id="deployment" class="ng-scope">Deployment</h2>
+<h3 id="general" class="ng-scope">General</h3>
+<ul class="ng-scope">
+<li><strong>Javascript minification: </strong><a href="http://thegreenpizza.github.io/2013/05/25/building-minification-safe-angular.js-applications/">Background</a>, <a href="https://github.com/olov/ng-annotate">ng-annotate automation tool</a></li>
+<li><strong>Analytics and Logging:</strong> <a href="http://ngmodules.org/modules/angularytics">Angularyitcs (Google Analytics)</a>, <a href="https://github.com/luisfarzati/angulartics">Angulartics (Analytics)</a>, <a href="http://www.bennadel.com/blog/2542-Logging-Client-Side-Errors-With-AngularJS-And-Stacktrace-js.htm">Logging Client-Side Errors</a></li>
+<li><strong>SEO:</strong> <a href="http://www.yearofmoo.com/2012/11/angularjs-and-seo.html">By hand</a>, <a href="http://prerender.io/">prerender.io</a>, <a href="http://www.brombone.com/">Brombone</a>, <a href="http://getseojs.com/">SEO.js</a>, <a href="http://www.seo4ajax.com/">SEO4Ajax</a></li>
+</ul>
+<h3 id="server-specific" class="ng-scope">Server-Specific</h3>
+<ul class="ng-scope">
+<li><strong>Django:</strong> <a href="http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework">Tutorial</a>, <a href="http://django-angular.readthedocs.org/en/latest/integration.html">Integrating AngularJS with Django</a>, <a href="http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html">Getting Started with Django Rest Framework and AngularJS</a></li>
+<li><strong>FireBase:</strong> <a href="http://angularfire.com/">AngularFire</a>, <a href="http://www.youtube.com/watch?v=C7ZI7z7qnHU">Realtime Apps with AngularJS and FireBase (video)</a></li>
+<li><strong>Google Cloud Platform: </strong><a href="https://cloud.google.com/resources/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications">with Cloud Endpoints</a>, <a href="https://github.com/GoogleCloudPlatform/appengine-angular-gotodos">with Go</a></li>
+<li><strong>Hood.ie:</strong> <a href="http://www.roberthorvick.com/2013/06/30/todomvc-angularjs-hood-ie-60-minutes-to-awesome/">60 Minutes to Awesome</a></li>
+<li><strong>MEAN Stack: </strong><a href="http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and">Blog post</a>, <a href="http://thecodebarbarian.wordpress.com/2013/07/22/introduction-to-the-mean-stack-part-one-setting-up-your-tools/">Setup</a>, <a href="https://developers.google.com/live/shows/913996610">GDL Video</a></li>
+<li><strong>Rails: </strong><a href="http://coderberry.me/blog/2013/04/22/angularjs-on-rails-4-part-1/">Tutorial</a>, <a href="https://shellycloud.com/blog/2013/10/how-to-integrate-angularjs-with-rails-4">AngularJS with Rails4</a>, <a href="https://github.com/hiravgandhi/angularjs-rails">angularjs-rails</a></li>
+<li><strong>PHP: </strong><a href="http://blog.brunoscopelliti.com/building-a-restful-web-service-with-angularjs-and-php-more-power-with-resource">Building a RESTful web service</a>, <a href="http://www.youtube.com/watch?v=hqAyiqUs93c">End to End with Laravel 4 (video)</a></li>
+</ul>
+<h2 id="learning-resources" class="ng-scope">Learning Resources</h2>
+<h3 id="books" class="ng-scope">Books</h3>
+<ul class="ng-scope">
+<li><a href="http://www.amazon.com/AngularJS-Brad-Green/dp/1449344852">AngularJS</a> by Brad Green and Shyam Seshadri</li>
+<li><a href="http://www.amazon.com/Mastering-Web-Application-Development-AngularJS/dp/1782161821">Mastering Web App Development</a> by Pawel Kozlowski and Pete Bacon Darwin</li>
+<li><a href="http://www.amazon.com/AngularJS-Directives-Alex-Vanston/dp/1783280336">AngularJS Directives</a> by Alex Vanston</li>
+<li><a href="http://www.amazon.co.uk/Recipes-Angular-js-Frederik-Dietz-ebook/dp/B00DK95V48">Recipes With AngularJS</a> by Frederik Dietz</li>
+<li><a href="http://www.amazon.com/Developing-AngularJS-Edge-Christopher-Hiller-ebook/dp/B00CJLFF8K">Developing an AngularJS Edge</a> by Christopher Hiller</li>
+<li><a href="http://ng-book.com/">ng-book: The Complete Book on AngularJS</a> by Ari Lerner</li>
+</ul>
+<h3 id="videos-" class="ng-scope">Videos:</h3>
+<ul class="ng-scope">
+<li><a href="http://egghead.io/">egghead.io</a></li>
+<li><a href="http://youtube.com/angularjs">Angular on YouTube</a></li>
+</ul>
+<h3 id="courses" class="ng-scope">Courses</h3>
+<ul class="ng-scope">
+<li><strong>Free online:</strong>
+<a href="http://thinkster.io/">thinkster.io</a>,
+<a href="http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1">CodeAcademy</a>
+<a href="https://www.codeschool.com/courses/shaping-up-with-angular-js">CodeSchool</a></li>
+<li><strong>Paid online:</strong>
+<a href="http://www.pluralsight.com/training/Courses/Find?highlight=true&searchTerm=angularjs">Pluralsite (3 courses)</a>,
+<a href="https://tutsplus.com/course/easier-js-apps-with-angular/">Tuts+</a>,
+<a href="http://www.lynda.com/AngularJS-tutorials/Up-Running-AngularJS/133318-2.html">lynda.com</a>
+<a href="http://www.wintellectnow.com/Course/Detail/mastering-angularjs">WintellectNOW (4 lessons)</a></li>
+<li><strong>Paid onsite:</strong>
+<a href="http://angularbootcamp.com/">angularbootcamp.com</a></li>
+</ul>
+<h2 id="getting-help" class="ng-scope">Getting Help</h2>
+<p class="ng-scope">The recipe for getting help on your unique issue is to create an example that could work (even if it doesn't) in a shareable example on <a href="http://plnkr.co/">Plunker</a>, <a href="http://jsfiddle.net/">JSFiddle</a>, or similar site and then post to one of the following:</p>
+<ul class="ng-scope">
+<li><a href="http://stackoverflow.com/search?q=angularjs">Stackoverflow.com</a></li>
+<li><a href="https://groups.google.com/forum/#!forum/angular">AngularJS mailing list</a></li>
+<li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4">AngularJS IRC channel</a></li>
+</ul>
+<h2 id="social-channels" class="ng-scope">Social Channels</h2>
+<ul class="ng-scope">
+<li><strong>Daily updates:</strong> <a href="https://plus.google.com/u/0/+AngularJS">Google+</a> or <a href="https://twitter.com/angularjs">Twitter</a></li>
+<li><strong>Weekly newsletter:</strong> <a href="http://www.ng-newsletter.com/">ng-newsletter</a></li>
+<li><strong>Meetups: </strong><a href="http://www.meetup.com/find/?keywords=angularJS&radius=Infinity&userFreeform=San+Francisco%2C+CA&mcId=z94108&mcName=San+Francisco%2C+CA&sort=member_count&eventFilter=mysugg">meetup.com</a></li>
+<li><strong>Official news and releases: </strong><a href="http://blog.angularjs.org/">AngularJS Blog</a></li>
+</ul>
+<h2 id="contributing-to-angularjs" class="ng-scope">Contributing to AngularJS</h2>
+<p class="ng-scope">Though we have a core group of core contributors at Google, Angular is an open source project with hundreds of contributors.  We'd love you to be one of them.  When you're ready, please read the <a href="https://docs.angularjs.org/misc/contribute">Guide for contributing to AngularJS</a>.</p>
+<h2 id="final-bits" class="ng-scope">Final Bits</h2>
+<p class="ng-scope">Didn't find what you're looking for here?  Check out <a href="https://github.com/jmcunningham/AngularJS-Learning">AngularJS-Learning</a> for an even more comprehensive list of links to videos, tutorials, and blog posts.</p>
+<p class="ng-scope">If you have awesome AngularJS resources that belong on this page, please tell us about them on <a href="https://plus.google.com/u/0/+AngularJS">Google+</a> or <a href="https://twitter.com/angularjs">Twitter</a>.</p>
+
+
+</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="pull-right"><a back-to-top="">Back to top</a></p>
+
+        <p>
+          Super-powered by Google  ©2010-2014
+          ( <a id="version" ng-href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#1.3.0-beta.15" ng-bind-template="v1.3.0-beta.15  unbelievable-advancement" class="ng-binding" href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#1.3.0-beta.15">v1.3.0-beta.15  unbelievable-advancement</a>
+          )
+        </p>
+        <p>
+          Code licensed under the
+          <a href="https://github.com/angular/angular.js/blob/master/LICENSE" target="_blank">The
+            MIT License</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+
+</body></html>

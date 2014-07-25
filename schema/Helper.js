@@ -18,11 +18,13 @@ exports.initialize = function(app, mongoose) {
       return Q.Promise(function(resolve, reject, notify) {
         User.findOne({'username': owner}, '_id' , function(err, user) {
           if(err || !user) {
+            err = !user ? new Error('No user found') : err;
             reject(err); 
           } else {
             var projectName = project.name ? project.name : project;
             Project.findOne({'name': projectName, 'owner': user._id}, function(err, project) {
               if(err || !project) {
+                err = !project ? new Error('No project found') : err;
                 reject(err);
               } else {
                 resolve(project);

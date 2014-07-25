@@ -51,12 +51,32 @@ exports = module.exports = function(app, mongoose) {
     var _this = this;
     return Q.Promise(function(resolve, reject, notify) {
       if(!_this.pages[pageName]) {
-        reject(new Error('Page does not exist!'));
+        reject(new Error('No page found'));
       } else {
         return _this.pages[pageName];
       }
     });
   };
+
+  projectSchema.methods.getPageContent = function(pageName) {
+    var _this = this;
+    return Q.Promise(function(resolve, reject, notify) {
+      if(!_this.pages[pageName]) {
+        reject(new Error('No page found'));
+      } else {
+
+        aws.getBlocks(_this.pages[pageName],
+          function(pageContent) {
+            resolve(pageContent);
+          },
+          function(reason) {
+            reject(reason);
+          }
+        );
+                  
+      }
+    });
+  }
 
   projectSchema.statics.createProject = function(ajaxProject) {
     var _this = this;
@@ -130,7 +150,6 @@ exports = module.exports = function(app, mongoose) {
         reject(new Error('Page already exists'));
       } else {
         var dataBlockArray = processNewPage(_this, ajaxPage);
-        console.log('ok creating page')
         aws.putBlocks(
           dataBlockArray,
           function _resolve() {
@@ -190,14 +209,12 @@ exports = module.exports = function(app, mongoose) {
               key: _this._id + pageName + blockName,
               content: block[blockName].content
             };
-
         aws.putBlocks(
           [dataBlock],
           function _resolve() {
             _this.pages[pageName].blocks[blockName] = {
               key: dataBlock.key
             };
-
             _this.markModified('pages');
             _this.save(function(err) {
               if(err) {
@@ -228,6 +245,8 @@ exports = module.exports = function(app, mongoose) {
         aws.deleteBlocks(
           [_this.pages[pageName].blocks[blockName].key],
           function _resolve() {
+            // TODO: save block metadata in account stats
+            // before deleting
             delete _this.pages[pageName].blocks[blockName];
             _this.markModified('pages');
             _this.save(function(err) {

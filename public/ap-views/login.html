@@ -3,6 +3,7 @@
 <br/>
 <input type='password' ng-model="password" style="width:800px" class='form-control' placeholder='Password'></input>
 <br/>
+<p class="alert alert-danger" ng-show="alert.error" ng-bind="alert.error"></p>
 <br/>
 <button type='button' ng-click="login(username, password)" class='btn btn-primary'>Sign In</button>
 <button type='button' class='btn btn-primary' ng-click="go('/ap-views/forgot-password')">

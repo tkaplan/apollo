@@ -1,7 +1,8 @@
 'use strict';
 
 var Q = require('q'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    moment = require('moment');
 
 exports = module.exports = function(app, mongoose) {
   
@@ -13,6 +14,25 @@ exports = module.exports = function(app, mongoose) {
   //     gets: { type: Number },
   //     puts: { type: Number }
   //   }, ...
+
+  var billingSchema = new mongoose.Schema({
+    start: { type: Date, default: moment()._d },
+    overdueStart: { type: Date, default: moment().add('d', 30)._d },
+    amountDue: { type: Number, default: 0 },
+    amountPaid: { type: Number, default: 0 },
+    paid: { type: Boolean, default: false },
+    gets: { type: Number, default: 0 },
+    puts: { type: Number, default: 0 },
+    bandwidth: { type: Number, default: 0 },
+    memoryUsed: { type: Number, default: 0 },
+    interest: { type: Number, default: 0 },
+    plan: { type: mongoose.Schema.Types.ObjectId, ref: 'BillingPlan' }
+  });
+
+  var paymentPlanSchema = new mongoose.Schema({
+    contractTerm: { type: String },
+    plan: { type: mongoose.Schema.Types.ObjectId, ref: 'BillingPlan' }
+  });
 
   var accountSchema = new mongoose.Schema({
     user: {
@@ -39,6 +59,8 @@ exports = module.exports = function(app, mongoose) {
         time: { type: Date, default: Date.now }
       }
     },
+    billing: [ billingSchema ],
+    paymentPlan: [ paymentPlanSchema ],
     projectStatistics: mongoose.Schema.Types.Mixed,
     statusLog: [mongoose.modelSchemas.StatusLog],
     notes: [mongoose.modelSchemas.Note],

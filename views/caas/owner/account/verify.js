@@ -26,7 +26,9 @@ exports.verify = function(req, res) {
 exports.details = function(req, res) {
   var notifications = {};
   res.header("Content-Type", "application/json");
-  req.app.db.models.Account.findOne({_id: req.user.roles.account}, function(err, account) {
+  req.app.db.models.Account.findOne({_id: req.user.roles.account}).
+  populate('paymentPlan.plan').
+  exec(function(err, account) {
     var billing = account.billing[account.billing.length - 1],
         paymentPlan = account.paymentPlan[0],
         totalMemory = 0;
@@ -51,35 +53,48 @@ exports.details = function(req, res) {
     }
 
     // balance
-    if(billing.due - Date.now < 0 && !billing.paid && paymentPlan.plan != 'freetrial') {
-      if(billing.overdue - Date.now < 0) {
+    if(moment(billing.due).diff(moment()) < 0 && !billing.paid && paymentPlan.plan != 'freetrial') {
+      if(moment(billing.overdue).diff(moment()) < 0) {
         // if overdue by 30 days deactivate account
-        if(billing.overdue - Date.now < -2592000000 ) {
+        if(moment(billing.overdue).add('d',30).diff(moment()) < 0) {
           notifications[deactivated] = {
-            due: due,
+            dueDate: moment(billing.overdue).add('d', 30).fromNow(),
+            cardStatus: cardStatus,
+            baseCharge: baseCharge,
             penalty: penalty,
             interestIncurred: interestIncurred,
-            totalDue: totalDue
+            amountDue: totalDue
           };
         } else {
           notifications[balanceOverdue] = {
-            due: due,
+            dueDate: moment(billing.overdue).add('d',30).fromNow(),
+            cardStatus: cardStatus,
+            baseCharge: baseCharge,
+            gets: billing.gets,
+            puts: billing.puts,
+            bandwidth: billing.bandwidth,
+            memoryUsed: billing.memoryUsed,
             penalty: penalty,
             interestIncurred: interestIncurred,
             totalDue: totalDue,
-            daysLeft: daysLeft
+            amountDue: billing.amountDue 
           };
         }
       } else {
         notifications[balanceDue] = {
-          due: due,
-          daysLeft: daysLeft
+          dueDate: moment(billing.due).add('d', 30).fromNow(),
+          amountDue: billing.amountDue,
+          baseCharge: billing.baseCharge,
+          gets: billing.gets,
+          puts: billint.puts,
+          bandwidth: billing.bandwidth,
+          memoryUsed: billing.memoryUsed
         };
       }
     }
 
-    if(paymentPlan.plan == 'freetrial' && Date.now - billing.start > 20 days ) {
-      if(Date.now - billing.start >  30 ) {
+    if(paymentPlan.name == 'freetrial' && moment(billing.start).add('d',20).diff(moment()) < 0 ) {
+      if(moment(billing.start).add('d', 30).diff(moment()) < 0) {
         notifications[freetrialOver] = {
           memoryUsed: memoryUsed,
           gets: gets,

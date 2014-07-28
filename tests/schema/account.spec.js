@@ -3,6 +3,7 @@ var app = require('../db-mock').app,
     Q = require('q'),
     id,
     Account,
+    moment = require('moment'),
     mongoose = require('../db-mock').mongoose;
 
 describe("Account", function() {
@@ -29,7 +30,18 @@ describe("Account", function() {
     });
   });
 
-  it("Should allow me to search for my account", function(done) {
+  it("Should get me my date", function(done) {
+    Account.findOne({'name.first': 'Taylor'}, function(err, account) {
+      console.log(moment().add('d', 20) - account.userCreated.time);
+      //console.log(Date.now - moment().add('d',1));
+      console.log('ok: ' + moment(new Date('Sun Jul 27 2014 17:29:58 GMT-0700 (PDT)')).add('d', 3).fromNow());
+      console.log('time: ' + moment().diff(moment().add('d',30)));
+      console.log("20 Days: " + moment().diff(moment().add('d',20)));
+      console.log("30 Days: " + moment().diff(moment().add('d',30)));
+    })
+  });
+
+  it.skip("Should allow me to search for my account", function(done) {
     Account.findOne({'name.first': 'Taylor'}, function(err, account) {
       account.projectStatistics['hello'] = {
         currentBytes: 512,
@@ -44,7 +56,7 @@ describe("Account", function() {
     });
   });
 
-  it("Should allow me to increment my gets by one", function(done) {
+  it.skip("Should allow me to increment my gets by one", function(done) {
     Account.findOne({'name.last': 'Kaplan'}, function(err, account) {
       account.incrementGet('hello').then(
         function() {
@@ -59,7 +71,7 @@ describe("Account", function() {
     });
   });
 
-  it("Should allow me to increment my puts by one", function(done) {
+  it.skip("Should allow me to increment my puts by one", function(done) {
     Account.findOne({'name.last': 'Kaplan'}, function(err, account) {
       account.incrementPut('hello','some bullshit content').then(
         function() {
@@ -74,7 +86,7 @@ describe("Account", function() {
     });
   });
 
-  it("Should allow me to increment my gets by one", function(done) {
+  it.skip("Should allow me to increment my gets by one", function(done) {
     Account.findOne({'name.last': 'Kaplan'}, function(err, account) {
       account.incrementGet('hello').then(
         function() {
@@ -89,7 +101,7 @@ describe("Account", function() {
     });
   });
 
-  it("Should allow me to increment my gets by one", function(done) {
+  it.skip("Should allow me to increment my gets by one", function(done) {
     Account.findOne({'name.last': 'Kaplan'}, function(err, account) {
       account.resetStats('hello').then(
         function() {

@@ -17,10 +17,13 @@ exports = module.exports = function(app, mongoose) {
 
   var billingSchema = new mongoose.Schema({
     start: { type: Date, default: moment()._d },
-    overdueStart: { type: Date, default: moment().add('d', 30)._d },
+    due: { type: Date, default: moment().add('d', 30)._d },
+    overdue: { type: Date, default: moment().add('d', 60)._d },
     amountDue: { type: Number, default: 0 },
     amountPaid: { type: Number, default: 0 },
     paid: { type: Boolean, default: false },
+    baseCharge: { type: Number, default: 0 },
+    cardStatus: { type: String, default: '' },
     gets: { type: Number, default: 0 },
     puts: { type: Number, default: 0 },
     bandwidth: { type: Number, default: 0 },

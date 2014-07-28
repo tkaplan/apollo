@@ -11,6 +11,12 @@ var config = require('./config'),
     cors = require('cors'),
     helmet = require('helmet');
 
+// Test seceret key
+var stripeSK = config.stripeSK;
+
+// Test public key
+var stripePK = config.stripePK;
+
 //create express app
 var app = express();
 app.use(cors());

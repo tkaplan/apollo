@@ -9,6 +9,7 @@ var app = require('../db-mock').app,
 describe("Account", function() {
   before(function(done) {
     require('../../schema/Account')(app,mongoose);
+    require('../../schema/BillingPlan')(app,mongoose);
     Account = app.db.model('Account');
     account = new Account({
       name: {
@@ -32,12 +33,7 @@ describe("Account", function() {
 
   it("Should get me my date", function(done) {
     Account.findOne({'name.first': 'Taylor'}, function(err, account) {
-      console.log(moment().add('d', 20) - account.userCreated.time);
-      //console.log(Date.now - moment().add('d',1));
-      console.log('ok: ' + moment(new Date('Sun Jul 27 2014 17:29:58 GMT-0700 (PDT)')).add('d', 3).fromNow());
-      console.log('time: ' + moment().diff(moment().add('d',30)));
-      console.log("20 Days: " + moment().diff(moment().add('d',20)));
-      console.log("30 Days: " + moment().diff(moment().add('d',30)));
+      done();
     })
   });
 

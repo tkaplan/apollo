@@ -10,6 +10,7 @@ exports = module.exports = function(app, mongoose) {
   //then regular docs
   require('./schema/User')(app, mongoose);
   require('./schema/Project')(app, mongoose);
+  require('./schema/BillingPlan')(app, mongoose);
   require('./schema/Admin')(app, mongoose);
   require('./schema/AdminGroup')(app, mongoose);
   require('./schema/Account')(app, mongoose);

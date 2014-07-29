@@ -2,6 +2,7 @@
 
 var Q = require('q'),
     _ = require('lodash'),
+    stripe = require('stripe'),
     moment = require('moment');
 
 exports = module.exports = function(app, mongoose) {
@@ -29,7 +30,7 @@ exports = module.exports = function(app, mongoose) {
     bandwidth: { type: Number, default: 0 },
     memoryUsed: { type: Number, default: 0 },
     interest: { type: Number, default: 0 },
-    plan: { type: mongoose.Schema.Types.ObjectId, ref: 'BillingPlan' }
+    penalty: { type: Number, default: 0 }
   });
 
   var paymentPlanSchema = new mongoose.Schema({
@@ -74,6 +75,70 @@ exports = module.exports = function(app, mongoose) {
     },
     search: [String]
   });
+
+  accountSchema.post('save', function(doc) {
+    var _this = this;
+    //console.log(this);
+    if(this.billing.length == 0) {
+      var BillingPlan = app.db.model('BillingPlan');
+      BillingPlan.findOne({name: 'Freetrial'}, function(err, freetrial) {
+        if(err) {
+          // Do something at somepoint, but can't throw errors
+        } else {
+          paymentPlanSchema.contractTerm = 'month';
+          paymentPlanSchema.plan = freetrial;
+          // Add payment plan
+          _this.paymentPlan.push(paymentPlanSchema);
+
+          // Create billing statement
+          _this.billing.push(billingSchema);
+
+          _this.save(function(err) {
+            if(err){
+              // Do something at some point but can't
+              // throw errors
+            } 
+          });
+        }
+      });
+    }
+  });
+
+  accountSchema.methods.buyPlan = function(plan, token) {
+    var _this = this;
+    var tok = app.get('stripeSK')(token);
+    return Q.Promise(function(resolve, reject, notify) {
+
+      // To buy a plan they must supply a plan
+      // and a token to store
+
+      // Before giving them a plan we must validate the credit
+      // Information
+
+      // If credit information is valid
+
+        // Find plan
+
+          // If no error and plan found
+
+            // Create customer object
+
+            // Update customer object in Account
+
+            // Add plan to paymentPlan
+
+            // Prorate latest billing statement
+
+            // Async.save(billing statement, account)
+
+            // Resolve on success();
+
+          // Else reject
+
+      // Else reject
+
+    });
+  };
 
   accountSchema.methods.setGets = function(keys) {
     var _this = this;

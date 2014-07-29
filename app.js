@@ -3,6 +3,7 @@
 //dependencies
 var config = require('./config'),
     express = require('express'),
+    billingConfig = require('./billing-config'),
     mongoStore = require('connect-mongo')(express),
     http = require('http'),
     path = require('path'),
@@ -11,35 +12,26 @@ var config = require('./config'),
     cors = require('cors'),
     helmet = require('helmet');
 
-// Test seceret key
-var stripeSK = config.stripeSK;
-
-// Test public key
-var stripePK = config.stripePK;
-
 //create express app
 var app = express();
+
 app.use(cors());
 
 //keep reference to config
 app.config = config;
-
 //setup the web server
 app.server = http.createServer(app);
-
 //setup mongoose
 app.db = mongoose.createConnection(config.mongodb.uri);
 app.db.on('error', console.error.bind(console, 'mongoose connection error: '));
 app.db.once('open', function () {
   //and... we have a data store
 });
-
 //config data models
 require('./models')(app, mongoose);
 
 //setup the session store
 app.sessionStore = new mongoStore({ url: config.mongodb.uri });
-
 //config express in all environments
 app.configure(function(){
   //settings
@@ -53,6 +45,15 @@ app.configure(function(){
   app.set('system-email', config.systemEmail);
   app.set('crypto-key', config.cryptoKey);
   app.set('require-account-verification', config.requireAccountVerification);
+  
+  // Test seceret key
+  app.set('stripeSK', config.stripeSK);
+
+  // Test public key
+  app.set('stripePK', config.stripePK);
+  
+  // Add billing plans
+  billingConfig.billingPlanFixtures(app.db.model('BillingPlan'));
 
   //smtp settings
   app.set('smtp-from-name', config.smtp.from.name);
@@ -74,7 +75,6 @@ app.configure(function(){
   //google settings
   app.set('google-oauth-key', config.oauth.google.key);
   app.set('google-oauth-secret', config.oauth.google.secret);
-
   //middleware
   app.use(express.logger('dev'));
   app.use(express.compress());
@@ -129,7 +129,6 @@ app.get('/vendor/caas/*', function(req, res, next) {
 
 //route requests
 require('./routes')(app, passport);
-
 //setup utilities
 app.utility = {};
 app.utility.sendmail = require('drywall-sendmail');

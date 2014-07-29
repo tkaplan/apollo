@@ -27,6 +27,7 @@
     "passport-twitter": "~1.0.2",
     "q": "^1.0.1",
     "should": "^4.0.4",
+    "stripe": "^2.7.4",
     "tough-cookie": "^0.12.1"
   },
   "devDependencies": {

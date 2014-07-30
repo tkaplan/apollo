@@ -106,7 +106,8 @@ exports = module.exports = function(app, mongoose) {
 
   accountSchema.methods.buyPlan = function(plan, token) {
     var _this = this;
-    var tok = app.get('stripeSK')(token);
+    var stripeProcessor = stripe(app.get('stripeSK'));
+    stripeProcessor();
     return Q.Promise(function(resolve, reject, notify) {
 
       // To buy a plan they must supply a plan

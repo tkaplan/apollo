@@ -205,13 +205,13 @@ exports = module.exports = function(app, passport) {
 
 
   //caas page
-  // create project
   app.post('/caas/owner/:owner/project/:project/page/:page', ensureAuthenticatedCaas);
   app.get('/caas/owner/:owner/project/:project/page/:page', require('./views/caas/owner/project/page').getPage);
   app.post('/caas/owner/:owner/project/:project/page/:page', require('./views/caas/owner/project/page').createPage);
 
   //caas block
   app.all('/caas/owner/:owner/project/:project/page/:page/block/:block', ensureAuthenticatedCaas);
+
   //app.get('/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').getBlock);
   app.post('/caas/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').putBlock);
   app.delete('/caas/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').deleteBlock);
@@ -219,7 +219,17 @@ exports = module.exports = function(app, passport) {
   app.all('/caas/account/*', ensureAuthenticatedCaas);
   // Account actions
   app.post('/caas/account/verify', require('./views/caas/owner/account/verify').verify);
+  
+  // plan
+  app.post('/caas/owner/:owner/account/plan/buy', require('./views/caas/owner/account/plan').buy);
+  app.post('/caas/owner/:owner/account/plan/change', require('./views/caas/owner/account/plan').change);
+  app.post('/caas/owner/:owner/account/plan/cancel', require('./views/caas/owner/account/plan').cancel);
 
+  // card
+  app.post('/caas/owner/:owner/account/card/add', require('./views/caas/owner/account/card').add);
+  app.post('/caas/owner/:owner/account/card/change', require('./views/caas/owner/account/card').change);
+  app.post('/caas/owner/:owner/account/card/remove', require('./views/caas/owner/account/card').remove);
+  app.post('/caas/owner/:owner/account/card/pay', require('./views/caas/owner/account/card').pay);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

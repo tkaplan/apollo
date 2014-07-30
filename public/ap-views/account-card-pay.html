@@ -1,0 +1,40 @@
+<form stripe-form="stripe">
+  <span class="payment-errors"></span>
+
+  <div class="form-row">
+    <label>
+      <span>Name</span>
+      <input type="text" ng-model="name"/>
+    </label>
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>Email</span>
+      <input type="text" ng-model="email"/>
+    </label>
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>Card Number</span>
+      <input type="text" ng-model="number" payments-validate="card" payments-type-model="type" payments-format="card"/>
+    </label>
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>CVC</span>
+      <input type="text" ng-model="cvc" payments-validate="cvc" payments-type-model="type" payments-format="cvc"/>
+    </label>
+  </div>
+
+  <div class="form-row">
+    <label>
+      <span>Expiration (MM/YYYY)</span>
+      <input type="text" ng-model="expiry" payments-validate="expiry" payments-format="expiry"/>
+    </label>
+  </div>
+
+  <button type="btn">Submit Payment</button>
+</form>

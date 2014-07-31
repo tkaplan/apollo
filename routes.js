@@ -226,9 +226,7 @@ exports = module.exports = function(app, passport) {
   app.post('/caas/owner/:owner/account/plan/cancel', require('./views/caas/owner/account/plan').cancel);
 
   // card
-  app.post('/caas/owner/:owner/account/card/add', require('./views/caas/owner/account/card').add);
-  app.post('/caas/owner/:owner/account/card/change', require('./views/caas/owner/account/card').change);
-  app.post('/caas/owner/:owner/account/card/remove', require('./views/caas/owner/account/card').remove);
+  app.post('/caas/owner/:owner/account/card/update', require('./views/caas/owner/account/card').update);
   app.post('/caas/owner/:owner/account/card/pay', require('./views/caas/owner/account/card').pay);
 
   //route not found

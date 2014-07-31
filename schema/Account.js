@@ -21,8 +21,7 @@ exports = module.exports = function(app, mongoose) {
     due: { type: Date, default: moment().add('d', 30)._d },
     overdue: { type: Date, default: moment().add('d', 60)._d },
     amountDue: { type: Number, default: 0 },
-    amountPaid: { type: Number, default: 0 },
-    paid: { type: Boolean, default: false },
+    balanceTransaction: { type: String, default: '' },
     baseCharge: { type: Number, default: 0 },
     cardStatus: { type: String, default: '' },
     gets: { type: Number, default: 0 },
@@ -64,6 +63,7 @@ exports = module.exports = function(app, mongoose) {
       }
     },
     billing: [ billingSchema ],
+    card: { type: String, default: '' },
     paymentPlan: [ paymentPlanSchema ],
     projectStatistics: mongoose.Schema.Types.Mixed,
     statusLog: [mongoose.modelSchemas.StatusLog],
@@ -103,6 +103,21 @@ exports = module.exports = function(app, mongoose) {
       });
     }
   });
+
+  accountSchema.methods.updateCard = function(customerId) {
+    var _this = this;
+    return Q.Promise(function(resolve, reject, notify) {
+      _this.card = customerId;
+
+      _this.save(function(err) {
+        if(err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      })
+    });
+  };
 
   accountSchema.methods.buyPlan = function(plan, token) {
     var _this = this;

@@ -10,6 +10,7 @@ var config = require('./config'),
     passport = require('passport'),
     mongoose = require('mongoose'),
     cors = require('cors'),
+    Stripe = require('stripe'),
     helmet = require('helmet');
 
 //create express app
@@ -47,10 +48,7 @@ app.configure(function(){
   app.set('require-account-verification', config.requireAccountVerification);
   
   // Test seceret key
-  app.set('stripeSK', config.stripeSK);
-
-  // Test public key
-  app.set('stripePK', config.stripePK);
+  app.set('stripe', Stripe(config.stripeSK));
   
   // Add billing plans
   billingConfig.billingPlanFixtures(app.db.model('BillingPlan'));

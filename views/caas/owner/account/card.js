@@ -7,15 +7,14 @@ exports.update = function(req, res) {
 
   stripe.customers.create({
     card: req.body.card.id
-  }).
-  then(
+  }).then(
     function _resolve(customer) {
-      app.db.models.Account.findOne({search: [req.params.owner]}, function(err, account) {
+      app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
         if(err || !account) {
           err = err ? err : new Error('No account found');
-          res.status(400).send(
+          res.status(400).send({
             errors: [err]
-          );
+          });
         } else {
           account.updateCard(customer.id).then(
             function() {
@@ -40,7 +39,7 @@ exports.update = function(req, res) {
 };
 
 exports.pay = function(req, res) {
-  req.app.db.models.Account.findOne({search: [req.params.owner]}, function(err, account) {
+  req.app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
 
     // Get bill
     var bill = _.findIndex(account.billing, function(billing) {

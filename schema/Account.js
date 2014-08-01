@@ -37,6 +37,11 @@ exports = module.exports = function(app, mongoose) {
     plan: { type: mongoose.Schema.Types.ObjectId, ref: 'BillingPlan' }
   });
 
+  var deferSchema = new mongoose.Schema({
+    type: { type: String, default: '' },
+    options: { type: mongoose.Schema.Types.Mixed }
+  });
+
   var accountSchema = new mongoose.Schema({
     user: {
       id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -65,6 +70,7 @@ exports = module.exports = function(app, mongoose) {
     billing: [ billingSchema ],
     card: { type: String, default: '' },
     paymentPlan: [ paymentPlanSchema ],
+    defers: [ deferSchema ]
     projectStatistics: mongoose.Schema.Types.Mixed,
     statusLog: [mongoose.modelSchemas.StatusLog],
     notes: [mongoose.modelSchemas.Note],
@@ -103,6 +109,70 @@ exports = module.exports = function(app, mongoose) {
       });
     }
   });
+
+  accountSchema.methods.buyPlan = function(card, term, billingPlan) {
+    var _this = this;
+
+    _this.card = card;
+
+    var paymentPlan = new paymentPlanSchema({
+      contractTerm: term,
+      plan: billingPlan
+    });
+
+    _this.paymentPlan.push(paymentPlan);
+
+    return Q.Promise(function(resolve, reject, notify) {
+      _this.save(function(err) {
+        if(err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  };
+
+  accountSchema.methods.defer = function(type, options) {
+    var _this = this;
+
+    return Q.Promise(function(resolve, reject, notify) {
+      var defer = new deferSchema({
+        type: type,
+        options: options
+      });
+
+      _this.defers.push(defer);
+
+      _this.save(function(err) {
+        if(err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  };
+
+  accountSchema.methods.getTotalMemoryUsage = function() {
+    var totalUsage = 0;
+
+    _.forEach(this.projectStatistics, function(block) {
+      totalUsage += block.currentBytes;
+    });
+
+    return totalUsage;
+  }
+
+  accountSchema.methods.getTotalBytesTransfered = function() {
+    var totalBytesTransfered = 0;
+
+    _.forEach(this.projectStatistics, function(block) {
+      totalBytesTransfered += block.bytesTransfered;
+    });
+
+    return totalBytesTransfered;
+  }
 
   accountSchema.methods.updateCard = function(customerId) {
     var _this = this;

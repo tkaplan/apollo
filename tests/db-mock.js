@@ -1,4 +1,5 @@
 var config = require('../config'),
+  spinLockDefer = require('spinLockDefer'),
 	options = {
 		server: {poolSize: 20}
 	},
@@ -12,6 +13,8 @@ var config = require('../config'),
             return 'sk_test_4Tw8TRE9Js4fAHUFIkizjXah';
           case 'stripePK':
             return 'pk_test_4Tw8iV5onKraKG9SZJjrdS4Z';
+          case 'redis-spinlock':
+            return spinLockDefer();
         }
       }
     };

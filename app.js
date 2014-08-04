@@ -7,6 +7,7 @@ var config = require('./config'),
     mongoStore = require('connect-mongo')(express),
     http = require('http'),
     path = require('path'),
+    spinLockDefer = require('spinLockDefer'),
     passport = require('passport'),
     mongoose = require('mongoose'),
     cors = require('cors'),
@@ -28,8 +29,6 @@ app.db.on('error', console.error.bind(console, 'mongoose connection error: '));
 app.db.once('open', function () {
   //and... we have a data store
 });
-//config data models
-require('./models')(app, mongoose);
 
 //setup the session store
 app.sessionStore = new mongoStore({ url: config.mongodb.uri });
@@ -47,6 +46,11 @@ app.configure(function(){
   app.set('crypto-key', config.cryptoKey);
   app.set('require-account-verification', config.requireAccountVerification);
   
+  app.set('redis-spinlock', spinLockDefer());
+
+  //config data models
+  require('./models')(app, mongoose);
+
   // Test seceret key
   app.set('stripe', Stripe(config.stripeSK));
   

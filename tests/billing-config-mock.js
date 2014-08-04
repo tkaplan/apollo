@@ -4,7 +4,7 @@ var async = require('async'),
 var BillingPlans = [
   {
     name: 'Freetrial',
-    memoryAlloted: 2000000000,  // Max GB
+    memoryAlloted: 1000,  // Max GB
     expiration: 30,      // Days
     getsCap: 50000,      // For the month
     putsCap: 10000,      // For the month
@@ -13,7 +13,7 @@ var BillingPlans = [
   },
   {
     name: 'Bronze',
-    memoryAlloted: 5000000000,
+    memoryAlloted: 2000,
 
     getRateMonthly: 0.000008,
     putRateMonthly: 0.00001,
@@ -35,7 +35,7 @@ var BillingPlans = [
   },
   {
     name: 'Silver',
-    memoryAlloted: 10000000000,
+    memoryAlloted: 3000,
 
     getRateMonthly: 0.000008,
     putRateMonthly: 0.00001,
@@ -57,7 +57,7 @@ var BillingPlans = [
   },
   {
     name: 'Gold',
-    memoryAlloted: 25000000000,
+    memoryAlloted: 4000,
 
     getRateMonthly: 0.000008,
     putRateMonthly: 0.00001,
@@ -79,7 +79,7 @@ var BillingPlans = [
   },
   {
     name: 'Platinum',
-    memoryAlloted: 50000000000,
+    memoryAlloted: 5000,
 
     getRateMonthly: 0.000008,
     putRateMonthly: 0.00001,

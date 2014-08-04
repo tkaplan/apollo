@@ -15,6 +15,7 @@ exports = module.exports = function(app, mongoose) {
   //     gets: { type: Number },
   //     puts: { type: Number }
   //   }, ...
+  var spinlock = app.get('redis-spinlock');
 
   var billingSchema = new mongoose.Schema({
     start: { type: Date, default: moment()._d },
@@ -33,13 +34,14 @@ exports = module.exports = function(app, mongoose) {
   });
 
   var paymentPlanSchema = new mongoose.Schema({
-    contractTerm: { type: String },
+    contractTerm: { type: Number },
     plan: { type: mongoose.Schema.Types.ObjectId, ref: 'BillingPlan' }
   });
 
   var deferSchema = new mongoose.Schema({
     type: { type: String, default: '' },
-    options: { type: mongoose.Schema.Types.Mixed }
+    params: { type: mongoose.Schema.Types.Mixed },
+    created: { type: Date, default: moment()._d }
   });
 
   var accountSchema = new mongoose.Schema({
@@ -70,7 +72,7 @@ exports = module.exports = function(app, mongoose) {
     billing: [ billingSchema ],
     card: { type: String, default: '' },
     paymentPlan: [ paymentPlanSchema ],
-    defers: [ deferSchema ]
+    defers: [ deferSchema ],
     projectStatistics: mongoose.Schema.Types.Mixed,
     statusLog: [mongoose.modelSchemas.StatusLog],
     notes: [mongoose.modelSchemas.Note],
@@ -84,76 +86,168 @@ exports = module.exports = function(app, mongoose) {
 
   accountSchema.post('save', function(doc) {
     var _this = this;
-    //console.log(this);
-    if(this.billing.length == 0) {
-      var BillingPlan = app.db.model('BillingPlan');
-      BillingPlan.findOne({name: 'Freetrial'}, function(err, freetrial) {
-        if(err) {
-          // Do something at somepoint, but can't throw errors
-        } else {
-          paymentPlanSchema.contractTerm = 'month';
-          paymentPlanSchema.plan = freetrial;
-          // Add payment plan
-          _this.paymentPlan.push(paymentPlanSchema);
-
-          // Create billing statement
-          _this.billing.push(billingSchema);
-
-          _this.save(function(err) {
-            if(err){
-              // Do something at some point but can't
-              // throw errors
-            } 
-          });
+    spinlock({keys: ['Account']}).then(
+      function(free) {
+        if(!_this.billing){
+          // Our lock on account
+          free();
+          return;
         }
-      });
-    }
+
+        if(_this.billing.length == 0) {
+          var BillingPlan = app.db.model('BillingPlan');
+          BillingPlan.findOne({name: 'Freetrial'}, function(err, freetrial) {
+            if(err) {
+              // Do something at somepoint, but can't throw errors
+              // Our lock on account
+              free();
+            } else {
+              paymentPlanSchema.contractTerm = 1;
+              paymentPlanSchema.plan = freetrial;
+              // Add payment plan
+              _this.paymentPlan.push(paymentPlanSchema);
+
+              // Create billing statement
+              _this.billing.push(billingSchema);
+
+              _this.save(function(err) {
+                if(err){
+                  // Do something at some point but can't
+                  // throw errors
+
+                  // Our lock on account
+                  free();
+                } else {
+                  free();
+                } 
+              });
+            }
+          });
+        } else {
+
+          // Our lock on account
+          free();
+        }
+      },
+      function() {}
+    );
   });
 
-  accountSchema.methods.buyPlan = function(card, term, billingPlan) {
+  // TODO: test
+  accountSchema.methods.buyPlan = function(card, term, plan) {
     var _this = this;
 
     _this.card = card;
 
-    var paymentPlan = new paymentPlanSchema({
-      contractTerm: term,
-      plan: billingPlan
-    });
-
-    _this.paymentPlan.push(paymentPlan);
-
     return Q.Promise(function(resolve, reject, notify) {
-      _this.save(function(err) {
+      app.db.models.BillingPlan.findOne({name: plan}, function(err, billingPlan) {
         if(err) {
           reject(err);
         } else {
-          resolve();
+          
+          paymentPlanSchema.contractTerm = term;
+          paymentPlanSchema.plan = billingPlan;
+
+          _this.paymentPlan = [];
+          _this.paymentPlan.push(paymentPlanSchema);
+
+          _this.save(function(err, account) {
+            if(err) {
+              reject(err);
+            } else {
+              resolve(account);
+            }
+          });
         }
       });
     });
   };
 
-  accountSchema.methods.defer = function(type, options) {
+  accountSchema.methods.getAllowedBillingPlans = function() {
+    var _this = this,
+        filter = {},
+        allowedBillingPlans = {};
+
+    return Q.Promise(function(resolve, reject, notify) {
+      app.db.model('BillingPlan').find(function(err, billingPlans) {
+        if(err) {
+          reject(err);
+        } else {
+          filter.currentTerm = _this.paymentPlan.contractTerm;
+          filter.currentMemoryUsage = _this.getTotalMemoryUsage();
+          filter.currentBaseCharge = _this.billing[_this.billing.length - 1].baseCharge;
+          allowedBillingPlans.filter = filter;
+          allowedBillingPlans.billingPlans = billingPlans;
+        }
+      });
+    });
+  };
+
+  accountSchema.methods.changePlan = function(plan, term) {
     var _this = this;
 
     return Q.Promise(function(resolve, reject, notify) {
-      var defer = new deferSchema({
-        type: type,
-        options: options
-      });
-
-      _this.defers.push(defer);
-
-      _this.save(function(err) {
-        if(err) {
+      app.db.model('BillingPlan').findOne({name: plan}, function(err, billingPlan) {
+        if(err || !billingPlan) {
+          err = err ? err : new Error('Billing Plan Does Not Exists!');
           reject(err);
+        } else if(billingPlan.memoryAlloted < _this.getTotalMemoryUsage() &&
+        billingPlan.baseChargeMonthly < _this.paymentPlan[0].plan.baseChargeMonthly) {
+          reject(new Error('Cannot downgrade your plan, you must free up memory.'));
+        } else if (_this.paymentPlan.contractTerm > term) {
+          reject(new Error('You cannot cut your contract term'));
+        } else if(plan === 'Freetrial') {
+          reject(new Error('You cannot get another free trial!'));
         } else {
-          resolve();
+          _this.defer('change-plan', {plan: plan, term: term}).then(
+            function(account) {
+              resolve(account);
+            },
+            function(reason) {
+              reject(reason);
+            }
+          );
         }
       });
     });
   };
 
+  accountSchema.methods.getBillingPlan = function() {
+    var _this = this;
+    return Q.Promise(function(resolve, reject, notify) {
+      var plan = _this.paymentPlan[0].plan;
+      app.db.model('BillingPlan').findById(plan, function(err, billingPlan) {
+        if(err || !billingPlan) {
+          err = err ? err : new Error('Billing Plan not found');
+          reject(err);
+        } else {
+          resolve(billingPlan);
+        }
+      });
+    });
+  };
+
+  // TODO: test
+  accountSchema.methods.defer = function(type, params) {
+    var _this = this;
+
+    return Q.Promise(function(resolve, reject, notify) {
+      deferSchema.type = type;
+      deferSchema.params = params;
+
+      _this.defers.push(deferSchema);
+
+      _this.save(function(err, account) {
+        if(err) {
+          reject(err);
+        } else {
+          resolve(account);
+        }
+      });
+    });
+  };
+
+  // TODO: test
   accountSchema.methods.getTotalMemoryUsage = function() {
     var totalUsage = 0;
 
@@ -164,6 +258,7 @@ exports = module.exports = function(app, mongoose) {
     return totalUsage;
   }
 
+  // TODO: test
   accountSchema.methods.getTotalBytesTransfered = function() {
     var totalBytesTransfered = 0;
 
@@ -174,58 +269,24 @@ exports = module.exports = function(app, mongoose) {
     return totalBytesTransfered;
   }
 
+
+  // TODO: test
   accountSchema.methods.updateCard = function(customerId) {
     var _this = this;
     return Q.Promise(function(resolve, reject, notify) {
       _this.card = customerId;
 
-      _this.save(function(err) {
+      _this.save(function(err, account) {
         if(err) {
           reject(err);
         } else {
-          resolve();
+          resolve(account);
         }
       })
     });
   };
 
-  accountSchema.methods.buyPlan = function(plan, token) {
-    var _this = this;
-    var stripeProcessor = stripe(app.get('stripeSK'));
-    stripeProcessor();
-    return Q.Promise(function(resolve, reject, notify) {
-
-      // To buy a plan they must supply a plan
-      // and a token to store
-
-      // Before giving them a plan we must validate the credit
-      // Information
-
-      // If credit information is valid
-
-        // Find plan
-
-          // If no error and plan found
-
-            // Create customer object
-
-            // Update customer object in Account
-
-            // Add plan to paymentPlan
-
-            // Prorate latest billing statement
-
-            // Async.save(billing statement, account)
-
-            // Resolve on success();
-
-          // Else reject
-
-      // Else reject
-
-    });
-  };
-
+  // Tested
   accountSchema.methods.setGets = function(keys) {
     var _this = this;
 
@@ -254,12 +315,13 @@ exports = module.exports = function(app, mongoose) {
     });
   };
 
+  // Tested
   accountSchema.methods.incrementGet = function(key) {
     var _this = this;
 
     return Q.Promise(function(resolve, reject, notify) {
 
-      if(_this.projectStatistics || !_this.projectStatistics[key]) {
+      if(!_this.projectStatistics || !_this.projectStatistics[key]) {
         reject(new Error('Cannot get statistics for undefined block'));
         return;
       }
@@ -278,6 +340,7 @@ exports = module.exports = function(app, mongoose) {
     });
   };
 
+  // Tested
   accountSchema.methods.incrementPut = function(key, content) {
     var _this = this,
         currentBytes = Buffer.byteLength(content, 'utf8');
@@ -289,17 +352,18 @@ exports = module.exports = function(app, mongoose) {
       _this.projectStatistics[key].currentBytes = currentBytes;
       _this.projectStatistics[key].puts ++;
       _this.markModified('projectStatistics');
-      _this.save(function(err) {
+      _this.save(function(err, account) {
         if(err) {
           reject(err);
         } else {
-          resolve();
+          resolve(account);
         }
       });
 
     });
   }
 
+  // Tested
   accountSchema.methods.resetStats = function() {
     var _this = this,
         defer = Q.defer(),
@@ -325,6 +389,7 @@ exports = module.exports = function(app, mongoose) {
     return defer.promise;
   }
 
+  // Tested
   accountSchema.methods.statExists = function(key) {
     return  this.projectStatistics != undefined &&
             this.projectStatistics != null &&
@@ -332,6 +397,7 @@ exports = module.exports = function(app, mongoose) {
             this.projectStatistics[key] != null;
   }
 
+  // Tested
   accountSchema.methods.createStat = function(key, content) {
     var _this = this;
     return Q.Promise(function(resolve, reject, notify) {

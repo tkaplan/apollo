@@ -3,36 +3,6 @@ exports.buy = function(req, res) {
   var plan = req.body.plan;
   var term = req.body.term;
 
-  switch() {
-    case 'Bronze':
-    case 'Silver':
-    case 'Gold':
-    case 'Platinum':
-    case 'Unlimited':
-      break;
-    default:
-      res.status(400).send({
-        errors: [
-          new Error('Invalid payment plan');
-        ]
-      });
-      return;
-  }
-
-  switch(term) {
-    case 1:
-    case 12:
-    case 36:
-      break;
-    default:
-      res.status(400).send({
-        errors: [
-          new Error('Invalid contract term');
-        ]
-      });
-      return;
-  }
-
   // Get and process credit card if plan and term is valid
   var stripe = req.app.get('stripe');
 
@@ -48,24 +18,16 @@ exports.buy = function(req, res) {
           });
         } else {
           // assign plan
-          app.db.models.BillingPlan.findOne({name: plan}, function(err, billingPlan) {
-            if(err) {
+          account.buyPlan(customer.id, term, plan).then(
+            function() {
+              res.status(204).send();
+            },
+            function(reason) {
               res.status(400).send({
-                errors: [err]
-              });
-            } else {
-              account.buyPlan(customer.id, term, billingPlan).then(
-                function() {
-                  res.status(204).send();
-                },
-                function(reason) {
-                  res.status(400).send({
-                    errors: [reason]
-                  })
-                }
-              );
+                errors: [reason]
+              })
             }
-          });
+          );
         }
       });
     },
@@ -81,43 +43,23 @@ exports.buy = function(req, res) {
 // TODO: Finish and test function
 exports.change = function(req, res) {
   res.header('Content-Type', 'application/json');
+  var plan = req.body.plan,
+      term = req.body.term;
 
-  req.app.db.models.Account.findOne({search: [req.user.username]}).
-  populate('paymentPlan.plan projectStatistics').
+  req.app.db.models.Account.findOne({search: [req.user.username]},
+  'paymentPlan projectStatistics defers').
+  populate('paymentPlan.plan').
   exec(function(err, account) {
-    if(wantedPaymentPlan.memoryAlloted < account.getTotalMemoryUsage &&
-      wantedPaymentPlan.baseCharge < account.paymentPlan.baseCharge) {
-      res.status(400).send({
-        errors: [
-          new Error('Cannot downgrade your plan, you must free up memory')
-        ]
-      })
-    } else {
-      switch(plan) {
-        case 'Bronze':
-        case 'Silver':
-        case 'Gold':
-        case 'Platinum':
-        case 'Unilimited':
-          account.defer('change-plan', plan).then(
-            function() {
-              res.status(204).send();
-            },
-            function(reason) {
-              res.status(400).send({
-                errors: [reason]
-              });
-            }
-          );
-          break;
-        default:
-          res.stats(400).send({
-            errors: [
-              new Error('Plan does not exist');
-            ]
-          });
+    account.changePlan(plan, term).then(
+      function(account) {
+        res.status(204).send();
+      },
+      function(reason) {
+        res.status(400).send({
+          errors: [reason]
+        });
       }
-    }
+    );
   });
 }
 
@@ -126,32 +68,59 @@ exports.cancel = function(req, res) {
   res.header('Content-Type', 'application/json');
 
   req.app.db.models.Account.findOne({search: [req.user.username]}).
-  populate('paymentPlan').
+  populate('paymentPlan.plan').
   exec(function(err, account) {
-    if(account.paymentPlan.contractTerm === 'month') {
-      account.defer('cancel-monthly').then(
-        function() {
-          res.status(200).send({
-            message: 'Success: your plan will not automatically renew'+
-                     ' at the end of the month.'
-          });
+    if(err) {
+      res.status(400).send({
+        errors: [err]
+      });
+    } else {
+      if(account.paymentPlan.contractTerm == 1) {
+        account.defer('cancel-monthly').then(
+          function() {
+            res.status(200).send({
+              message: 'Success: your plan will not automatically renew'+
+                       ' at the end of the month.'
+            });
+          },
+          function(reason) {
+            res.status(400).send({
+              errors: [reason]
+            });
+          }
+        )
+      } else {
+        res.status(200).send({
+          message: 'You do not have a monthly plan.'+
+          ' Your contract will not automatically renew '+
+          'at the end of its term.'
+        });
+      }
+    }
+  });
+};
+
+exports.allowedBillingPlans = function(req, res) {
+  res.header('Content-Type', 'application/json');
+
+  req.app.db.models.Account.findOne({search: [req.user.username]}, 'paymentPlan billing').
+  populate('paymentPlan.plan').
+  exec(function(err, account) {
+    if(err) {
+      res.status(400).send({
+        errors: [err]
+      });
+    } else {
+      account.getAllowedBillingPlans().then(
+        function(allowedBillingPlans) {
+          res.status(200).send(allowedBillingPlans);
         },
         function(reason) {
           res.status(400).send({
             errors: [reason]
           });
         }
-      )
-    } else {
-      res.status(200).send({
-        message: 'You do not have a monthly plan.'+
-        ' Your contract will not automatically renew '+
-        'at the end of its term.'
-      });
+      );
     }
   });
-  // If plan is monthly then you can cancel
-    // Add defer cancel plan to account
-  // Else
-    // reject
 }

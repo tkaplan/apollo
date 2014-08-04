@@ -196,6 +196,9 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/google/callback/', require('./views/account/settings/index').connectGoogle);
   app.get('/account/settings/google/disconnect/', require('./views/account/settings/index').disconnectGoogle);
 
+  // caas get plans
+  app.get('/caas/billing-plans', require('./views/caas/billing-plans').billingPlans);
+
   //caas project
   app.get('/caas/owner/:owner/project/:project', ensureAuthenticatedCaas);
   app.post('/caas/owner/:owner/project/:project', ensureAuthenticatedCaas);

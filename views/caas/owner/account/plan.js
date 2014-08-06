@@ -102,7 +102,6 @@ exports.cancel = function(req, res) {
 
 exports.allowedBillingPlans = function(req, res) {
   res.header('Content-Type', 'application/json');
-
   req.app.db.models.Account.findOne({search: [req.user.username]}, 'paymentPlan billing').
   populate('paymentPlan.plan').
   exec(function(err, account) {
@@ -111,16 +110,7 @@ exports.allowedBillingPlans = function(req, res) {
         errors: [err]
       });
     } else {
-      account.getAllowedBillingPlans().then(
-        function(allowedBillingPlans) {
-          res.status(200).send(allowedBillingPlans);
-        },
-        function(reason) {
-          res.status(400).send({
-            errors: [reason]
-          });
-        }
-      );
+      res.status(200).send(account.getAllowedBillingPlans());
     }
   });
 }

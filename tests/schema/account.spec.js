@@ -1,5 +1,6 @@
 var app = require('../db-mock').app,
     Q = require('q'),
+    _ = require('lodash'),
     should = require('should'),
     accountId,
     Account,
@@ -236,9 +237,9 @@ describe("Account", function() {
     });
   });
 
-  it("Should allow me to change a plan", function(done) {
+  it("Should not allow me to change a plan", function(done) {
     Account.findOne({search: ['taylor']}, function(err, account) {
-      account.changePlan('made up').then(
+      account.changePlan('made up',1).then(
         function(account) {
           should.fail('should not have passed');
           done();
@@ -251,9 +252,9 @@ describe("Account", function() {
     });
   });
 
-  it("Should allow me to change a plan", function(done) {
+  it("Should not allow me to change a plan", function(done) {
     Account.findOne({search: ['taylor']}, function(err, account) {
-      account.changePlan('Freetrial').then(
+      account.changePlan('Freetrial',1).then(
         function(account) {
           should.fail('should not have passed');
           done();
@@ -270,11 +271,8 @@ describe("Account", function() {
     Account.findOne({search: ['taylor']}).
     populate('paymentPlan.plan').
     exec(function(err, account) {
-      account.changePlan('Platinum').then(
+      account.changePlan('Platinum',1).then(
         function(account) {
-          var defer = account.defers[1];
-          defer.type.should.match('change-plan');
-          defer.params.should.match('Platinum');
           done();
         },
         function(err) {
@@ -312,7 +310,7 @@ describe("Account", function() {
     Account.findOne({search: ['taylor']}).
     populate('paymentPlan.plan').
     exec(function(err, account) {
-      account.changePlan('Bronze').then(
+      account.changePlan('Bronze',1).then(
         function(account) {
           should.fail('should not have passed');
           done();
@@ -345,7 +343,6 @@ describe("Account", function() {
   it("Should not have any kind of race conditions when incrementing get", function(done) {
     Account.findOne({search: ['taylor']}).
     exec(function(err, account) {
-      console.log(account.projectStatistics['hello'].gets);
       async.parallel([
           function(callback) {
             account.incrementGet('hello').then(callback);
@@ -417,7 +414,6 @@ describe("Account", function() {
 it("Should not have any kind of race conditions when incrementing get", function(done) {
     Account.findOne({search: ['taylor']}).
     exec(function(err, account) {
-      console.log(account.projectStatistics['hello'].gets);
       async.parallel([
           function(callback) {
             account.incrementPut('hello','h').then(callback);
@@ -480,6 +476,35 @@ it("Should not have any kind of race conditions when incrementing get", function
         ],
         function(err, results) {
           account.projectStatistics['hello'].puts.should.match(20);
+          done();
+        }
+      );
+    });
+  });
+
+  it("Should allow me to change a plan: Platinum", function(done) {
+    Account.findOne({search: ['taylor']}).
+    populate('paymentPlan.plan').
+    exec(function(err, account) {
+      account.changePlan('Platinum', 12).then(
+        function(account) {
+          var bill = _.max(account.billing, function(bill){return bill.start});
+          bill.penalty.should.match(0);
+          bill.interest.should.match(0);
+          bill.memoryUsed.should.match(6.66e-7);
+          bill.bandwidth.should.match(2000.04);
+          bill.puts.should.match(0.0002);
+          bill.gets.should.match(0.000168);
+          bill.cardStatus.should.match('');
+          bill.baseCharge.should.match(260);
+          bill.balanceTransaction.should.match('');
+          bill.amountDue.should.match(0);
+          account.paymentPlan[0].plan.name.should.match('Platinum');
+          account.paymentPlan[0].contractTerm.should.match(12);
+          done();
+        },
+        function(err) {
+          should.fail(err);
           done();
         }
       );

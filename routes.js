@@ -224,13 +224,14 @@ exports = module.exports = function(app, passport) {
   app.post('/caas/account/verify', require('./views/caas/owner/account/verify').verify);
   
   // plan
-  app.post('/caas/owner/:owner/account/plan/buy', require('./views/caas/owner/account/plan').buy);
-  app.post('/caas/owner/:owner/account/plan/change', require('./views/caas/owner/account/plan').change);
-  app.post('/caas/owner/:owner/account/plan/cancel', require('./views/caas/owner/account/plan').cancel);
+  app.post('/caas/account/plan/buy', require('./views/caas/owner/account/plan').buy);
+  app.post('/caas/account/plan/change', require('./views/caas/owner/account/plan').change);
+  app.post('/caas/account/plan/cancel', require('./views/caas/owner/account/plan').cancel);
+  app.post('/caas/account/plan/allowedBillingPlans', require('./views/caas/owner/account/plan').allowedBillingPlans)
 
   // card
-  app.post('/caas/owner/:owner/account/card/update', require('./views/caas/owner/account/card').update);
-  app.post('/caas/owner/:owner/account/card/pay', require('./views/caas/owner/account/card').pay);
+  app.post('/caas/account/card/update', require('./views/caas/owner/account/card').update);
+  app.post('/caas/account/card/pay', require('./views/caas/owner/account/card').pay);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

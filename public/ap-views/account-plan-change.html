@@ -1,4 +1,134 @@
-// To get this to work, we need to allow someone to
-// renew their contract for more time or change the plan
-// to what they want
+<table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <td>Plan</td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 1">1 Month</td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 12">1 Year</td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 36">3 Years</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          Bronze --
+          <small>
+          <br/>
+          <strong>Memory Alloted:</strong> {{billingPlans.Bronze.memoryAlloted / 1000000000}} GB
+          <br/>
+          <strong>Get Monthly Rate:</strong> ${{billingPlans.Bronze.getRateMonthly * 1000}} / 10,000 Requests
+          <br/>
+          <strong>Put Monthly Rate:</strong> ${{billingPlans.Bronze.putRateMonthly * 1000}} / 1000 Requests
+          <br/>
+          <strong>Monthly Bandwidth Rate:</strong> ${{billingPlans.Bronze.bandwidthRateMonthly}} / GB
+          </small>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 1">
+          <input type="radio" ng-click="setPlan('Bronze', 1)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Bronze.baseChargeMonthly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 12">
+          <input type="radio" ng-click="setPlan('Bronze', 12)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Bronze.baseChargeYearly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 36">
+          <input type="radio" ng-click="setPlan('Bronze', 36)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Bronze.baseChargeThreeYear}}</input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Silver --
+          <small>
+          <br/>
+          <strong>Memory Alloted:</strong> {{billingPlans.Silver.memoryAlloted / 1000000000}} GB
+          <br/>
+          <strong>Get Monthly Rate:</strong> ${{billingPlans.Silver.getRateMonthly * 1000}} / 10,000 Requests
+          <br/>
+          <strong>Put Monthly Rate:</strong> ${{billingPlans.Silver.putRateMonthly * 1000}} / 1000 Requests
+          <br/>
+          <strong>Monthly Bandwidth Rate:</strong> ${{billingPlans.Silver.bandwidthRateMonthly}} / GB 
+          </small>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 1">
+          <input type="radio" ng-click="setPlan('Silver', 1)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Silver.baseChargeMonthly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 12">
+          <input type="radio" ng-click="setPlan('Silver', 12)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Silver.baseChargeYearly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 36">
+          <input type="radio" ng-click="setPlan('Silver', 36)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Silver.baseChargeThreeYear}}</input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Gold --
+          <small>
+          <br/>
+          <strong>Memory Alloted:</strong> {{billingPlans.Gold.memoryAlloted / 1000000000}} GB
+          <br/>
+          <strong>Get Monthly Rate:</strong> ${{billingPlans.Gold.getRateMonthly * 1000}} / 10,000 Requests
+          <br/>
+          <strong>Put Monthly Rate:</strong> ${{billingPlans.Gold.putRateMonthly * 1000}} / 1000 Requests
+          <br/>
+          <strong>Monthly Bandwidth Rate:</strong> ${{billingPlans.Gold.bandwidthRateMonthly}} / GB 
+          </small>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 1">
+          <input type="radio" ng-click="setPlan('Gold', 1)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Gold.baseChargeMonthly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 12">
+          <input type="radio" ng-click="setPlan('Gold', 12)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Gold.baseChargeYearly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 36">
+          <input type="radio" ng-click="setPlan('Gold', 36)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Gold.baseChargeThreeYear}}</input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Platinum --
+          <small>
+          <br/>
+          <strong>Memory Alloted:</strong> {{billingPlans.Platinum.memoryAlloted / 1000000000}} GB
+          <br/>
+          <strong>Get Monthly Rate:</strong> ${{billingPlans.Platinum.getRateMonthly * 1000}} / 10,000 Requests
+          <br/>
+          <strong>Put Monthly Rate:</strong> ${{billingPlans.Platinum.putRateMonthly * 1000}} / 1000 Requests
+          <br/>
+          <strong>Monthly Bandwidth Rate:</strong> ${{billingPlans.Platinum.bandwidthRateMonthly}} / GB 
+          </small>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 1">
+          <input type="radio" ng-click="setPlan('Platinum', 1)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Platinum.baseChargeMonthly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 12">
+          <input type="radio" ng-click="setPlan('Platinum', 12)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Platinum.baseChargeYearly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 36">
+          <input type="radio" ng-click="setPlan('Platinum', 36)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Platinum.baseChargeThreeYear}}</input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Unlimited --
+          <small>
+            <br/>
+            <strong>Memory Alloted:</strong> {{billingPlans.Unlimited.memoryAlloted / 1000000000}} GB
+            <br/>
+            <strong>Get Monthly Rate:</strong> ${{billingPlans.Unlimited.getRateMonthly * 1000}} / 10,000 Requests
+            <br/>
+            <strong>Put Monthly Rate:</strong> ${{billingPlans.Unlimited.putRateMonthly * 1000}} / 1000 Requests
+            <br/>
+            <strong>Monthly Bandwidth Rate:</strong> ${{billingPlans.Unlimited.bandwidthRateMonthly}} / GB
+          </small>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 1">
+          <input type="radio" ng-click="setPlan('Unlimited', 1)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Unlimited.baseChargeMonthly}}</input>
+        </td>
+        <td ng-if="allowedBillingPlans.filter.currentTerm <= 12">
+          <input type="radio" ng-click="setPlan('Unlimited', 12)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Unlimited.baseChargeYearly}}</input>
+        </td>
+        <td  ng-if="allowedBillingPlans.filter.currentTerm <= 36">
+          <input type="radio" ng-click="setPlan('Unlimited', 36)" name="baseCharge">Base Charge Per Month: ${{billingPlans.Unlimited.baseChargeThreeYear}}</input>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
+  <button class="btn btn-primary" ng-click="changePlan()">Change Plan</button>

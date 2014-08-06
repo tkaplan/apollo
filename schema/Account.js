@@ -150,7 +150,8 @@ exports = module.exports = function(app, mongoose) {
 
           _this.paymentPlan = [];
           _this.paymentPlan.push(paymentPlanSchema);
-
+          _this.billing.push(billingSchema);
+          
           _this.save(function(err, account) {
             if(err) {
               reject(err);
@@ -168,16 +169,96 @@ exports = module.exports = function(app, mongoose) {
         filter = {},
         allowedBillingPlans = {};
 
+      filter.currentTerm = _this.paymentPlan[0].contractTerm;
+      filter.currentMemoryUsage = _this.getTotalMemoryUsage();          
+      switch(filter.currentTerm) {
+        case 1:
+          filter.currentBaseCharge = _this.paymentPlan[0].plan.baseChargeMonthly;
+          break;
+        case 12:
+          filter.currentBaseCharge = _this.paymentPlan[0].plan.baseChargeYearly;
+          break;
+        case 36:
+          filter.currentBaseCharge = _this.paymentPlan[0].plan.baseChargeThreeYear;
+      }
+      allowedBillingPlans.filter = filter;
+      
+      return allowedBillingPlans;
+  };
+
+  // Let this be our embedded doc
+  // {
+  //   key: {
+  //     currentBytes: { type: Number },
+  //     bytesTransfered: { type: Number },
+  //     gets: { type: Number },
+  //     puts: { type: Number }
+  //   }, ...
+
+  // var billingSchema = new mongoose.Schema({
+  //   start: { type: Date, default: moment()._d },
+  //   due: { type: Date, default: moment().add('d', 30)._d },
+  //   overdue: { type: Date, default: moment().add('d', 60)._d },
+  //   amountDue: { type: Number, default: 0 },
+  //   balanceTransaction: { type: String, default: '' },
+  //   baseCharge: { type: Number, default: 0 },
+  //   cardStatus: { type: String, default: '' },
+  //   gets: { type: Number, default: 0 },
+  //   puts: { type: Number, default: 0 },
+  //   bandwidth: { type: Number, default: 0 },
+  //   memoryUsed: { type: Number, default: 0 },
+  //   interest: { type: Number, default: 0 },
+  //   penalty: { type: Number, default: 0 }
+  // });
+
+  // Requires paymentPlan, billing, and projectStatistics
+  // to be loaded
+  accountSchema.methods.updateBill = function() {
+    var _this = this;
+
     return Q.Promise(function(resolve, reject, notify) {
-      app.db.model('BillingPlan').find(function(err, billingPlans) {
+      var plan = _this.paymentPlan[0].plan,
+          bill = _.max(_this.billing, function(bill) {return bill.start}),
+          totalStatistics = _this.getTotalStatistics();
+
+      // Update the billing according to term
+      switch(_this.paymentPlan[0].contractTerm) {
+        case 1:
+          bill.baseCharge += plan.baseChargeMonthly;
+          bill.gets += plan.getRateMonthly * totalStatistics.totalGets;
+          bill.puts += plan.putRateMonthly * totalStatistics.totalPuts;
+          bill.memoryUsed += plan.memoryUseRateMonthly * (totalStatistics.totalMemoryUsage/10000000);
+          bill.bandwidth += plan.bandwidthRateMonthly * totalStatistics.totalBytesTransfered;
+          break; 
+        case 12:
+          bill.baseCharge += plan.baseChargeYearly;
+          bill.gets += plan.getRateYearly * totalStatistics.totalGets;
+          bill.puts += plan.putRateYearly * totalStatistics.totalPuts;
+          bill.memoryUsed += plan.memoryUseRateYearly * (totalStatistics.totalMemoryUsage/10000000);
+          bill.bandwidth += plan.bandwidthRateYearly * totalStatistics.totalBytesTransfered;
+          break; 
+        case 36:
+          bill.baseCharge += plan.baseChargeThreeYear;
+          bill.gets += plan.getRateThreeYear * totalStatistics.totalGets;
+          bill.puts += plan.putRateThreeYear * totalStatistics.totalPuts;
+          bill.memoryUsed += plan.memoryUseRateThreeYear * (totalStatistics.totalMemoryUsage/10000000);
+          bill.bandwidth += plan.bandwidthRateThreeYear * totalStatistics.totalBytesTransfered; 
+      }
+      
+      // If there is penalty or interest incurring, it will be calculated
+      // when the true bill is generated.
+      _this.save(function(err, account) {
         if(err) {
           reject(err);
         } else {
-          filter.currentTerm = _this.paymentPlan.contractTerm;
-          filter.currentMemoryUsage = _this.getTotalMemoryUsage();
-          filter.currentBaseCharge = _this.billing[_this.billing.length - 1].baseCharge;
-          allowedBillingPlans.filter = filter;
-          allowedBillingPlans.billingPlans = billingPlans;
+          _this.resetStats().then(
+            function(account) {
+              resolve(account);
+            },
+            function(reason) {
+              reject(reason);
+            }
+          );
         }
       });
     });
@@ -199,9 +280,16 @@ exports = module.exports = function(app, mongoose) {
         } else if(plan === 'Freetrial') {
           reject(new Error('You cannot get another free trial!'));
         } else {
-          _this.defer('change-plan', {plan: plan, term: term}).then(
+          _this.updateBill().then(
             function(account) {
-              resolve(account);
+              _this.paymentPlan[0].plan = billingPlan;
+              _this.save(function(err, account) {
+                if(err) {
+                  reject(err);
+                } else {
+                  resolve(account);
+                }
+              });
             },
             function(reason) {
               reject(reason);
@@ -267,6 +355,27 @@ exports = module.exports = function(app, mongoose) {
     });
 
     return totalBytesTransfered;
+  }
+
+  accountSchema.methods.getTotalStatistics = function() {
+    var totalGets = 0,
+        totalPuts = 0,
+        totalBytesTransfered = 0,
+        totalMemoryUsage = 0;
+
+    _.forEach(this.projectStatistics, function(block) {
+      totalGets += block.gets;
+      totalPuts += block.puts;
+      totalBytesTransfered += block.bytesTransfered;
+      totalMemoryUsage += block.currentBytes;
+    });
+
+    return {
+      totalGets: totalGets,
+      totalPuts: totalPuts,
+      totalBytesTransfered: totalBytesTransfered,
+      totalMemoryUsage: totalMemoryUsage
+    };
   }
 
 
@@ -374,7 +483,7 @@ exports = module.exports = function(app, mongoose) {
       _this.projectStatistics[keys[i]].gets = 0;
       _this.projectStatistics[keys[i]].bytesTransfered = 0;
     }
-
+    
     _this.markModified('projectStatistics');
     
     // Is rumored to return a promise
@@ -382,7 +491,7 @@ exports = module.exports = function(app, mongoose) {
       if(err) {
         defer.reject(err);
       } else {
-        defer.resolve();
+        defer.resolve(account);
       }
     });
 

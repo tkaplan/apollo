@@ -87,6 +87,7 @@ exports = module.exports = function(app, mongoose) {
   accountSchema.post('save', function(doc) {
     var _this = this;
     spinlock({keys: ['Account']}).then(
+
       function(free) {
         if(!_this.billing){
           // Our lock on account
@@ -98,6 +99,7 @@ exports = module.exports = function(app, mongoose) {
           var BillingPlan = app.db.model('BillingPlan');
           BillingPlan.findOne({name: 'Freetrial'}, function(err, freetrial) {
             if(err) {
+              console.log("Billing plan not found: " + err);
               // Do something at somepoint, but can't throw errors
               // Our lock on account
               free();
@@ -110,14 +112,18 @@ exports = module.exports = function(app, mongoose) {
               // Create billing statement
               _this.billing.push(billingSchema);
 
+              _this.markModified('paymentPlan');
+              _this.markModified('billing');
+
               _this.save(function(err) {
                 if(err){
                   // Do something at some point but can't
                   // throw errors
-
+                  console.log("Billing plan not saved: " + err);
                   // Our lock on account
                   free();
                 } else {
+
                   free();
                 } 
               });
@@ -244,6 +250,9 @@ exports = module.exports = function(app, mongoose) {
           bill.memoryUsed += plan.memoryUseRateThreeYear * (totalStatistics.totalMemoryUsage/10000000);
           bill.bandwidth += plan.bandwidthRateThreeYear * totalStatistics.totalBytesTransfered; 
       }
+
+      _this.markModified('paymentPlan');
+      _this.markModified('billing');
       
       // If there is penalty or interest incurring, it will be calculated
       // when the true bill is generated.
@@ -283,6 +292,7 @@ exports = module.exports = function(app, mongoose) {
           _this.updateBill().then(
             function(account) {
               _this.paymentPlan[0].plan = billingPlan;
+              _this.paymentPlan[0].contractTerm = term; 
               _this.save(function(err, account) {
                 if(err) {
                   reject(err);

@@ -134,6 +134,14 @@ exports.signup = function(req, res){
     });
   });
 
+  workflow.on('sendVerificationEmail', function() {
+    require('../account/verification/index').init(req, res, function(err){
+      if(err) {
+        console.log('Error Sending Verification Email: ' + err);
+      }
+    });
+  });
+
   workflow.on('sendWelcomeEmail', function() {
     req.app.utility.sendmail(req, res, {
       from: req.app.get('smtp-from-name') +' <'+ req.app.get('smtp-from-address') +'>',
@@ -151,7 +159,6 @@ exports.signup = function(req, res){
         workflow.emit('logUserIn');
       },
       error: function(err) {
-        console.log('Error Sending Welcome Email: '+ err);
         workflow.emit('logUserIn');
       }
     });
@@ -175,6 +182,7 @@ exports.signup = function(req, res){
 
           workflow.outcome.defaultReturnUrl = user.defaultReturnUrl();
           workflow.emit('response');
+          workflow.emit('sendVerificationEmail');
         });
       }
     })(req, res);
@@ -421,7 +429,6 @@ exports.signupSocial = function(req, res){
         workflow.emit('logUserIn');
       },
       error: function(err) {
-        console.log('Error Sending Welcome Email: '+ err);
         workflow.emit('logUserIn');
       }
     });

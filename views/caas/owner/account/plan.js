@@ -47,7 +47,7 @@ exports.change = function(req, res) {
       term = req.body.term;
 
   req.app.db.models.Account.findOne({search: [req.user.username]},
-  'paymentPlan projectStatistics defers').
+  'paymentPlan billing projectStatistics').
   populate('paymentPlan.plan').
   exec(function(err, account) {
     account.changePlan(plan, term).then(

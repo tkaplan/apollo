@@ -42,11 +42,17 @@ exports.init = function(req, res, next){
   });
 
   workflow.on('generateTokenOrRender', function() {
-    if (req.user.roles.account.verificationToken !== '') {
-      return workflow.emit('renderPage');
-    }
+    //if(!req.user.roles.account.verificationToken)
+    req.app.db.models.User.findById(req.user.id).
+    populate('roles.account').
+    exec(function(err, user) {
+      req.user = user;
+      if (req.user.roles.account.verificationToken !== '') {
+        return workflow.emit('renderPage');
+      }
 
-    workflow.emit('generateToken');
+      workflow.emit('generateToken');
+    });
   });
 
   workflow.on('generateToken', function() {

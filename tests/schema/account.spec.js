@@ -489,16 +489,14 @@ it("Should not have any kind of race conditions when incrementing get", function
       account.changePlan('Platinum', 12).then(
         function(account) {
           var bill = _.max(account.billing, function(bill){return bill.start});
-          bill.penalty.should.match(0);
-          bill.interest.should.match(0);
           bill.memoryUsed.should.match(6.66e-7);
-          bill.bandwidth.should.match(2000.04);
+          bill.bandwidth.should.match(0.00020000400000000002);
           bill.puts.should.match(0.0002);
           bill.gets.should.match(0.000168);
           bill.cardStatus.should.match('');
-          bill.baseCharge.should.match(260);
+          bill.baseCharge.should.match(265);
           bill.balanceTransaction.should.match('');
-          bill.amountDue.should.match(0);
+          bill.amountDue.should.match(265.00056867);
           account.paymentPlan[0].plan.name.should.match('Platinum');
           account.paymentPlan[0].contractTerm.should.match(12);
           done();
@@ -508,6 +506,16 @@ it("Should not have any kind of race conditions when incrementing get", function
           done();
         }
       );
+    });
+  });
+
+  it("Should correctly calculate the outstanding bill", function(done) {
+    Account.findOne({search: ['taylor']}, 'billing').
+    exec(function(err, account) {
+      var bills = account.calculateBill();
+      bills.bills.length.should.equal(2);
+      bills.totalDue.should.equal(265.00056867);
+      done();
     });
   });
 

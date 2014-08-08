@@ -19,18 +19,18 @@ exports = module.exports = function(app, mongoose) {
 
   var billingSchema = new mongoose.Schema({
     start: { type: Date, default: moment()._d },
-    due: { type: Date, default: moment().add('d', 30)._d },
+    due: { type: Date, default: moment().add('d', 45)._d },
     overdue: { type: Date, default: moment().add('d', 60)._d },
     amountDue: { type: Number, default: 0 },
-    balanceTransaction: { type: String, default: '' },
+    last4: { type: Number, default: 0 },
+    brand: { type: String, default: null }
+    txn: { type: String, default: '' },
     baseCharge: { type: Number, default: 0 },
     cardStatus: { type: String, default: '' },
     gets: { type: Number, default: 0 },
     puts: { type: Number, default: 0 },
     bandwidth: { type: Number, default: 0 },
-    memoryUsed: { type: Number, default: 0 },
-    interest: { type: Number, default: 0 },
-    penalty: { type: Number, default: 0 }
+    memoryUsed: { type: Number, default: 0 }
   });
 
   var paymentPlanSchema = new mongoose.Schema({
@@ -86,7 +86,7 @@ exports = module.exports = function(app, mongoose) {
 
   accountSchema.post('save', function(doc) {
     var _this = this;
-    spinlock({keys: ['Account']}).then(
+    spinlock({keys: [_this.id]}).then(
 
       function(free) {
         if(!_this.billing){
@@ -99,7 +99,6 @@ exports = module.exports = function(app, mongoose) {
           var BillingPlan = app.db.model('BillingPlan');
           BillingPlan.findOne({name: 'Freetrial'}, function(err, freetrial) {
             if(err) {
-              console.log("Billing plan not found: " + err);
               // Do something at somepoint, but can't throw errors
               // Our lock on account
               free();
@@ -119,7 +118,6 @@ exports = module.exports = function(app, mongoose) {
                 if(err){
                   // Do something at some point but can't
                   // throw errors
-                  console.log("Billing plan not saved: " + err);
                   // Our lock on account
                   free();
                 } else {
@@ -144,20 +142,17 @@ exports = module.exports = function(app, mongoose) {
     var _this = this;
 
     _this.card = card;
-
     return Q.Promise(function(resolve, reject, notify) {
       app.db.models.BillingPlan.findOne({name: plan}, function(err, billingPlan) {
         if(err) {
           reject(err);
         } else {
           
-          paymentPlanSchema.contractTerm = term;
-          paymentPlanSchema.plan = billingPlan;
-
           _this.paymentPlan = [];
           _this.paymentPlan.push(paymentPlanSchema);
+          _this.paymentPlan[0].contractTerm = term;
+          _this.paymentPlan[0].plan = billingPlan;
           _this.billing.push(billingSchema);
-          
           _this.save(function(err, account) {
             if(err) {
               reject(err);
@@ -219,6 +214,22 @@ exports = module.exports = function(app, mongoose) {
 
   // Requires paymentPlan, billing, and projectStatistics
   // to be loaded
+  accountSchema.methods.calculateBill = function() {
+    var outstandingBills = {
+          bills: [],
+          totalDue: 0
+        };
+
+    _.forEach(this.billing, function(bill) {
+      if(bill.txn == '' && (moment().add(1, 'days').diff(bill.due) < 0)) {
+        outstandingBills.totalDue += bill.amountDue;
+        outstandingBills.bills.push(bill);
+      }
+    });
+
+    return outstandingBills;
+  };
+
   accountSchema.methods.updateBill = function() {
     var _this = this;
 
@@ -234,23 +245,25 @@ exports = module.exports = function(app, mongoose) {
           bill.gets += plan.getRateMonthly * totalStatistics.totalGets;
           bill.puts += plan.putRateMonthly * totalStatistics.totalPuts;
           bill.memoryUsed += plan.memoryUseRateMonthly * (totalStatistics.totalMemoryUsage/10000000);
-          bill.bandwidth += plan.bandwidthRateMonthly * totalStatistics.totalBytesTransfered;
+          bill.bandwidth += plan.bandwidthRateMonthly * (totalStatistics.totalBytesTransfered/10000000);
           break; 
         case 12:
           bill.baseCharge += plan.baseChargeYearly;
           bill.gets += plan.getRateYearly * totalStatistics.totalGets;
           bill.puts += plan.putRateYearly * totalStatistics.totalPuts;
           bill.memoryUsed += plan.memoryUseRateYearly * (totalStatistics.totalMemoryUsage/10000000);
-          bill.bandwidth += plan.bandwidthRateYearly * totalStatistics.totalBytesTransfered;
+          bill.bandwidth += plan.bandwidthRateYearly * (totalStatistics.totalBytesTransfered/10000000);
           break; 
         case 36:
           bill.baseCharge += plan.baseChargeThreeYear;
           bill.gets += plan.getRateThreeYear * totalStatistics.totalGets;
           bill.puts += plan.putRateThreeYear * totalStatistics.totalPuts;
           bill.memoryUsed += plan.memoryUseRateThreeYear * (totalStatistics.totalMemoryUsage/10000000);
-          bill.bandwidth += plan.bandwidthRateThreeYear * totalStatistics.totalBytesTransfered; 
+          bill.bandwidth += plan.bandwidthRateThreeYear * (totalStatistics.totalBytesTransfered/10000000); 
       }
 
+      bill.amountDue = bill.baseCharge + bill.gets + bill.puts + bill.memoryUsed + bill.bandwidth;
+      
       _this.markModified('paymentPlan');
       _this.markModified('billing');
       

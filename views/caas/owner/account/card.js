@@ -1,4 +1,6 @@
-var _ = require('lodash');
+var _ = require('lodash'),
+    moment = require('moment'),
+    email = require('../../../email/email');
 
 exports.update = function(req, res) {
   var stripe = req.app.get('stripe');
@@ -9,7 +11,7 @@ exports.update = function(req, res) {
     card: req.body.card.id
   }).then(
     function _resolve(customer) {
-      app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
+      req.app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
         if(err || !account) {
           err = err ? err : new Error('No account found');
           res.status(400).send({
@@ -38,36 +40,68 @@ exports.update = function(req, res) {
   );
 };
 
+exports.getOutstandingBills = function(req, res) {
+  req.app.db.models.Account.findOne({search: [req.user.username]}, 'billing', function(err, account) {
+    if(err) {
+      res.status(400).send({
+        errors: [err]
+      });
+    } else {
+      res.status(200).send(account.calculateBill());
+    }
+  });
+}
+
 exports.pay = function(req, res) {
-  req.app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
+  res.header('Content-Type', 'application/json');
+  
+  var name = req.body.name,
+      email = req.body.email;
 
-    // Get bill
-    var bill = _.findIndex(account.billing, function(billing) {
-      return billing.amountDue > 0;
-    });
+  req.app.db.models.Account.findOne({search: [req.user.username]}, 'billing').
+  exec(function(err, account) {
 
-    // Send
-    if(bill === -1) {
-      res.status(204).send();
+    var bills = account.calculateBill();
+
+    if(bills.length == 0) {
+      res.status(400).send('No bills found at this time.');
       return;
     }
 
     req.app.get('stripe').charges.create({
-      amount: account.billing[bill].amountDue,
+      amount: bills.totalDue,
       currency: 'usd',
       card: req.body.card.id,
       description: "One time payment towards monthly bill"
     }).then(
       function _resolve(charge) {
         if(charge.paid) {
-          account.billing[bill].amountDue = 0;
-          account.billing[bill].balanceTransaction = charge.balance_transaction;
+
+          var card = charge.card;
+
+          var amount = charge.amount,
+              txn = charge.balance_transaction,
+              last4 = card.last4,
+              brand = card.brand;
+
+          _.forEach(account.billing, function(bill) {
+            // Also make sure that we are pass the due date
+            if(bill.txn == '' && (moment().add(1, 'days').diff(bill.due) < 0)) {
+              bill.txn = txn;
+              bill.last4 = last4;
+              bill.brand = brand;
+            }
+          });
+
+          email.paymentConfirmation(req, res, bills, amount, txn, last4, brand);
+
           account.save(function(err) {
             if(err) {
               res.status(200).send({
                 message: "Data base couldn't save",
-                balanceTX: charge.balance_transaction,
-                ammountPaid: charge.amount
+                txn: txn,
+                last4: amount,
+                brand: brand
               });
             } else {
               res.status(204).send();

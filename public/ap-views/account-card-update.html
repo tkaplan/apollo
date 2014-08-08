@@ -2,10 +2,7 @@
 <form stripe-form="updateCard">
   <span class="payment-errors"></span>
 
-  <div>
-    <label>Card: {{currentCard.type}}</label>
-    <label>Last 4 Digits: {{currentCard.type}}</label>
-  </div>
+  <p> Card is not displayed for security reasons. You will be notified via email if your card is declined.</p>
 
   <div class="form-row">
     <label>
@@ -45,5 +42,8 @@
   <span ng-for="error in alert.errors">
     <p class="alert alert-danger" ng-show="error" ng-bind="error"></p>
   </span>
+  <br/>
+  <alert ng-show="alert.updateCard" type="{{alert.updateCard.type}}">{{alert.updateCard.msg}}</alert>
+  <br/>
   <button type="btn">Submit Payment</button>
 </form>

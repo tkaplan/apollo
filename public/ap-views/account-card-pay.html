@@ -1,4 +1,16 @@
 <h1>account card pay</h1>
+<div ng-repeat="bill in outstandingBills.bills" style="border-bottom: 1px solid;">
+  <span>Memory use charge: </span>${{bill.memoryUsed}}
+  <br/>
+  <span>Bandwidth charge: </span>${{bill.bandwidth}}
+  <br/>
+  <span>Put charge: </span>${{bill.puts}}
+  <br/>
+  <span>Get charge: </span>${{bill.gets}}
+  <br/>
+  <span>Base charge: </span>${{bill.baseCharge}}
+</div>
+<span>Total charge: </span>${{outstandingBills.totalDue}}
 <form stripe-form="payCard">
   <span class="payment-errors"></span>
 

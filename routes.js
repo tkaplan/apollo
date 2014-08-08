@@ -232,6 +232,7 @@ exports = module.exports = function(app, passport) {
   // card
   app.post('/caas/account/card/update', require('./views/caas/owner/account/card').update);
   app.post('/caas/account/card/pay', require('./views/caas/owner/account/card').pay);
+  app.post('/caas/account/card/getOutstandingBills', require('./views/caas/owner/account/card').getOutstandingBills);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

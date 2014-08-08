@@ -1,5 +1,5 @@
 <p> Are you sure you want to cancel your monthly plan ? </p>
-
+<alert ng-show="alert.cancel" type="{{alert.cancel.type}}">{{alert.cancel.msg}}</alert>
 <button class="btn btn-danger" ng-click="cancelPlan()">
 	<strong>Cancel</strong>
 </button>

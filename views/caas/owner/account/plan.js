@@ -10,7 +10,7 @@ exports.buy = function(req, res) {
     card: req.body.card.id
   }).then(
     function _resolve(customer) {
-      app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
+      req.app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
         if(err || !account) {
           err = err ? err : new Error('No account found');
           res.status(400).send({

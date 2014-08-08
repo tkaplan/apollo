@@ -1,0 +1,1 @@
+exports.paymentConfirmation = require('./payment-confirmation');

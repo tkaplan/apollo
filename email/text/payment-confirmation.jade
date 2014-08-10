@@ -1,1 +1,36 @@
-payment confirmation text
+| Thank you #{name} for your payment! :)
+= '\n'
+| Your payment has been confirmation for the account: #{username}
+= '\n'  
+= '\n'
+| Amount due and paid: #{amount}
+= '\n'
+= '\n'
+| Please keep track of your confirmation number (transaction number):
+= '\n'
+| #{txn}
+= '\n'
+= '\n'
+| You payment was done with #{brand} and last four digits #{last4}
+each bill in bills
+	= '\n'
+	| Billing period: #{bill.start} - #{bill.due} '\n'
+	= '\n'
+	= '\n'
+	| Base charge: $#{bill.baseCharge}
+	= '\n'
+	| Get charge: $#{bill.gets}
+	= '\n'
+	| Put charge: $#{bill.puts}
+	= '\n'
+	| Bandwidth charge: $#{bill.bandwidth}
+	= '\n'
+	| + Memory use: $#{bill.memoryUsed}
+	= '\n'
+	| =====================================
+	= '\n'
+	| Total due for this bill: $#{bill.amountDue}
+	= '\n'
+	| -------------------------------------
+	= '\n'
+	| -------------------------------------

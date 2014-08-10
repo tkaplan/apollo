@@ -19,11 +19,11 @@ exports = module.exports = function(app, mongoose) {
 
   var billingSchema = new mongoose.Schema({
     start: { type: Date, default: moment()._d },
-    due: { type: Date, default: moment().add('d', 45)._d },
-    overdue: { type: Date, default: moment().add('d', 60)._d },
+    due: { type: Date, default: moment().add('d', 30)._d },
+    overdue: { type: Date, default: moment().add('d', 45)._d },
     amountDue: { type: Number, default: 0 },
     last4: { type: Number, default: 0 },
-    brand: { type: String, default: null }
+    brand: { type: String, default: null },
     txn: { type: String, default: '' },
     baseCharge: { type: Number, default: 0 },
     cardStatus: { type: String, default: '' },
@@ -221,12 +221,18 @@ exports = module.exports = function(app, mongoose) {
         };
 
     _.forEach(this.billing, function(bill) {
-      if(bill.txn == '' && (moment().add(1, 'days').diff(bill.due) < 0)) {
+      if(bill.txn == '' && (moment().add(-1, 'days').diff(bill.due) > 0)) {
         outstandingBills.totalDue += bill.amountDue;
         outstandingBills.bills.push(bill);
+        bill.baseCharge = bill.baseCharge.toFixed(2);
+        bill.gets = bill.gets.toFixed(2);
+        bill.puts = bill.puts.toFixed(2);
+        bill.bandwidth = bill.bandwidth.toFixed(2);
+        bill.memoryUsed = bill.memoryUsed.toFixed(2);
+        bill.amountDue = bill.amountDue.toFixed(2);
       }
     });
-
+    outstandingBills.totalDue = outstandingBills.totalDue.toFixed(2);
     return outstandingBills;
   };
 

@@ -1,1 +1,36 @@
-payment confirmation html
+| Thank you #{name} for your payment! :)
+br
+| Your payment has been confirmation for the account: #{username}
+br  
+br
+| Amount due and paid: #{amount}
+br
+br
+| Please keep track of your confirmation number (transaction number):
+br
+| #{txn}
+br
+br
+| You payment was done with #{brand} and last four digits #{last4}
+each bill in bills.bills
+	br
+	| Billing period: #{bill.start} - #{bill.due} '\n'
+	br
+	br
+	| Base charge: $#{bill.baseCharge}
+	br
+	| Get charge: $#{bill.gets}
+	br
+	| Put charge: $#{bill.puts}
+	br
+	| Bandwidth charge: $#{bill.bandwidth}
+	br
+	| + Memory use: $#{bill.memoryUsed}
+	br
+	| =====================================
+	br
+	| Total due for this bill: $#{bill.amountDue}
+	br
+	| -------------------------------------
+	br
+	| -------------------------------------

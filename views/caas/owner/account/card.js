@@ -1,6 +1,6 @@
 var _ = require('lodash'),
     moment = require('moment'),
-    email = require('../../../email/email');
+    emailServer = require('../../../../email/email');
 
 exports.update = function(req, res) {
   var stripe = req.app.get('stripe');
@@ -58,7 +58,8 @@ exports.pay = function(req, res) {
   var name = req.body.name,
       email = req.body.email;
 
-  req.app.db.models.Account.findOne({search: [req.user.username]}, 'billing').
+  req.app.db.models.Account.findOne({search: [req.user.username]}).
+  select('billing').
   exec(function(err, account) {
 
     var bills = account.calculateBill();
@@ -69,32 +70,38 @@ exports.pay = function(req, res) {
     }
 
     req.app.get('stripe').charges.create({
-      amount: bills.totalDue,
+      amount: parseInt(bills.totalDue),
       currency: 'usd',
       card: req.body.card.id,
       description: "One time payment towards monthly bill"
     }).then(
       function _resolve(charge) {
         if(charge.paid) {
-
           var card = charge.card;
-
           var amount = charge.amount,
               txn = charge.balance_transaction,
               last4 = card.last4,
               brand = card.brand;
 
-          _.forEach(account.billing, function(bill) {
+          _.forEach(bills.bills, function(bill) {
             // Also make sure that we are pass the due date
-            if(bill.txn == '' && (moment().add(1, 'days').diff(bill.due) < 0)) {
-              bill.txn = txn;
-              bill.last4 = last4;
-              bill.brand = brand;
-            }
+            bill.txn = txn;
+            bill.last4 = last4;
+            bill.brand = brand;
           });
 
-          email.paymentConfirmation(req, res, bills, amount, txn, last4, brand);
+          emailServer.paymentConfirmation(
+            req,
+            res,
+            name,
+            email,
+            bills,
+            amount,
+            txn,
+            last4,
+            brand);
 
+          account.markModified('billing');
           account.save(function(err) {
             if(err) {
               res.status(200).send({

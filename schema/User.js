@@ -19,7 +19,7 @@ exports = module.exports = function(app, mongoose) {
       account: { type: mongoose.Schema.Types.ObjectId, ref: 'Account' }
     },
     projects: [
-      { type: mongoose.Schema.Types.ObjectId, ref: 'Projects' }
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Project' }
     ],
     isActive: String,
     timeCreated: { type: Date, default: Date.now },

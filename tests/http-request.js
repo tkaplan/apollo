@@ -40,6 +40,7 @@ exports.login = function (username, password) {
 };
 
 exports.sendJson = function(cookie, path, json) {
+  json['apCookie'] = cookie;
   json = JSON.stringify(json);
   return Q.Promise(function(resolve, reject, notify) {
     var options = {

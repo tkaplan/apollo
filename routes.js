@@ -222,7 +222,8 @@ exports = module.exports = function(app, passport) {
   app.all('/caas/account/*', ensureAuthenticatedCaas);
   // Account actions
   app.post('/caas/account/verify', require('./views/caas/owner/account/verify').verify);
-  
+  app.post('/caas/account/notices', require('./views/caas/owner/account/notices').notices);
+
   // plan
   app.post('/caas/account/plan/buy', require('./views/caas/owner/account/plan').buy);
   app.post('/caas/account/plan/change', require('./views/caas/owner/account/plan').change);

@@ -1,1 +1,5 @@
-Your balance is due
+<p ng-hide="noticeProperties.balancePaid"\>{{noticeMessage}}</p>
+<p class="alert alert-success" ng-show="alert.updateCard || alert.payCard">{{alert.updateCard}}{{alert.payCard}}</p>
+<button class='btn btn-alert' ng-click="eventFnxs.payCard()" ng-hide="noticeProperties.balancePaid">One time payment</button>
+<button class='btn btn-alert' ng-click="eventFnxs.updateCard()" ng-hide="noticeProperties.balancePaid">Update card</button>
+<button class='btn btn-alert' ng-click="eventFnxs.continue()">Continue</button>

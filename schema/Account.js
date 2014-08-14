@@ -144,7 +144,7 @@ exports = module.exports = function(app, mongoose) {
     _this.card = card;
     return Q.Promise(function(resolve, reject, notify) {
       app.db.models.BillingPlan.findOne({name: plan}, function(err, billingPlan) {
-        if(err) {
+        if(err || plan !=) {
           reject(err);
         } else {
           

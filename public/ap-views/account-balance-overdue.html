@@ -1,6 +1,5 @@
-Your account is overdue. You have %days% before service interruption with
-          incurred late fees. Unpaid accounts by this time will result in:
-            1) Denied access to content editing
-            2) Denied get requests for clients to content
-          
- If this is a mistake please send message bello
+<p ng-hide="noticeProperties.balancePaid"\>{{noticeMessage}}</p>
+<p class="alert alert-success" ng-show="alert.updateCard || alert.payCard">{{alert.updateCard}}{{alert.payCard}}</p>
+<button class='btn btn-alert' ng-click="eventFnxs.payCard()" ng-hide="noticeProperties.balancePaid">One time payment</button>
+<button class='btn btn-alert' ng-click="eventFnxs.updateCard()" ng-hide="noticeProperties.balancePaid">Update card</button>
+<button class='btn btn-alert' ng-click="eventFnxs.continue()" ng-show="noticeProperties.balancePaid">Continue</button>

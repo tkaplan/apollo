@@ -10,11 +10,17 @@ exports.buy = function(req, res) {
     card: req.body.card.id
   }).then(
     function _resolve(customer) {
-      req.app.db.models.Account.findOne({search: [req.user.username]}, function(err, account) {
+      req.app.db.models.Account.findOne({search: [req.user.username]})
+      .populate('paymentPlan.plan')
+      .exec(function(err, account) {
         if(err || !account) {
           err = err ? err : new Error('No account found');
           res.status(400).send({
             errors: [err]
+          });
+        } else if(account.paymentPlan[0].plan.name != 'Freetrial') {
+          res.status(400).send({
+            errors: [new Error('You cannot buy another plan. You can only renew or change.')]
           });
         } else {
           // assign plan

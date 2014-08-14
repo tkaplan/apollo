@@ -5,6 +5,7 @@ var app = require('../db-inject').app,
     moment = require('moment'),
     mongoose = require('../db-inject').mongoose;
     require('../../schema/Account')(app, mongoose);
+    require('../../schema/BillingPlan')(app, mongoose);
 
 var billingSchema = new mongoose.Schema({
   start: { type: Date, default: moment()._d },
@@ -33,6 +34,9 @@ if(argv.help) {
     --puts (set charge)\n\
     --bandwidth (set charge)\n\
     --memoryUsed (set charge)\n\
+    --remove (remove bill with id)\n\
+    --changePlan ( change the plan )\n\
+    --card (set card)\n\
   ");
   process.exit(1);
 } else if(argv.remove) {
@@ -42,13 +46,57 @@ if(argv.help) {
     account.save(function(err) {
       if(err) {
         console.log(err);
+        process.exit(1);
       } else {
         console.log('Success!');
+        process.exit(0);
       }
-      process.exit(1);
     });
   });
-}else {
+} else if(argv.card) {
+  app.db.model('Account').findOne({search: ['tkaplan']}, function(err, account) {
+    if(err) {
+      console.log(err);
+      process.exit(1);
+    } else {
+      account.card = argv.card !== 'blank' ? argv.card : null;
+      account.save(function(err) {
+        if(err) {
+          console.log(err);
+          process.exit(1);
+        } else {
+          console.log('Success!');
+          process.exit(0);
+        }
+      });
+    }
+  });
+} else if(argv.changePlan) {
+  app.db.model('Account').findOne({search: ['tkaplan']}, function(err, account) {
+    if(err) {
+      console.log(err);
+      process.exit(1);
+    } else {
+      app.db.model('BillingPlan').findOne({name: argv.changePlan}, function(err, plan) {
+        if(err) {
+          console.log(err);
+          process.exit(1);
+        } else {
+          account.paymentPlan[0].plan = plan;
+          account.save(function(err) {
+            if(err) {
+              console.log(err);
+              process.exit(1);
+            } else {
+              console.log('Success!');
+              process.exit(0);
+            }
+          });
+        }
+      })
+    }
+  });
+} else {
   app.db.model('Account').findOne({search: ['tkaplan']}, function(err, account) {
     billingSchema.start = argv.start ? moment().add('d',argv.start)._d : moment()._d;
     billingSchema.due = moment(billingSchema.start).add('d', 30)._d;
@@ -71,9 +119,10 @@ if(argv.help) {
     account.save(function(err, account) {
       if(err) {
         console.log(err);
+        process.exit(1);
       } else {
         console.log("Success!");
-        process.exit(1);
+        process.exit(0);
       }
     });
   });

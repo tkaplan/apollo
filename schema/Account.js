@@ -152,6 +152,7 @@ exports = module.exports = function(app, mongoose) {
           _this.paymentPlan.push(paymentPlanSchema);
           _this.paymentPlan[0].contractTerm = term;
           _this.paymentPlan[0].plan = billingPlan;
+          _this.billing = [];
           _this.billing.push(billingSchema);
           _this.save(function(err, account) {
             if(err) {

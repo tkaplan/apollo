@@ -170,7 +170,7 @@
   </div>
 
   <span ng-for="error in alert.errors">
-    <p class="alert alert-danger" ng-show="error" ng-bind="error"></p>
+    <p class="alert alert-danger" ng-show="alert.buyPlan.msg" ng-bind="alert.buyPlan.msg"></p>
   </span>
   <button type="btn">Submit Payment</button>
 </form>

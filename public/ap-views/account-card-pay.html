@@ -54,7 +54,7 @@
     <p class="alert alert-danger" ng-show="error" ng-bind="error"></p>
   </span>
   <button type="btn">Submit Payment</button>
-  <button type="btn btn-success" ui-sref="^.balanceOverdue" ng-show="noticeProperties['callee-notices'] === 'overdue'">Back</button>
-  <button type="btn btn-success" ui-sref="^.balanceDue" ng-show="noticeProperties['callee-notices'] === 'due'">Back</button>
-  <button type="btn btn-success" ng-click="eventFnxs.continue()" ng-show="noticeProperties['callee-notices'] === 'due'">Pay Later</button>
+  <button type="btn btn-success" ui-sref="^.balanceOverdue" ng-show="noticeOverdue">Back</button>
+  <button type="btn btn-success" ui-sref="^.balanceDue" ng-show="noticeDue">Back</button>
+  <button type="btn btn-success" ng-click="$parent.eventFnxs.continue()" ng-show="noticeDue">Pay Later</button>
 </form>

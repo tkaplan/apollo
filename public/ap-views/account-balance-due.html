@@ -1,6 +1,6 @@
 <span ng-init="$parent.$parent.page = 'Balance Due'"></span>
 <p ng-hide="noticeProperties.balancePaid"\>{{noticeMessage}}</p>
-<p class="alert alert-success" ng-show="alert.updateCard || alert.payCard">{{alert.updateCard.msg}}{{alert.payCard.msg}}</p>
+<p class="alert alert-success" ng-show="alert">{{alert.msg}}</p>
 <button class='btn btn-alert' ui-sref="^.cardPay" ng-hide="noticeProperties.balancePaid">One time payment</button>
 <button class='btn btn-alert' ui-sref="^.cardUpdate" ng-hide="noticeProperties.balancePaid">Update card</button>
-<button class='btn btn-alert' ng-click="eventFnxs.continue()">Continue</button>
+<button class='btn btn-alert' ng-click="$parent.eventFnxs.continue()">Continue</button>

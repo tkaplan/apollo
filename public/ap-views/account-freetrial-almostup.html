@@ -2,4 +2,4 @@
 <p> You can review our plans here: </p>
 <p class="alert alert-success" ng-show="alert.buyPlan" ng-bind="alert.buyPlan.msg"></p>
 <button class='btn btn-alert' ui-sref="^.planBuy" ng-hide="alert.buyPlan">CAAS Plans</button>
-<button class='btn btn-alert' ng-click="eventFnxs.continue()">Continue</button>
+<button class='btn btn-alert' ng-click="$parent.eventFnxs.continue()">Continue</button>

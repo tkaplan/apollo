@@ -144,7 +144,10 @@ exports = module.exports = function(app, mongoose) {
     _this.card = card;
     return Q.Promise(function(resolve, reject, notify) {
       app.db.models.BillingPlan.findOne({name: plan}, function(err, billingPlan) {
-        if(err || plan !=) {
+        // As more specialize plans become available
+        // we will check against them
+        if(err || plan == 'Freetrial') {
+          err = err ? err : new Error('You cannot buy a freetrial');
           reject(err);
         } else {
           

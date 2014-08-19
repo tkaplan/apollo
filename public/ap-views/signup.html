@@ -1,4 +1,5 @@
 
+		<span ng-init="$parent.page = 'Sign Up'"></span>
 		<label for="ap-signup-email">Email: </label>
 		<input id="ap-signup-email" type="text" class="form-control" ng-model="email" placeholder="Email"></input>
 		<br/>
@@ -15,4 +16,4 @@
 		<p class="alert alert-danger" ng-show="alert.password" ng-bind="alert.password"></p>
 		<br/>
 		<button type="button" class="btn btn-primary" ng-click="signup(email, username, password)">Confirm</button>
-		<button type="button" class="btn" style="float:right" ng-click="go('/ap-views/login')">Back</button>
+		<button type="button" class="btn" style="float:right" ui-sref="^.login">Back</button>

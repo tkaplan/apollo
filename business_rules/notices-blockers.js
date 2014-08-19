@@ -19,6 +19,7 @@ module.exports = function(user, account, projectName) {
         && bill.txn == '';
       });
 
+  console.log
   // Is balance due || Is balance overdue?
   if(billsOverdue.length > 0 &&
     planName != 'Freetrial' &&
@@ -28,7 +29,7 @@ module.exports = function(user, account, projectName) {
       type: 'blocker',
       message: "Your account has been disabled and your customers cannot download your content"
     };
-  } else if(billsDue.length > 0 && planName != 'Freetrial' && account.isVerified === 'yes') {
+  } else if(billsDue.length > 0 && planName !== 'Freetrial' && account.isVerified === 'yes') {
     notifications['due'] = {
       type: 'notification',
       message: "Either your credit card has not been charged or was denied. You balance is currently due."

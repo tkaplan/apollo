@@ -1,15 +1,14 @@
 <span ng-init="$parent.$parent.page = 'One time Payment'"></span>
-<h1>account card pay</h1>
 <div ng-repeat="bill in outstandingBills.bills" style="border-bottom: 1px solid;">
-  <span>Memory use charge: </span>${{bill.memoryUsed}}
+  <span>Memory use charge: </span>${{bill.memoryUsed.toFixed(2)}}
   <br/>
-  <span>Bandwidth charge: </span>${{bill.bandwidth}}
+  <span>Bandwidth charge: </span>${{bill.bandwidth.toFixed(2)}}
   <br/>
-  <span>Put charge: </span>${{bill.puts}}
+  <span>Put charge: </span>${{bill.puts.toFixed(2)}}
   <br/>
-  <span>Get charge: </span>${{bill.gets}}
+  <span>Get charge: </span>${{bill.gets.toFixed(2)}}
   <br/>
-  <span>Base charge: </span>${{bill.baseCharge}}
+  <span>Base charge: </span>${{bill.baseCharge.toFixed(2)}}
 </div>
 <span>Total charge: </span>${{outstandingBills.totalDue}}
 <form stripe-form="payCard">
@@ -50,11 +49,12 @@
     </label>
   </div>
 
-  <span ng-for="error in alert.errors">
-    <p class="alert alert-danger" ng-show="error" ng-bind="error"></p>
-  </span>
-  <button type="btn">Submit Payment</button>
-  <button type="btn btn-success" ui-sref="^.balanceOverdue" ng-show="noticeOverdue">Back</button>
-  <button type="btn btn-success" ui-sref="^.balanceDue" ng-show="noticeDue">Back</button>
-  <button type="btn btn-success" ng-click="$parent.eventFnxs.continue()" ng-show="noticeDue">Pay Later</button>
+  <br/>
+  <alert ng-show="alert" type="{{alert.type}}">{{alert.msg}}</alert>
+  <br/>
+  <button class="btn btn-primary" ng-show="!balancePaid">Submit Payment</button>
+  <button type="button" class="btn btn-info" ui-sref="^.balanceOverdue" ng-show="$parent.data.overdue && !balancePaid">Back</button>
+  <button type="button" class="btn btn-info" ui-sref="^.balanceDue" ng-show="$parent.data.due && !balancePaid">Back</button>
+  <button type="button" class="btn btn-default" ng-click="$parent.eventFnxs.continue()" ng-show="$parent.data.due && !balancePaid">Pay Later</button>
+  <button type="button" class="btn btn-default" ng-click="$parent.eventFnxs.continue()" ng-show="balancePaid">Continue</button>
 </form>

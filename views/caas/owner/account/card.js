@@ -70,7 +70,7 @@ exports.pay = function(req, res) {
     }
 
     req.app.get('stripe').charges.create({
-      amount: parseInt(bills.totalDue),
+      amount: parseInt(bills.totalDue*100),
       currency: 'usd',
       card: req.body.card.id,
       description: "One time payment towards monthly bill"

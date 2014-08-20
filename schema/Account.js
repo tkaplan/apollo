@@ -228,15 +228,15 @@ exports = module.exports = function(app, mongoose) {
       if(bill.txn == '' && (moment().add(-1, 'days').diff(bill.due) > 0)) {
         outstandingBills.totalDue += bill.amountDue;
         outstandingBills.bills.push(bill);
-        bill.baseCharge = bill.baseCharge.toFixed(2);
-        bill.gets = bill.gets.toFixed(2);
-        bill.puts = bill.puts.toFixed(2);
-        bill.bandwidth = bill.bandwidth.toFixed(2);
-        bill.memoryUsed = bill.memoryUsed.toFixed(2);
-        bill.amountDue = bill.amountDue.toFixed(2);
+        bill.baseCharge = bill.baseCharge.toFixed(4);
+        bill.gets = bill.gets.toFixed(4);
+        bill.puts = bill.puts.toFixed(4);
+        bill.bandwidth = bill.bandwidth.toFixed(4);
+        bill.memoryUsed = bill.memoryUsed.toFixed(4);
+        bill.amountDue = bill.amountDue.toFixed(4);
       }
     });
-    outstandingBills.totalDue = outstandingBills.totalDue.toFixed(2);
+    outstandingBills.totalDue = outstandingBills.totalDue.toFixed(4);
     return outstandingBills;
   };
 

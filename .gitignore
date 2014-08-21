@@ -1,5 +1,6 @@
 bower_components/*
 public/vendor/*
+!public/vendor/caas
 node_modules/*
 !node_modules/drywall-sendmail
 !node_modules/drywall-slugify

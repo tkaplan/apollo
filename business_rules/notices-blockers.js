@@ -3,7 +3,7 @@ var _ = require('lodash'),
     moment = require('moment');
 
 // Require that req, account, and project be fully populated
-module.exports = function(req, user, account, ownerName, projectName) {
+module.exports = function(user, account, project) {
   var notifications = {},
       planName = account.paymentPlan[0].plan.name,
       billsDue = _.filter(account.billing, function(bill) { 
@@ -15,75 +15,59 @@ module.exports = function(req, user, account, ownerName, projectName) {
         return moment().add(-1,'days').diff(bill.overdue) > 0
         && bill.txn == '';
       }),
-      project = _.filter(user.projects, function(projectInst) {
-        return projectName === projectInst.name;
-      })[0],
-      defer = Q.defer();
+      projects = _.filter(user.projects, function(projectInst) {
+        return project._id.toString() === projectInst._id.toString();
+      });
 
-  req.app.models.Project.findOne({owner: project.owner}).
-  select('username').
-  exec(function(err, owner) {
-    if(err) {
-      defer.reject(err);
-    } else {
-      // Now we can retrieve the rest of our notices
+  // We must first get the owner name of the project if it exists
+  if((projects.length < 1) && account.isVerified === 'yes') {
+    notifications['accessDenied'] = {
+      type: 'blocker',
+      message: "You are not an owner nor editor of this account. For access please contact the owner of this account."
+    };
+  }
 
-      // We must first get the owner name of the project if it exists
-      if(
-          (!project && account.isVerified === 'yes') ||
-          (owner.username != ownerName)
-        ) {
-        notifications['accessDenied'] = {
-          type: 'blocker',
-          message: "You are not an owner nor editor of this account. For access please contact the owner of this account."
-        };
-      }
+  // Is balance due || Is balance overdue?
+  if(billsOverdue.length > 0 &&
+    planName != 'Freetrial' &&
+    account.isVerified === 'yes') {
 
-      // Is balance due || Is balance overdue?
-      if(billsOverdue.length > 0 &&
-        planName != 'Freetrial' &&
-        account.isVerified === 'yes') {
-
-        notifications['overdue'] = {
-          type: 'blocker',
-          message: "Your account has been disabled and your customers cannot download your content"
-        };
-      } else if(billsDue.length > 0 && planName !== 'Freetrial' && account.isVerified === 'yes') {
-        notifications['due'] = {
-          type: 'notification',
-          message: "Either your credit card has not been charged or was denied. You balance is currently due."
-        };
-      }
-      
-      // Is freetrial within 5 days of finishing || freetrial over?
-      if(planName === 'Freetrial' &&
-        account.isVerified === 'yes') {
-        
-        var daysLeft = moment(account.billing[0].due).diff(moment(), 'days');
-        if(daysLeft < 0) {
-          notifications['freetrialDone'] = {
-            type: 'blocker',
-            message: "Your freetrial is up. To allow content access for your client please buy a plan."
-          };
-        } else if(daysLeft < 6) {
-          notifications['freetrialAlmostDone'] = {
-            type: 'notification',
-            message: "Your freetrial is almost up. You have: " + daysLeft + " days left."
-          };
-        }
-      }
-
-      // Is account verified?
-      if(account.isVerified !== 'yes') {
-        notifications['verify'] = {
-          type: 'blocker',
-          message: "Please check your account for verification or re-send the verification email."
-        };
-      }
-
-      defer.resolve(notifications);
+    notifications['overdue'] = {
+      type: 'blocker',
+      message: "Your account has been disabled and your customers cannot download your content"
+    };
+  } else if(billsDue.length > 0 && planName !== 'Freetrial' && account.isVerified === 'yes') {
+    notifications['due'] = {
+      type: 'notification',
+      message: "Either your credit card has not been charged or was denied. You balance is currently due."
+    };
+  }
+  
+  // Is freetrial within 5 days of finishing || freetrial over?
+  if(planName === 'Freetrial' &&
+    account.isVerified === 'yes') {
+    
+    var daysLeft = moment(account.billing[0].due).diff(moment(), 'days');
+    if(daysLeft < 0) {
+      notifications['freetrialDone'] = {
+        type: 'blocker',
+        message: "Your freetrial is up. To allow content access for your client please buy a plan."
+      };
+    } else if(daysLeft < 6) {
+      notifications['freetrialAlmostDone'] = {
+        type: 'notification',
+        message: "Your freetrial is almost up. You have: " + daysLeft + " days left."
+      };
     }
-  });
+  }
 
-  return defer.promise;
+  // Is account verified?
+  if(account.isVerified !== 'yes') {
+    notifications['verify'] = {
+      type: 'blocker',
+      message: "Please check your account for verification or re-send the verification email."
+    };
+  }
+
+  return notifications;
 }

@@ -263,5 +263,27 @@ exports = module.exports = function(app, mongoose) {
     });
   };
 
+  projectSchema.statics.getProject = function(ownerName, projectName) {
+    var _this = this;
+    return Q.Promise(function(resolve, reject, notify) {
+      app.db.models.User.findOne({'username': ownerName}).
+      select('_id').
+      exec(function(err, user) {
+        if(err) {
+          reject(err);
+        } else {
+          app.db.models.Project.findOne({'name': projectName, 'owner': user._id}).
+          exec(function(err, project) {
+            if(err) {
+              reject(err);
+            } else {
+              resolve(project);
+            }
+          });
+        }
+      });
+    });
+  }
+
   app.db.model('Project', projectSchema);
 };

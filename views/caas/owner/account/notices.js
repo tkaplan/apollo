@@ -4,10 +4,10 @@ var business = require('../../../../business_rules/notices-blockers'),
 exports.notices = function(req, res) {
   res.header('Content-Type', 'application/json');
   var projectName = req.body.project;
+  var owner = req.body.owner;
   req.app.db.models.User.findOne({username: req.user.username}).
   populate('projects').
   exec(function(err, user) {
-
     req.app.db.models.Account.
     findById(user.roles.account).
     populate('paymentPlan.plan').
@@ -19,11 +19,22 @@ exports.notices = function(req, res) {
           }
         ));
       } else {
-        res.status(200).send(
-          JSON.stringify({
-            notices: business(user, account, projectName)
-          })
-        );
+        business(req, user, account, owner, projectName).then(
+          function(value) {
+            res.status(200).send(
+              JSON.stringify({
+                notices: value
+              })
+            );
+          },
+          function(reason) {
+            res.status(400).send(
+              JSON.stringify({
+                errors: [err]
+              })
+            );
+          }
+        )
       }
     });
   });

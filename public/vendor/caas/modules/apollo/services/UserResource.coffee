@@ -188,6 +188,7 @@ class UserResource
     noticeRes = new @accountRes
     noticeRes.apCookie = @APGlobalState.get('cookie')
     noticeRes.project = @project
+    noticeRes.owner = @owner
     noticeRes.$save
       'action': 'notices'
 

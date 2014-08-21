@@ -2641,508 +2641,6 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
 }).call(this);
 
 (function() {
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  window.apInject.APBlock = function(app) {
-    return app.directive('apBlock', [
-      '$compile', '$document', '$rootScope', '$http', 'UserResource', 'APGlobalState', function($compile, $document, $rootScope, $http, UserResource, APGlobalState) {
-        return {
-          priority: 0,
-          replace: false,
-          transclude: false,
-          restrict: 'EAC',
-          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'htmlContent\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'htmlContent\'>\n    </ap-render-html>\n  </div>\n</div>',
-          scope: {
-            classId: '@',
-            blockId: '@',
-            editor: '@'
-          },
-          link: function(scope, ele, attrs, controller) {
-            var block, saveBlock;
-            scope.htmlContent;
-            if (APGlobalState.get('set-block-content') == null) {
-              APGlobalState.set('set-block-content', {});
-            }
-            block = APGlobalState.get('set-block-content');
-            block[scope.blockId] = function(content) {
-              scope.htmlContent = content;
-            };
-            if (APGlobalState.get('get-block-content') == null) {
-              APGlobalState.set('get-block-content', {});
-            }
-            block = APGlobalState.get('get-block-content');
-            block[scope.blockId] = function(key) {
-              return scope.htmlContent;
-            };
-
-            /* Set up event handlers */
-            saveBlock = function() {
-              return UserResource.putBlock(scope.blockId, scope.htmlContent);
-            };
-            $rootScope.$on('page-save', function() {
-              return saveBlock();
-            });
-            $rootScope.$on("" + scope.blockId + "-save", function() {
-              return saveBlock();
-            });
-            scope.htmlContent = scope.htmlContent != null ? scope.htmlContent : window.apBlocks[attrs.blockId];
-            scope.mouseoverB = false;
-            this.editMode = APGlobalState.get('edit_mode');
-            if (this.editMode == null) {
-              this.editMode = false;
-            }
-            angular.element(document).bind('mousedown', function() {
-              if (scope.mouseoverB) {
-                scope.active = true;
-              } else {
-                if (scope.active) {
-                  saveBlock();
-                }
-                scope.active = false;
-              }
-              if (!scope.editMode) {
-                scope.active = false;
-              }
-              scope.htmlContent = scope.htmlContent;
-              scope.$apply();
-            });
-            scope.$on('edit_mode', function(event, value) {
-              return scope.editMode = value;
-            });
-            scope.mouseleave = function() {
-              this.removeBorder();
-              return scope.mouseoverB = false;
-            };
-            scope.mouseover = function() {
-              this.addBorder();
-              return scope.mouseoverB = true;
-            };
-            scope.removeBorder = function() {
-              ele.removeAttr('style');
-            };
-            scope.addBorder = (function(_this) {
-              return function() {
-                if (scope.editMode) {
-                  ele.attr('style', 'border-width: 2px; border-style: solid; border-color: #AAAAFF;');
-                }
-              };
-            })(this);
-          }
-        };
-      }
-    ]);
-  };
-
-}).call(this);
-
-(function() {
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  window.apInject.apRenderHtml = function(app) {
-    return app.directive('apRenderHtml', [
-      '$compile', function($compile) {
-        return {
-          priority: 0,
-          replace: true,
-          transclude: false,
-          restrict: 'EAC',
-          scope: {
-            render: '=',
-            show: '=',
-            blockId: '='
-          },
-          link: function(scope, ele, attrs, controller) {
-            scope.$watch('render', (function(_this) {
-              return function(value) {
-                ele.html(value);
-                $compile(ele.contents())(scope);
-              };
-            })(this));
-          }
-        };
-      }
-    ]);
-  };
-
-}).call(this);
-
-(function() {
-  var APCtrlLoad,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  APCtrlLoad = (function() {
-    function APCtrlLoad() {
-      this.get = __bind(this.get, this);
-      this.add = __bind(this.add, this);
-      this.set = __bind(this.set, this);
-      this.exec = __bind(this.exec, this);
-      this.state = {};
-    }
-
-    APCtrlLoad.prototype.exec = function(ctrlName, ctrl) {
-      var fxns;
-      fxns = this.state[ctrlName];
-      if (fxns instanceof Array) {
-        while (fxns.length > 0) {
-          ctrl[fxns[0]]();
-          fxns = fxns.slice(1);
-        }
-      } else if (fxns != null) {
-        ctrl[fxns]();
-        fxns = null;
-      }
-      return delete this.state[ctrlName];
-    };
-
-    APCtrlLoad.prototype.set = function(key, value) {
-      return this.state[key] = value;
-    };
-
-    APCtrlLoad.prototype.add = function(key, value) {
-      if (this.state[key] != null) {
-        if (this.state[key] instanceof Array) {
-          return this.state[key].push(value);
-        } else {
-          throw new Error('key is not an array!');
-        }
-      } else {
-        this.state[key] = [];
-        return this.state[key].push(value);
-      }
-    };
-
-    APCtrlLoad.prototype.get = function(key) {
-      return this.state[key];
-    };
-
-    return APCtrlLoad;
-
-  })();
-
-  window.apInject.APCtrlLoad = function(app) {
-    return app.service('APCtrlLoad', [APCtrlLoad]);
-  };
-
-}).call(this);
-
-(function() {
-  var APGlobalState,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  APGlobalState = (function() {
-    function APGlobalState() {
-      this.get = __bind(this.get, this);
-      this.set = __bind(this.set, this);
-      var meta, value, _i, _len;
-      this.state = {};
-      meta = document.getElementsByTagName('meta');
-      for (_i = 0, _len = meta.length; _i < _len; _i++) {
-        value = meta[_i];
-        this.state['owner'] = value.getAttribute('data-owner') != null ? value.getAttribute('data-owner') : void 0;
-        this.state['project'] = value.getAttribute('data-project') != null ? value.getAttribute('data-project') : void 0;
-        this.state['page'] = value.getAttribute('data-page') != null ? value.getAttribute('data-page') : void 0;
-      }
-    }
-
-    APGlobalState.prototype.set = function(key, value) {
-      this.state[key] = value;
-    };
-
-    APGlobalState.prototype.get = function(key) {
-      return this.state[key];
-    };
-
-    return APGlobalState;
-
-  })();
-
-  window.apInject.APGlobalState = function(app) {
-    return app.service('APGlobalState', [APGlobalState]);
-  };
-
-}).call(this);
-
-(function() {
-  var CMSContainerMQ,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-  CMSContainerMQ = (function() {
-    function CMSContainerMQ() {
-      this.get = __bind(this.get, this);
-      this.set = __bind(this.set, this);
-    }
-
-    CMSContainerMQ.prototype.set = function(scope) {
-      this.$scope = scope;
-    };
-
-    CMSContainerMQ.prototype.get = function() {
-      return this.$scope;
-    };
-
-    return CMSContainerMQ;
-
-  })();
-
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  window.apInject.CMSContainerMQ = function(app) {
-    return app.service('CMSContainerMQ', [CMSContainerMQ]);
-  };
-
-}).call(this);
-
-(function() {
-  var UserResource,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  UserResource = (function() {
-    function UserResource($resource, $cookies, APGlobalState) {
-      this.$resource = $resource;
-      this.$cookies = $cookies;
-      this.APGlobalState = APGlobalState;
-      this.deleteBlock = __bind(this.deleteBlock, this);
-      this.putBlock = __bind(this.putBlock, this);
-      this.getBlock = __bind(this.getBlock, this);
-      this.createPage = __bind(this.createPage, this);
-      this.getPage = __bind(this.getPage, this);
-      this.createProject = __bind(this.createProject, this);
-      this.forgot = __bind(this.forgot, this);
-      this.logout = __bind(this.logout, this);
-      this.login = __bind(this.login, this);
-      this.signup = __bind(this.signup, this);
-      this.signupRes = this.$resource("" + window.ap_base_uri + "/signup/");
-      this.loginRes = this.$resource("" + window.ap_base_uri + "/login/");
-      this.forgotRes = this.$resource("" + window.ap_base_uri + "/login/forgot/");
-      this.logoutRes = this.$resource("" + window.ap_base_uri + "/logout/");
-      this.projectRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project");
-      this.pageRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/page/:page");
-      this.blockRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/page/:page/block/:block");
-      this.cardRes = this.$resource("" + window.ap_base_uri + "/caas/account/card/:action");
-      this.planRes = this.$resource("" + window.ap_base_uri + "/caas/account/plan/:action");
-      this.accountRes = this.$resource("" + window.ap_base_uri + "/caas/account/:action");
-      this.owner = this.APGlobalState.get('owner');
-      this.project = this.APGlobalState.get('project');
-      this.page = this.APGlobalState.get('page');
-    }
-
-    UserResource.prototype.signup = function(email, username, password) {
-      var signupRes;
-      signupRes = new this.signupRes();
-      signupRes.email = email;
-      signupRes.username = username;
-      signupRes.password = password;
-      return signupRes.$save();
-    };
-
-    UserResource.prototype.login = function(username, password) {
-      var loginRes;
-      loginRes = new this.loginRes();
-      loginRes.username = username;
-      loginRes.password = password;
-      return loginRes.$save();
-    };
-
-    UserResource.prototype.logout = function() {
-      var logoutRes;
-      return logoutRes = this.logoutRes.get();
-    };
-
-    UserResource.prototype.forgot = function(email) {
-      var forgotRes;
-      forgotRes = new this.forgotRes();
-      forgotRes.email = email;
-      return forgotRes.$save();
-    };
-
-    UserResource.prototype.createProject = function(blocks) {
-      var projectRes;
-      projectRes = new this.projectRes();
-      projectRes.apCookie = this.APGlobalState.get('cookie');
-      projectRes.name = this.project;
-      projectRes.pages = {};
-      projectRes.pages[this.page] = {
-        blocks: {}
-      };
-      return projectRes.$save({
-        'owner': this.owner,
-        'project': this.project
-      });
-    };
-
-    UserResource.prototype.getPage = function(overload) {
-      return this.pageRes.get({
-        'owner': this.owner,
-        'project': this.project,
-        'page': this.page
-      }, overload.success, overload.fail);
-    };
-
-    UserResource.prototype.createPage = function() {
-      var pageRes;
-      pageRes = new this.pageRes();
-      pageRes.apCookie = this.APGlobalState.get('cookie');
-      pageRes[this.page] = {
-        blocks: {}
-      };
-      return pageRes.$save({
-        'owner': this.owner,
-        'project': this.project,
-        'page': this.page
-      });
-    };
-
-    UserResource.prototype.getBlock = function(block, overload) {
-      return this.blockRes.get({
-        'owner': this.owner,
-        'project': this.project,
-        'page': this.page,
-        'block': block
-      }, overload.success, overload.fail);
-    };
-
-    UserResource.prototype.putBlock = function(blockName, content) {
-      var blockRes;
-      blockRes = new this.blockRes;
-      blockRes.apCookie = this.APGlobalState.get('cookie');
-      blockRes[blockName] = {
-        content: content
-      };
-      return blockRes.$save({
-        'owner': this.owner,
-        'project': this.project,
-        'page': this.page,
-        'block': blockName
-      });
-    };
-
-    UserResource.prototype.deleteBlock = function(block) {
-      var blockRes;
-      blockRes = new this.blockRes;
-      blockRes.apCookie = this.APGlobalState.get('cookie');
-      return blockRes.$delete({
-        'owner': this.owner,
-        'project': this.project,
-        'page': this.page,
-        'block': block
-      });
-    };
-
-    UserResource.prototype.buyPlan = function(card, plan, term, name, email) {
-      var planRes;
-      planRes = new this.planRes;
-      planRes.apCookie = this.APGlobalState.get('cookie');
-      planRes.card = card;
-      planRes.plan = plan;
-      planRes.term = term;
-      planRes.name = name;
-      planRes.email = email;
-      return planRes.$save({
-        'action': 'buy'
-      });
-    };
-
-    UserResource.prototype.changePlan = function(plan, term) {
-      var planRes;
-      planRes = new this.planRes;
-      planRes.apCookie = this.APGlobalState.get('cookie');
-      planRes.plan = plan;
-      planRes.term = term;
-      return planRes.$save({
-        'action': 'change'
-      });
-    };
-
-    UserResource.prototype.getAllowedBillingPlans = function() {
-      var planRes;
-      planRes = new this.planRes;
-      planRes.apCookie = this.APGlobalState.get('cookie');
-      return planRes.$save({
-        'action': 'allowedBillingPlans'
-      });
-    };
-
-    UserResource.prototype.cancelPlan = function() {
-      var planRes;
-      planRes = new this.planRes;
-      planRes.apCookie = this.APGlobalState.get('cookie');
-      return planRes.$save({
-        'action': 'cancel'
-      });
-    };
-
-    UserResource.prototype.updateCard = function(card, name, email) {
-      var cardRes;
-      cardRes = new this.cardRes;
-      cardRes.apCookie = this.APGlobalState.get('cookie');
-      cardRes.card = card;
-      cardRes.name = name;
-      cardRes.email = email;
-      return cardRes.$save({
-        'action': 'update'
-      });
-    };
-
-    UserResource.prototype.payCard = function(card, name, email) {
-      var cardRes;
-      cardRes = new this.cardRes;
-      cardRes.apCookie = this.APGlobalState.get('cookie');
-      cardRes.name = name;
-      cardRes.email = email;
-      cardRes.card = card;
-      return cardRes.$save({
-        'action': 'pay'
-      });
-    };
-
-    UserResource.prototype.getOutstandingBills = function() {
-      var cardRes;
-      cardRes = new this.cardRes;
-      cardRes.apCookie = this.APGlobalState.get('cookie');
-      return cardRes.$save({
-        'action': 'getOutstandingBills'
-      });
-    };
-
-    UserResource.prototype.getNotices = function() {
-      var noticeRes;
-      noticeRes = new this.accountRes;
-      noticeRes.apCookie = this.APGlobalState.get('cookie');
-      noticeRes.project = this.project;
-      return noticeRes.$save({
-        'action': 'notices'
-      });
-    };
-
-    return UserResource;
-
-  })();
-
-  window.apInject.UserResource = function(app) {
-    return app.service('UserResource', ['$resource', '$cookies', 'APGlobalState', UserResource]);
-  };
-
-}).call(this);
-
-(function() {
   var CMSAccountCtrl;
 
   CMSAccountCtrl = (function() {
@@ -3634,12 +3132,14 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
   var CMSNoticesCtrl;
 
   CMSNoticesCtrl = (function() {
-    function CMSNoticesCtrl($scope, $state, $window, UserResource) {
+    function CMSNoticesCtrl($scope, $rootScope, $state, $window, UserResource, APGlobalState) {
       var ctrl;
       this.$scope = $scope;
+      this.$rootScope = $rootScope;
       this.$state = $state;
       this.$window = $window;
       this.UserResource = UserResource;
+      this.APGlobalState = APGlobalState;
       ctrl = this;
       $scope.eventFnxs = {};
       $scope.data = {};
@@ -3762,6 +3262,8 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
 
     CMSNoticesCtrl.prototype.showToolbar = function() {
       this.$scope.$parent.$parent.$parent.$parent['edit_mode'] = true;
+      this.$rootScope.$broadcast('edit_mode', true);
+      this.APGlobalState.set('edit_mode', true);
       this.$window.scrollTo(0, 0);
       return this.$state.go('container.view');
     };
@@ -3779,7 +3281,7 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
   }
 
   window.apInject.CMSNoticesCtrl = function(app) {
-    return app.controller('CMSNoticesCtrl', ['$scope', '$state', '$window', 'UserResource', CMSNoticesCtrl]);
+    return app.controller('CMSNoticesCtrl', ['$scope', '$rootScope', '$state', '$window', 'UserResource', 'APGlobalState', CMSNoticesCtrl]);
   };
 
   window.CMSControllers.CMSNoticesCtrl = CMSNoticesCtrl;
@@ -4060,6 +3562,509 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
   };
 
   window.CMSControllers.CMSVerifyCtrl = CMSVerifyCtrl;
+
+}).call(this);
+
+(function() {
+  var APCtrlLoad,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  APCtrlLoad = (function() {
+    function APCtrlLoad() {
+      this.get = __bind(this.get, this);
+      this.add = __bind(this.add, this);
+      this.set = __bind(this.set, this);
+      this.exec = __bind(this.exec, this);
+      this.state = {};
+    }
+
+    APCtrlLoad.prototype.exec = function(ctrlName, ctrl) {
+      var fxns;
+      fxns = this.state[ctrlName];
+      if (fxns instanceof Array) {
+        while (fxns.length > 0) {
+          ctrl[fxns[0]]();
+          fxns = fxns.slice(1);
+        }
+      } else if (fxns != null) {
+        ctrl[fxns]();
+        fxns = null;
+      }
+      return delete this.state[ctrlName];
+    };
+
+    APCtrlLoad.prototype.set = function(key, value) {
+      return this.state[key] = value;
+    };
+
+    APCtrlLoad.prototype.add = function(key, value) {
+      if (this.state[key] != null) {
+        if (this.state[key] instanceof Array) {
+          return this.state[key].push(value);
+        } else {
+          throw new Error('key is not an array!');
+        }
+      } else {
+        this.state[key] = [];
+        return this.state[key].push(value);
+      }
+    };
+
+    APCtrlLoad.prototype.get = function(key) {
+      return this.state[key];
+    };
+
+    return APCtrlLoad;
+
+  })();
+
+  window.apInject.APCtrlLoad = function(app) {
+    return app.service('APCtrlLoad', [APCtrlLoad]);
+  };
+
+}).call(this);
+
+(function() {
+  var APGlobalState,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  APGlobalState = (function() {
+    function APGlobalState() {
+      this.get = __bind(this.get, this);
+      this.set = __bind(this.set, this);
+      var meta, value, _i, _len;
+      this.state = {};
+      meta = document.getElementsByTagName('meta');
+      for (_i = 0, _len = meta.length; _i < _len; _i++) {
+        value = meta[_i];
+        this.state['owner'] = value.getAttribute('data-owner') != null ? value.getAttribute('data-owner') : void 0;
+        this.state['project'] = value.getAttribute('data-project') != null ? value.getAttribute('data-project') : void 0;
+        this.state['page'] = value.getAttribute('data-page') != null ? value.getAttribute('data-page') : void 0;
+      }
+    }
+
+    APGlobalState.prototype.set = function(key, value) {
+      this.state[key] = value;
+    };
+
+    APGlobalState.prototype.get = function(key) {
+      return this.state[key];
+    };
+
+    return APGlobalState;
+
+  })();
+
+  window.apInject.APGlobalState = function(app) {
+    return app.service('APGlobalState', [APGlobalState]);
+  };
+
+}).call(this);
+
+(function() {
+  var CMSContainerMQ,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  CMSContainerMQ = (function() {
+    function CMSContainerMQ() {
+      this.get = __bind(this.get, this);
+      this.set = __bind(this.set, this);
+    }
+
+    CMSContainerMQ.prototype.set = function(scope) {
+      this.$scope = scope;
+    };
+
+    CMSContainerMQ.prototype.get = function() {
+      return this.$scope;
+    };
+
+    return CMSContainerMQ;
+
+  })();
+
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  window.apInject.CMSContainerMQ = function(app) {
+    return app.service('CMSContainerMQ', [CMSContainerMQ]);
+  };
+
+}).call(this);
+
+(function() {
+  var UserResource,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  UserResource = (function() {
+    function UserResource($resource, $cookies, APGlobalState) {
+      this.$resource = $resource;
+      this.$cookies = $cookies;
+      this.APGlobalState = APGlobalState;
+      this.deleteBlock = __bind(this.deleteBlock, this);
+      this.putBlock = __bind(this.putBlock, this);
+      this.getBlock = __bind(this.getBlock, this);
+      this.createPage = __bind(this.createPage, this);
+      this.getPage = __bind(this.getPage, this);
+      this.createProject = __bind(this.createProject, this);
+      this.forgot = __bind(this.forgot, this);
+      this.logout = __bind(this.logout, this);
+      this.login = __bind(this.login, this);
+      this.signup = __bind(this.signup, this);
+      this.signupRes = this.$resource("" + window.ap_base_uri + "/signup/");
+      this.loginRes = this.$resource("" + window.ap_base_uri + "/login/");
+      this.forgotRes = this.$resource("" + window.ap_base_uri + "/login/forgot/");
+      this.logoutRes = this.$resource("" + window.ap_base_uri + "/logout/");
+      this.projectRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project");
+      this.pageRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/page/:page");
+      this.blockRes = this.$resource("" + window.ap_base_uri + "/caas/owner/:owner/project/:project/page/:page/block/:block");
+      this.cardRes = this.$resource("" + window.ap_base_uri + "/caas/account/card/:action");
+      this.planRes = this.$resource("" + window.ap_base_uri + "/caas/account/plan/:action");
+      this.accountRes = this.$resource("" + window.ap_base_uri + "/caas/account/:action");
+      this.owner = this.APGlobalState.get('owner');
+      this.project = this.APGlobalState.get('project');
+      this.page = this.APGlobalState.get('page');
+    }
+
+    UserResource.prototype.signup = function(email, username, password) {
+      var signupRes;
+      signupRes = new this.signupRes();
+      signupRes.email = email;
+      signupRes.username = username;
+      signupRes.password = password;
+      return signupRes.$save();
+    };
+
+    UserResource.prototype.login = function(username, password) {
+      var loginRes;
+      loginRes = new this.loginRes();
+      loginRes.username = username;
+      loginRes.password = password;
+      return loginRes.$save();
+    };
+
+    UserResource.prototype.logout = function() {
+      var logoutRes;
+      return logoutRes = this.logoutRes.get();
+    };
+
+    UserResource.prototype.forgot = function(email) {
+      var forgotRes;
+      forgotRes = new this.forgotRes();
+      forgotRes.email = email;
+      return forgotRes.$save();
+    };
+
+    UserResource.prototype.createProject = function(blocks) {
+      var projectRes;
+      projectRes = new this.projectRes();
+      projectRes.apCookie = this.APGlobalState.get('cookie');
+      projectRes.name = this.project;
+      projectRes.pages = {};
+      projectRes.pages[this.page] = {
+        blocks: {}
+      };
+      return projectRes.$save({
+        'owner': this.owner,
+        'project': this.project
+      });
+    };
+
+    UserResource.prototype.getPage = function(overload) {
+      return this.pageRes.get({
+        'owner': this.owner,
+        'project': this.project,
+        'page': this.page
+      }, overload.success, overload.fail);
+    };
+
+    UserResource.prototype.createPage = function() {
+      var pageRes;
+      pageRes = new this.pageRes();
+      pageRes.apCookie = this.APGlobalState.get('cookie');
+      pageRes[this.page] = {
+        blocks: {}
+      };
+      return pageRes.$save({
+        'owner': this.owner,
+        'project': this.project,
+        'page': this.page
+      });
+    };
+
+    UserResource.prototype.getBlock = function(block, overload) {
+      return this.blockRes.get({
+        'owner': this.owner,
+        'project': this.project,
+        'page': this.page,
+        'block': block
+      }, overload.success, overload.fail);
+    };
+
+    UserResource.prototype.putBlock = function(blockName, content) {
+      var blockRes;
+      blockRes = new this.blockRes;
+      blockRes.apCookie = this.APGlobalState.get('cookie');
+      blockRes[blockName] = {
+        content: content
+      };
+      return blockRes.$save({
+        'owner': this.owner,
+        'project': this.project,
+        'page': this.page,
+        'block': blockName
+      });
+    };
+
+    UserResource.prototype.deleteBlock = function(block) {
+      var blockRes;
+      blockRes = new this.blockRes;
+      blockRes.apCookie = this.APGlobalState.get('cookie');
+      return blockRes.$delete({
+        'owner': this.owner,
+        'project': this.project,
+        'page': this.page,
+        'block': block
+      });
+    };
+
+    UserResource.prototype.buyPlan = function(card, plan, term, name, email) {
+      var planRes;
+      planRes = new this.planRes;
+      planRes.apCookie = this.APGlobalState.get('cookie');
+      planRes.card = card;
+      planRes.plan = plan;
+      planRes.term = term;
+      planRes.name = name;
+      planRes.email = email;
+      return planRes.$save({
+        'action': 'buy'
+      });
+    };
+
+    UserResource.prototype.changePlan = function(plan, term) {
+      var planRes;
+      planRes = new this.planRes;
+      planRes.apCookie = this.APGlobalState.get('cookie');
+      planRes.plan = plan;
+      planRes.term = term;
+      return planRes.$save({
+        'action': 'change'
+      });
+    };
+
+    UserResource.prototype.getAllowedBillingPlans = function() {
+      var planRes;
+      planRes = new this.planRes;
+      planRes.apCookie = this.APGlobalState.get('cookie');
+      return planRes.$save({
+        'action': 'allowedBillingPlans'
+      });
+    };
+
+    UserResource.prototype.cancelPlan = function() {
+      var planRes;
+      planRes = new this.planRes;
+      planRes.apCookie = this.APGlobalState.get('cookie');
+      return planRes.$save({
+        'action': 'cancel'
+      });
+    };
+
+    UserResource.prototype.updateCard = function(card, name, email) {
+      var cardRes;
+      cardRes = new this.cardRes;
+      cardRes.apCookie = this.APGlobalState.get('cookie');
+      cardRes.card = card;
+      cardRes.name = name;
+      cardRes.email = email;
+      return cardRes.$save({
+        'action': 'update'
+      });
+    };
+
+    UserResource.prototype.payCard = function(card, name, email) {
+      var cardRes;
+      cardRes = new this.cardRes;
+      cardRes.apCookie = this.APGlobalState.get('cookie');
+      cardRes.name = name;
+      cardRes.email = email;
+      cardRes.card = card;
+      return cardRes.$save({
+        'action': 'pay'
+      });
+    };
+
+    UserResource.prototype.getOutstandingBills = function() {
+      var cardRes;
+      cardRes = new this.cardRes;
+      cardRes.apCookie = this.APGlobalState.get('cookie');
+      return cardRes.$save({
+        'action': 'getOutstandingBills'
+      });
+    };
+
+    UserResource.prototype.getNotices = function() {
+      var noticeRes;
+      noticeRes = new this.accountRes;
+      noticeRes.apCookie = this.APGlobalState.get('cookie');
+      noticeRes.project = this.project;
+      noticeRes.owner = this.owner;
+      return noticeRes.$save({
+        'action': 'notices'
+      });
+    };
+
+    return UserResource;
+
+  })();
+
+  window.apInject.UserResource = function(app) {
+    return app.service('UserResource', ['$resource', '$cookies', 'APGlobalState', UserResource]);
+  };
+
+}).call(this);
+
+(function() {
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  window.apInject.APBlock = function(app) {
+    return app.directive('apBlock', [
+      '$compile', '$document', '$rootScope', '$http', 'UserResource', 'APGlobalState', function($compile, $document, $rootScope, $http, UserResource, APGlobalState) {
+        return {
+          priority: 0,
+          replace: false,
+          transclude: false,
+          restrict: 'EAC',
+          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'htmlContent\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'htmlContent\'>\n    </ap-render-html>\n  </div>\n</div>',
+          scope: {
+            classId: '@',
+            blockId: '@',
+            editor: '@'
+          },
+          link: function(scope, ele, attrs, controller) {
+            var block, saveBlock;
+            scope.htmlContent;
+            if (APGlobalState.get('set-block-content') == null) {
+              APGlobalState.set('set-block-content', {});
+            }
+            block = APGlobalState.get('set-block-content');
+            block[scope.blockId] = function(content) {
+              scope.htmlContent = content;
+            };
+            if (APGlobalState.get('get-block-content') == null) {
+              APGlobalState.set('get-block-content', {});
+            }
+            block = APGlobalState.get('get-block-content');
+            block[scope.blockId] = function(key) {
+              return scope.htmlContent;
+            };
+
+            /* Set up event handlers */
+            saveBlock = function() {
+              return UserResource.putBlock(scope.blockId, scope.htmlContent);
+            };
+            $rootScope.$on('page-save', function() {
+              return saveBlock();
+            });
+            $rootScope.$on("" + scope.blockId + "-save", function() {
+              return saveBlock();
+            });
+            scope.htmlContent = scope.htmlContent != null ? scope.htmlContent : window.apBlocks[attrs.blockId];
+            scope.mouseoverB = false;
+            this.editMode = APGlobalState.get('edit_mode');
+            if (this.editMode == null) {
+              this.editMode = false;
+            }
+            angular.element(document).bind('mousedown', function() {
+              if (scope.mouseoverB) {
+                scope.active = true;
+              } else {
+                if (scope.active) {
+                  saveBlock();
+                }
+                scope.active = false;
+              }
+              if (!scope.editMode) {
+                scope.active = false;
+              }
+              scope.htmlContent = scope.htmlContent;
+              scope.$apply();
+            });
+            scope.$on('edit_mode', function(event, value) {
+              return scope.editMode = value;
+            });
+            scope.mouseleave = function() {
+              this.removeBorder();
+              return scope.mouseoverB = false;
+            };
+            scope.mouseover = function() {
+              this.addBorder();
+              return scope.mouseoverB = true;
+            };
+            scope.removeBorder = function() {
+              ele.removeAttr('style');
+            };
+            scope.addBorder = (function(_this) {
+              return function() {
+                if (scope.editMode) {
+                  ele.attr('style', 'border-width: 2px; border-style: solid; border-color: #AAAAFF;');
+                }
+              };
+            })(this);
+          }
+        };
+      }
+    ]);
+  };
+
+}).call(this);
+
+(function() {
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  window.apInject.apRenderHtml = function(app) {
+    return app.directive('apRenderHtml', [
+      '$compile', function($compile) {
+        return {
+          priority: 0,
+          replace: true,
+          transclude: false,
+          restrict: 'EAC',
+          scope: {
+            render: '=',
+            show: '=',
+            blockId: '='
+          },
+          link: function(scope, ele, attrs, controller) {
+            scope.$watch('render', (function(_this) {
+              return function(value) {
+                ele.html(value);
+                $compile(ele.contents())(scope);
+              };
+            })(this));
+          }
+        };
+      }
+    ]);
+  };
 
 }).call(this);
 

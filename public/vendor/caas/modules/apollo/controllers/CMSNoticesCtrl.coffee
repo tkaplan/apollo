@@ -1,5 +1,5 @@
 class CMSNoticesCtrl
-  constructor: (@$scope, @$state, @$window, @UserResource) ->
+  constructor: (@$scope, @$rootScope, @$state, @$window, @UserResource, @APGlobalState) ->
     ctrl = @
     $scope.eventFnxs = {}
     $scope.data = {}
@@ -119,6 +119,8 @@ class CMSNoticesCtrl
 
   showToolbar: () ->
     @$scope.$parent.$parent.$parent.$parent['edit_mode'] = true
+    @$rootScope.$broadcast 'edit_mode', true
+    @APGlobalState.set 'edit_mode', true
     @$window.scrollTo 0, 0
     @$state.go 'container.view'
 
@@ -131,9 +133,11 @@ if !window.CMSControllers?
 window.apInject.CMSNoticesCtrl = (app) ->
   app.controller 'CMSNoticesCtrl', [
     '$scope'
+    '$rootScope'
     '$state'
     '$window'
     'UserResource'
+    'APGlobalState'
     CMSNoticesCtrl
   ]
 

@@ -1,44 +1,36 @@
 <div>
-	<h3>Add User</h3>
-	<input type="text" class="form-class" placeholder="Email or Name"></input>
-	<button class="btn">Send Invite</button>
+<angucomplete id="apollo-editors" placeholder="Email or Username" selectedObject="user" url="http://localhost:3000/caas/search/user/" titlefield="username,email" minlength="1" inputclass="angucomplete-form-control"/>
 </div>
+<br ng-show="alert.msg"/>
+<alert ng-show="alert.msg" type="{{alert.type}}">{{alert.msg}}</alert>
+<br/>
 <div>
-	<br/>
-	<br/>
 	<table class="table table-bordered">
 		<thead>
 			<tr>
 				<td>
-					User
+					Editors
 				</td>
 				<td>
-					Read
+					Username
 				</td>
 				<td>
-					Write
-				</td>
-				<td>
-					Admin
+					Email
 				</td>
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
+			<tr ng-repeat="editor in editors">
 				<td>
-					<a href="#/ap-views/manage-editors">
-						<span class="glyphicon glyphicon-remove"></span>
+					<a ui-sref=".">
+						<span ng-click="remove(editor.username)" class="apollo-hand glyphicon glyphicon-remove"></span>
 					</a>
-					Taylor Kaplan
 				</td>
 				<td>
-					X
+					{{editor.username}}
 				</td>
 				<td>
-					X
-				</td>
-				<td>
-					X
+					{{editor.email}}
 				</td>
 			</tr>
 		</tbody>

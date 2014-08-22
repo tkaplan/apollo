@@ -13,6 +13,7 @@ documentStatusId = setInterval () ->
       'textAngular'
       'ngResource'
       'ngCookies'
+      'angucomplete'
       'angularPayments'
     ])
 

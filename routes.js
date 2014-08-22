@@ -205,7 +205,11 @@ exports = module.exports = function(app, passport) {
   //app.get('/owner/:owner/project/:project', require('./views/caas/owner/project').getProject);
   //app.options('/owner/:owner/project/:project', cors());
   app.post('/caas/owner/:owner/project/:project', require('./views/caas/owner/project').createProject);
-
+  // project editors
+  app.post('/caas/onwer/:owner/project/:project/editor/*', ensureAuthenticatedCaas);
+  app.post('/caas/owner/:owner/project/:project/editor/:editor/add', require('./views/caas/owner/project/editors').add);
+  app.post('/caas/owner/:owner/project/:project/editor/:editor/remove', require('./views/caas/owner/project/editors').remove);
+  app.post('/caas/owner/:owner/project/:project/editor/list', require('./views/caas/owner/project/editors').list);
 
   //caas page
   app.post('/caas/owner/:owner/project/:project/page/:page', ensureAuthenticatedCaas);
@@ -234,6 +238,9 @@ exports = module.exports = function(app, passport) {
   app.post('/caas/account/card/update', require('./views/caas/owner/account/card').update);
   app.post('/caas/account/card/pay', require('./views/caas/owner/account/card').pay);
   app.post('/caas/account/card/getOutstandingBills', require('./views/caas/owner/account/card').getOutstandingBills);
+
+  // autocomplete
+  app.get('/caas/search/user/:user', require('./views/caas/search/search').user.find);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

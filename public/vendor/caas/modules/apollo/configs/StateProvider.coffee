@@ -89,7 +89,7 @@ class StateProvider
       views: {
         'modal@': {
           templateUrl: "#{window.ap_base_uri}/ap-views/manage-editors.html"
-          controller: window.CMSControllers.CMSPendingCtrl
+          controller: window.CMSControllers.CMSManageEditorsCtrl
         }
       }
     })

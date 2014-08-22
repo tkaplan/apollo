@@ -8,6 +8,8 @@ class UserResource
     @forgotRes = @$resource "#{window.ap_base_uri}/login/forgot/"
     @logoutRes = @$resource "#{window.ap_base_uri}/logout/"
     @projectRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project"
+    @editorRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/editor/:editor/:action"
+    @editorListRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/editor/list"
     @pageRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/page/:page"
     @blockRes = @$resource "#{window.ap_base_uri}/caas/owner/:owner/project/:project/page/:page/block/:block"
     @cardRes = @$resource "#{window.ap_base_uri}/caas/account/card/:action"
@@ -95,7 +97,7 @@ class UserResource
   # Returns a promise
   #owner, projectName, pageName
   putBlock: (blockName, content) =>
-    blockRes = new @blockRes
+    blockRes = new @blockRes()
     blockRes.apCookie = @APGlobalState.get('cookie')
     blockRes[blockName] = {
       content: content
@@ -121,7 +123,7 @@ class UserResource
   # Plan Resources
   #===============
   buyPlan: (card, plan, term, name, email) ->
-    planRes = new @planRes
+    planRes = new @planRes()
     planRes.apCookie = @APGlobalState.get('cookie')
     planRes.card = card
     planRes.plan = plan
@@ -132,7 +134,7 @@ class UserResource
       'action': 'buy'
 
   changePlan: (plan, term) ->
-    planRes = new @planRes
+    planRes = new @planRes()
     planRes.apCookie = @APGlobalState.get('cookie')
     planRes.plan = plan
     planRes.term = term
@@ -140,7 +142,7 @@ class UserResource
       'action': 'change'
 
   getAllowedBillingPlans: () ->
-    planRes = new @planRes
+    planRes = new @planRes()
     planRes.apCookie = @APGlobalState.get('cookie')
 
     # We are not saving anything
@@ -155,7 +157,7 @@ class UserResource
   # Plan Resources
   #===============
   cancelPlan: () ->
-    planRes = new @planRes
+    planRes = new @planRes()
     planRes.apCookie = @APGlobalState.get('cookie')
     planRes.$save
       'action': 'cancel'
@@ -170,7 +172,7 @@ class UserResource
       'action': 'update'
 
   payCard: (card, name, email) ->
-    cardRes = new @cardRes
+    cardRes = new @cardRes()
     cardRes.apCookie = @APGlobalState.get('cookie')
     cardRes.name = name
     cardRes.email = email
@@ -179,18 +181,43 @@ class UserResource
       'action': 'pay'
 
   getOutstandingBills: () ->
-    cardRes = new @cardRes
+    cardRes = new @cardRes()
     cardRes.apCookie = @APGlobalState.get('cookie')
     cardRes.$save
       'action': 'getOutstandingBills'
 
   getNotices: () ->
-    noticeRes = new @accountRes
+    noticeRes = new @accountRes()
     noticeRes.apCookie = @APGlobalState.get('cookie')
     noticeRes.project = @project
     noticeRes.owner = @owner
     noticeRes.$save
       'action': 'notices'
+
+  addEditor: (username) ->
+    editorRes = new @editorRes()
+    editorRes.apCookie = @APGlobalState.get('cookie')
+    editorRes.$save
+      'owner': @owner
+      'project': @project
+      'editor': username
+      'action': 'add'
+
+  removeEditor: (username) ->
+    editorRes = new @editorRes()
+    editorRes.apCookie = @APGlobalState.get('cookie')
+    editorRes.$save
+      'owner': @owner
+      'project': @project
+      'editor': username
+      'action': 'remove'
+
+  listEditors: () ->
+    editorRes = new @editorListRes()
+    editorRes.apCookie = @APGlobalState.get('cookie')
+    editorRes.$save
+      'owner': @owner
+      'project': @project
 
 window.apInject.UserResource = (app) ->
   app.service 'UserResource', [

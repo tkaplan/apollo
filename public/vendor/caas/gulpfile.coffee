@@ -30,6 +30,7 @@ src_files =
     'bower_components/q/q.js'
     'bower_components/lodash/dist/lodash.min.js'
     'bower_components/angular/angular.min.js'
+    'misc/angucomplete/angucomplete.js'
     'bower_components/angular-resource/angular-resource.min.js'
     'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
     'bower_components/angular-ui-router/release/angular-ui-router.min.js'
@@ -40,6 +41,7 @@ src_files =
     'dist/all.js'
   ]
   bower_css: [
+    'misc/angucomplete/angucomplete.css'
     'bower_components/bootstrap/dist/css/test.css',
     'dist/all.css'
   ]

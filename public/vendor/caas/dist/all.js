@@ -2889,6 +2889,136 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
 }).call(this);
 
 (function() {
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  window.apInject.APBlock = function(app) {
+    return app.directive('apBlock', [
+      '$compile', '$document', '$rootScope', '$http', 'UserResource', 'APGlobalState', function($compile, $document, $rootScope, $http, UserResource, APGlobalState) {
+        return {
+          priority: 0,
+          replace: false,
+          transclude: false,
+          restrict: 'EAC',
+          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'htmlContent\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'htmlContent\'>\n    </ap-render-html>\n  </div>\n</div>',
+          scope: {
+            classId: '@',
+            blockId: '@',
+            editor: '@'
+          },
+          link: function(scope, ele, attrs, controller) {
+            var block, saveBlock;
+            scope.htmlContent;
+            if (APGlobalState.get('set-block-content') == null) {
+              APGlobalState.set('set-block-content', {});
+            }
+            block = APGlobalState.get('set-block-content');
+            block[scope.blockId] = function(content) {
+              scope.htmlContent = content;
+            };
+            if (APGlobalState.get('get-block-content') == null) {
+              APGlobalState.set('get-block-content', {});
+            }
+            block = APGlobalState.get('get-block-content');
+            block[scope.blockId] = function(key) {
+              return scope.htmlContent;
+            };
+
+            /* Set up event handlers */
+            saveBlock = function() {
+              return UserResource.putBlock(scope.blockId, scope.htmlContent);
+            };
+            $rootScope.$on('page-save', function() {
+              return saveBlock();
+            });
+            $rootScope.$on("" + scope.blockId + "-save", function() {
+              return saveBlock();
+            });
+            scope.htmlContent = scope.htmlContent != null ? scope.htmlContent : window.apBlocks[attrs.blockId];
+            scope.mouseoverB = false;
+            this.editMode = APGlobalState.get('edit_mode');
+            if (this.editMode == null) {
+              this.editMode = false;
+            }
+            angular.element(document).bind('mousedown', function() {
+              if (scope.mouseoverB) {
+                scope.active = true;
+              } else {
+                if (scope.active) {
+                  saveBlock();
+                }
+                scope.active = false;
+              }
+              if (!scope.editMode) {
+                scope.active = false;
+              }
+              scope.htmlContent = scope.htmlContent;
+              scope.$apply();
+            });
+            scope.$on('edit_mode', function(event, value) {
+              return scope.editMode = value;
+            });
+            scope.mouseleave = function() {
+              this.removeBorder();
+              return scope.mouseoverB = false;
+            };
+            scope.mouseover = function() {
+              this.addBorder();
+              return scope.mouseoverB = true;
+            };
+            scope.removeBorder = function() {
+              ele.removeAttr('style');
+            };
+            scope.addBorder = (function(_this) {
+              return function() {
+                if (scope.editMode) {
+                  ele.attr('style', 'border-width: 2px; border-style: solid; border-color: #AAAAFF;');
+                }
+              };
+            })(this);
+          }
+        };
+      }
+    ]);
+  };
+
+}).call(this);
+
+(function() {
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  window.apInject.apRenderHtml = function(app) {
+    return app.directive('apRenderHtml', [
+      '$compile', function($compile) {
+        return {
+          priority: 0,
+          replace: true,
+          transclude: false,
+          restrict: 'EAC',
+          scope: {
+            render: '=',
+            show: '=',
+            blockId: '='
+          },
+          link: function(scope, ele, attrs, controller) {
+            scope.$watch('render', (function(_this) {
+              return function(value) {
+                ele.html(value);
+                $compile(ele.contents())(scope);
+              };
+            })(this));
+          }
+        };
+      }
+    ]);
+  };
+
+}).call(this);
+
+(function() {
   var CMSAccountCtrl;
 
   CMSAccountCtrl = (function() {
@@ -3394,13 +3524,13 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
             $scope.alert.type = 'success';
             return $timeout(function() {
               return $scope.alert.msg = null;
-            }, 3000);
+            }, 5000);
           }, function(reason) {
             $scope.alert.msg = reason;
             $scope.alert.type = 'danger';
             return $timeout(function() {
               return $scope.alert.msg = null;
-            }, 3000);
+            }, 5000);
           });
         }
       });
@@ -3415,21 +3545,24 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
           $scope.alert.type = 'success';
           return $timeout(function() {
             return $scope.alert.msg = null;
-          }, 3000);
+          }, 5000);
         }, function(reason) {
           $scope.alert.msg = reason;
           $scope.alert.type = 'danger';
           return $timeout(function() {
             return $scope.alert.msg = null;
-          }, 3000);
+          }, 5000);
         });
       };
       (function() {
-        return UserResource.listEditors().then(function(editors) {
-          return $scope.editors = editors;
-        }, function() {
+        return UserResource.listEditors().then(function(data) {
+          return $scope.editors = data.editors;
+        }, function(reason) {
           $scope.alert.msg = 'Error: could not retrieve editors';
-          return $scope.alert.type = 'danger';
+          $scope.alert.type = 'danger';
+          return $timeout(function() {
+            return $scope.alert.msg = null;
+          }, 5000);
         });
       })();
     }
@@ -3888,136 +4021,6 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
   };
 
   window.CMSControllers.CMSVerifyCtrl = CMSVerifyCtrl;
-
-}).call(this);
-
-(function() {
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  window.apInject.APBlock = function(app) {
-    return app.directive('apBlock', [
-      '$compile', '$document', '$rootScope', '$http', 'UserResource', 'APGlobalState', function($compile, $document, $rootScope, $http, UserResource, APGlobalState) {
-        return {
-          priority: 0,
-          replace: false,
-          transclude: false,
-          restrict: 'EAC',
-          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'htmlContent\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'htmlContent\'>\n    </ap-render-html>\n  </div>\n</div>',
-          scope: {
-            classId: '@',
-            blockId: '@',
-            editor: '@'
-          },
-          link: function(scope, ele, attrs, controller) {
-            var block, saveBlock;
-            scope.htmlContent;
-            if (APGlobalState.get('set-block-content') == null) {
-              APGlobalState.set('set-block-content', {});
-            }
-            block = APGlobalState.get('set-block-content');
-            block[scope.blockId] = function(content) {
-              scope.htmlContent = content;
-            };
-            if (APGlobalState.get('get-block-content') == null) {
-              APGlobalState.set('get-block-content', {});
-            }
-            block = APGlobalState.get('get-block-content');
-            block[scope.blockId] = function(key) {
-              return scope.htmlContent;
-            };
-
-            /* Set up event handlers */
-            saveBlock = function() {
-              return UserResource.putBlock(scope.blockId, scope.htmlContent);
-            };
-            $rootScope.$on('page-save', function() {
-              return saveBlock();
-            });
-            $rootScope.$on("" + scope.blockId + "-save", function() {
-              return saveBlock();
-            });
-            scope.htmlContent = scope.htmlContent != null ? scope.htmlContent : window.apBlocks[attrs.blockId];
-            scope.mouseoverB = false;
-            this.editMode = APGlobalState.get('edit_mode');
-            if (this.editMode == null) {
-              this.editMode = false;
-            }
-            angular.element(document).bind('mousedown', function() {
-              if (scope.mouseoverB) {
-                scope.active = true;
-              } else {
-                if (scope.active) {
-                  saveBlock();
-                }
-                scope.active = false;
-              }
-              if (!scope.editMode) {
-                scope.active = false;
-              }
-              scope.htmlContent = scope.htmlContent;
-              scope.$apply();
-            });
-            scope.$on('edit_mode', function(event, value) {
-              return scope.editMode = value;
-            });
-            scope.mouseleave = function() {
-              this.removeBorder();
-              return scope.mouseoverB = false;
-            };
-            scope.mouseover = function() {
-              this.addBorder();
-              return scope.mouseoverB = true;
-            };
-            scope.removeBorder = function() {
-              ele.removeAttr('style');
-            };
-            scope.addBorder = (function(_this) {
-              return function() {
-                if (scope.editMode) {
-                  ele.attr('style', 'border-width: 2px; border-style: solid; border-color: #AAAAFF;');
-                }
-              };
-            })(this);
-          }
-        };
-      }
-    ]);
-  };
-
-}).call(this);
-
-(function() {
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  window.apInject.apRenderHtml = function(app) {
-    return app.directive('apRenderHtml', [
-      '$compile', function($compile) {
-        return {
-          priority: 0,
-          replace: true,
-          transclude: false,
-          restrict: 'EAC',
-          scope: {
-            render: '=',
-            show: '=',
-            blockId: '='
-          },
-          link: function(scope, ele, attrs, controller) {
-            scope.$watch('render', (function(_this) {
-              return function(value) {
-                ele.html(value);
-                $compile(ele.contents())(scope);
-              };
-            })(this));
-          }
-        };
-      }
-    ]);
-  };
 
 }).call(this);
 

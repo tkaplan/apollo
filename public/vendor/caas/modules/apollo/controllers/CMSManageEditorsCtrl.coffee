@@ -11,13 +11,13 @@ class CMSManageEditorsCtrl
             $scope.alert.type = 'success'
             $timeout () ->
               $scope.alert.msg = null
-            , 3000
+            , 5000
           (reason) ->
             $scope.alert.msg = reason
             $scope.alert.type = 'danger'
             $timeout () ->
               $scope.alert.msg = null
-            , 3000
+            , 5000
         )
 
     $scope.remove = (username) ->
@@ -30,22 +30,25 @@ class CMSManageEditorsCtrl
           $scope.alert.type = 'success'
           $timeout () ->
             $scope.alert.msg = null
-          , 3000
+          , 5000
         (reason) ->
           $scope.alert.msg = reason
           $scope.alert.type = 'danger'
           $timeout () ->
             $scope.alert.msg = null
-          , 3000
+          , 5000
       )
 
     (() ->
       UserResource.listEditors().then(
-        (editors) ->
-          $scope.editors = editors
-        () ->
+        (data) ->
+          $scope.editors = data.editors
+        (reason) ->
           $scope.alert.msg = 'Error: could not retrieve editors'
           $scope.alert.type = 'danger'
+          $timeout () ->
+            $scope.alert.msg = null
+          , 5000
       )
     )()
 

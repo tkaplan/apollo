@@ -29,16 +29,16 @@ exports.add = function(req, res) {
       // Does the project exists?
       if(!project) {
         res.status(400).send(JSON.stringify({
-          errors: [new Error('Project does not exists')]
+          errors: ['Project does not exists']
         }));
       } else {
         // Does our user exist
         req.app.db.models.User.findOne({username: editor}).
         exec(function(err, user) {
-          if(err || user) {
+          if(err || !user) {
             err = err ? err : new Error('User does not exist');
             res.status(400).send(JSON.stringify({
-              errors: [err]
+              errors: [err.toString()]
             }));
           } else {
             // Now that we have the user, we must insure
@@ -49,7 +49,7 @@ exports.add = function(req, res) {
 
             if(equals.length > 0) {
               res.status(400).send(JSON.stringify({
-                errors: [new Error('The user is already an editor')]
+                errors: ['The user is already an editor']
               }));
             } else {
               user.projects.push(project);
@@ -62,7 +62,7 @@ exports.add = function(req, res) {
                     cb(err);
                   });
                 },
-                function() {
+                function(cb) {
                   project.save(function(err) {
                     cb(err);
                   })
@@ -71,7 +71,7 @@ exports.add = function(req, res) {
               function(err) {
                 if(err) {
                   res.status(400).send(JSON.stringify({
-                    errors: [err]
+                    errors: [err.toString()]
                   }));
                 } else {
                   res.status(204).send();
@@ -120,7 +120,7 @@ exports.list = function(req, res) {
           username: editor.username
         });
       });
-      res.status(200).send(JSON.stringify(editors));
+      res.status(200).send(JSON.stringify({'editors':editors}));
     }
   });
 };
@@ -151,7 +151,7 @@ exports.remove = function(req, res) {
         // Does our user exist
         req.app.db.models.User.findOne({username: editor}).
         exec(function(err, user) {
-          if(err || user) {
+          if(err || !user) {
             err = err ? err : new Error('User does not exist');
             res.status(400).send(JSON.stringify({
               errors: [err]
@@ -197,7 +197,7 @@ exports.remove = function(req, res) {
                     cb(err);
                   });
                 },
-                function() {
+                function(cb) {
                   project.save(function(err) {
                     cb(err);
                   })

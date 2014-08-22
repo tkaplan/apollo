@@ -206,7 +206,7 @@ exports = module.exports = function(app, passport) {
   //app.options('/owner/:owner/project/:project', cors());
   app.post('/caas/owner/:owner/project/:project', require('./views/caas/owner/project').createProject);
   // project editors
-  app.post('/caas/onwer/:owner/project/:project/editor/*', ensureAuthenticatedCaas);
+  app.post('/caas/owner/:owner/project/:project/editor/*', ensureAuthenticatedCaas);
   app.post('/caas/owner/:owner/project/:project/editor/:editor/add', require('./views/caas/owner/project/editors').add);
   app.post('/caas/owner/:owner/project/:project/editor/:editor/remove', require('./views/caas/owner/project/editors').remove);
   app.post('/caas/owner/:owner/project/:project/editor/list', require('./views/caas/owner/project/editors').list);

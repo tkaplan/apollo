@@ -27,8 +27,8 @@
   src_files = {
     modules_less: ['assets/stylesheets/*.less', 'modules/**/views/assets/stylesheets/*.less', 'modules/**'],
     modules_coffee: ['coffee/*.coffee', 'modules/**', 'modules/**/configs/*.coffee', 'modules/**/services/*.coffee', 'modules/**/directives/*.coffee', 'modules/**/controllers/*.coffee', 'modules/**/app.coffee'],
-    bower_js: ['misc/stripe.js', 'bower_components/q/q.js', 'bower_components/lodash/dist/lodash.min.js', 'bower_components/angular/angular.min.js', 'misc/angucomplete/angucomplete.js', 'bower_components/angular-resource/angular-resource.min.js', 'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js', 'bower_components/angular-ui-router/release/angular-ui-router.min.js', 'bower_components/angular-cookies/angular-cookies.min.js', 'bower_components/angular-payments/lib/angular-payments.min.js', 'bower_components/textAngular/dist/textAngular.min.js', 'bower_components/textAngular/dist/textAngular-sanitize.min.js', 'dist/all.js'],
-    bower_css: ['misc/angucomplete/angucomplete.css', 'bower_components/bootstrap/dist/css/test.css', 'dist/all.css']
+    bower_js: ['misc/stripe.js', 'bower_components/q/q.js', 'bower_components/lodash/dist/lodash.min.js', 'bower_components/angular/angular.min.js', 'misc/angucomplete/angucomplete.js', 'bower_components/angular-tree-control/angular-tree-control.js', 'bower_components/angular-resource/angular-resource.min.js', 'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js', 'bower_components/angular-ui-router/release/angular-ui-router.min.js', 'bower_components/angular-cookies/angular-cookies.min.js', 'bower_components/angular-payments/lib/angular-payments.min.js', 'bower_components/textAngular/dist/textAngular.min.js', 'bower_components/textAngular/dist/textAngular-sanitize.min.js', 'dist/all.js'],
+    bower_css: ['misc/angucomplete/angucomplete.css', 'bower_components/bootstrap/less/test.css', 'bower_components/angular-tree-control/css/tree-control-attribute.css', 'assets/font-awesome-4.0.3/css/font-awesome.css', 'dist/all.css']
   };
 
   gulp.task('coffee', function() {

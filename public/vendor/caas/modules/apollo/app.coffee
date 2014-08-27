@@ -9,6 +9,13 @@ class Apollo
       this.insertBefore child, @firstChild
       return
 
+    head = document.getElementsByTagName('head')[0]
+    css = document.createElement 'link'
+    css.setAttribute 'rel', 'stylesheet'
+    css.setAttribute 'type', 'text/css'
+    css.setAttribute 'href', "#{window.ap_base_uri}#{window.ap_base_dist}/all.css"
+    head.appendChild css
+
     # Create div element and prepend to document without jQuery
     # This div element will be used to contain our tool bar and $modelValue
     container = document.createElement 'div'

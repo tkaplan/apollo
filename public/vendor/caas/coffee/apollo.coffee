@@ -9,6 +9,7 @@ documentStatusId = setInterval () ->
 
     dependencies = _.unique window.apDependencies.concat([
       'ui.router'
+      'treeControl'
       'ui.bootstrap'
       'textAngular'
       'ngResource'

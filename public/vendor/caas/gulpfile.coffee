@@ -31,6 +31,7 @@ src_files =
     'bower_components/lodash/dist/lodash.min.js'
     'bower_components/angular/angular.min.js'
     'misc/angucomplete/angucomplete.js'
+    'bower_components/angular-tree-control/angular-tree-control.js'
     'bower_components/angular-resource/angular-resource.min.js'
     'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
     'bower_components/angular-ui-router/release/angular-ui-router.min.js'
@@ -42,7 +43,9 @@ src_files =
   ]
   bower_css: [
     'misc/angucomplete/angucomplete.css'
-    'bower_components/bootstrap/dist/css/test.css',
+    'bower_components/bootstrap/less/test.css'
+    'bower_components/angular-tree-control/css/tree-control-attribute.css'
+    'assets/font-awesome-4.0.3/css/font-awesome.css'
     'dist/all.css'
   ]
 

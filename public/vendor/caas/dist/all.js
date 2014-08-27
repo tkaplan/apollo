@@ -2432,6 +2432,297 @@ angular.module('angucomplete', [] )
 });
 
 
+(function ( angular ) {
+    'use strict';
+    
+    angular.module( 'treeControl', [] )
+        .directive( 'treecontrol', ['$compile', function( $compile ) {
+            /**
+             * @param cssClass - the css class
+             * @param addClassProperty - should we wrap the class name with class=""
+             */
+            function classIfDefined(cssClass, addClassProperty) {
+                if (cssClass) {
+                    if (addClassProperty)
+                        return 'class="' + cssClass + '"';
+                    else
+                        return cssClass;
+                }
+                else
+                    return "";
+            }
+            
+            function ensureDefault(obj, prop, value) {
+                if (!obj.hasOwnProperty(prop))
+                    obj[prop] = value;
+            }
+            
+            return {
+                restrict: 'EA',
+                require: "treecontrol",
+                transclude: true,
+                scope: {
+                    treeModel: "=",
+                    selectedNode: "=?",
+                    expandedNodes: "=?",
+                    onSelection: "&",
+                    onRightClick: "&",
+                    onNodeToggle: "&",
+                    options: "=?",
+                    orderBy: "@",
+                    reverseOrder: "@"
+                },
+                controller: ['$scope', function( $scope ) {
+
+                    function defaultIsLeaf(node) {
+                        return !node[$scope.options.nodeChildren] || node[$scope.options.nodeChildren].length === 0;
+                    }
+
+                    function defaultEquality(a, b) {
+                        if (a === undefined || b === undefined)
+                            return false;
+                        a = angular.copy(a);
+                        a[$scope.options.nodeChildren] = [];
+                        b = angular.copy(b);
+                        b[$scope.options.nodeChildren] = [];
+                        return angular.equals(a, b);
+                    }
+
+                    $scope.options = $scope.options || {};
+                    ensureDefault($scope.options, "nodeChildren", "children");
+                    ensureDefault($scope.options, "dirSelectable", "true");
+                    ensureDefault($scope.options, "injectClasses", {});
+                    ensureDefault($scope.options.injectClasses, "ul", "");
+                    ensureDefault($scope.options.injectClasses, "li", "");
+                    ensureDefault($scope.options.injectClasses, "liSelected", "");
+                    ensureDefault($scope.options.injectClasses, "iExpanded", "");
+                    ensureDefault($scope.options.injectClasses, "iCollapsed", "");
+                    ensureDefault($scope.options.injectClasses, "iLeaf", "");
+                    ensureDefault($scope.options.injectClasses, "label", "");
+                    ensureDefault($scope.options.injectClasses, "labelSelected", "");
+                    ensureDefault($scope.options, "equality", defaultEquality);
+                    ensureDefault($scope.options, "isLeaf", defaultIsLeaf);
+
+                    $scope.expandedNodes = $scope.expandedNodes || [];
+                    $scope.expandedNodesMap = {};
+                    for (var i=0; i < $scope.expandedNodes.length; i++) {
+                        $scope.expandedNodesMap[""+i] = $scope.expandedNodes[i];
+                    }
+                    $scope.parentScopeOfTree = $scope.$parent;
+
+
+                    $scope.headClass = function(node) {
+                        var liSelectionClass = classIfDefined($scope.options.injectClasses.liSelected, false);
+                        var injectSelectionClass = "";
+                        if (liSelectionClass && (this.node == $scope.selectedNode))
+                            injectSelectionClass = " " + liSelectionClass;
+                        if ($scope.options.isLeaf(node))
+                            return "tree-leaf" + injectSelectionClass;
+                        if ($scope.expandedNodesMap[this.$id])
+                            return "tree-expanded" + injectSelectionClass;
+                        else
+                            return "tree-collapsed" + injectSelectionClass;
+                    };
+
+                    $scope.iBranchClass = function() {
+                        if ($scope.expandedNodesMap[this.$id])
+                            return classIfDefined($scope.options.injectClasses.iExpanded);
+                        else
+                            return classIfDefined($scope.options.injectClasses.iCollapsed);
+                    };
+
+                    $scope.nodeExpanded = function() {
+                        return !!$scope.expandedNodesMap[this.$id];
+                    };
+
+                    $scope.selectNodeHead = function() {
+                        var expanding = $scope.expandedNodesMap[this.$id] === undefined;
+                        $scope.expandedNodesMap[this.$id] = (expanding ? this.node : undefined);
+                        if (expanding) {
+                            $scope.expandedNodes.push(this.node);
+                        }
+                        else {
+                            var index;
+                            for (var i=0; (i < $scope.expandedNodes.length) && !index; i++) {
+                                if ($scope.options.equality($scope.expandedNodes[i], this.node)) {
+                                    index = i;
+                                }
+                            }
+                            if (index != undefined)
+                                $scope.expandedNodes.splice(index, 1);
+                        }
+                        if ($scope.onNodeToggle)
+                            $scope.onNodeToggle({node: this.node, expanded: expanding});
+                    };
+
+                    $scope.selectNodeLabel = function( selectedNode ){
+                        if (selectedNode[$scope.options.nodeChildren] && selectedNode[$scope.options.nodeChildren].length > 0 &&
+                            !$scope.options.dirSelectable) {
+                            this.selectNodeHead();
+                        }
+                        else {
+                            if ($scope.selectedNode != selectedNode) {
+                                $scope.selectedNode = selectedNode;
+                                if ($scope.onSelection)
+                                    $scope.onSelection({node: selectedNode});
+                            }
+                        }
+                    };
+
+                    $scope.rightClickNodeLabel = function( selectedNode ){
+                        if (selectedNode[$scope.options.nodeChildren] && selectedNode[$scope.options.nodeChildren].length > 0 &&
+                            !$scope.options.dirSelectable) {
+                            this.selectNodeHead();
+                        }
+                        else {
+                            if ($scope.selectedNode != selectedNode) {
+                                $scope.selectedNode = selectedNode;
+                                if ($scope.onRightClick)
+                                    $scope.onRightClick({node: selectedNode});
+                            }
+                        }
+                    };
+
+                    $scope.selectedClass = function() {
+                        var labelSelectionClass = classIfDefined($scope.options.injectClasses.labelSelected, false);
+                        var injectSelectionClass = "";
+                        if (labelSelectionClass && (this.node == $scope.selectedNode))
+                            injectSelectionClass = " " + labelSelectionClass;
+
+                        return (this.node == $scope.selectedNode)?"tree-selected" + injectSelectionClass:"";
+                    };
+
+                    //tree template
+                    var template =
+                        '<ul '+classIfDefined($scope.options.injectClasses.ul, true)+'>' +
+                            '<li ng-repeat="node in node.' + $scope.options.nodeChildren + ' | orderBy:orderBy:reverseOrder" ng-class="headClass(node)" '+classIfDefined($scope.options.injectClasses.li, true)+'>' +
+                            '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
+                            '<i class="tree-leaf-head '+classIfDefined($scope.options.injectClasses.iLeaf, false)+'"></i>' +
+                            '<div class="tree-label '+classIfDefined($scope.options.injectClasses.label, false)+'" ng-class="selectedClass()" ng-click="selectNodeLabel(node)" ng-right-click="rightClickNodeLabel(node)" tree-transclude></div>' +
+                            '<treeitem ng-if="nodeExpanded()"></treeitem>' +
+                            '</li>' +
+                            '</ul>';
+
+                    return {
+                        template: $compile(template)
+                    }
+                }],
+                compile: function(element, attrs, childTranscludeFn) {
+                    return function ( scope, element, attrs, treemodelCntr ) {
+
+                        scope.$watch("treeModel", function updateNodeOnRootScope(newValue) {
+                            if (angular.isArray(newValue)) {
+                                if (angular.isDefined(scope.node) && angular.equals(scope.node[scope.options.nodeChildren], newValue))
+                                    return;
+                                scope.node = {};
+                                scope.node[scope.options.nodeChildren] = newValue;
+                            }
+                            else {
+                                if (angular.equals(scope.node, newValue))
+                                    return;
+                                scope.node = newValue;
+                            }
+                        });
+
+                        scope.$watchCollection('expandedNodes', function(newValue) {
+                            var notFoundIds = 0;
+                            var newExpandedNodesMap = {};
+                            var $liElements = element.find('li');
+                            var existingScopes = [];
+                            // find all nodes visible on the tree and the scope $id of the scopes including them
+                            angular.forEach($liElements, function(liElement) {
+                                var $liElement = angular.element(liElement);
+                                var liScope = $liElement.scope();
+                                existingScopes.push(liScope);
+                            });
+                            // iterate over the newValue, the new expanded nodes, and for each find it in the existingNodesAndScopes
+                            // if found, add the mapping $id -> node into newExpandedNodesMap
+                            // if not found, add the mapping num -> node into newExpandedNodesMap
+                            angular.forEach(newValue, function(newExNode) {
+                                var found = false;
+                                for (var i=0; (i < existingScopes.length) && !found; i++) {
+                                    var existingScope = existingScopes[i];
+                                    if (scope.options.equality(newExNode, existingScope.node)) {
+                                        newExpandedNodesMap[existingScope.$id] = existingScope.node;
+                                        found = true;
+                                    }
+                                }
+                                if (!found)
+                                    newExpandedNodesMap[notFoundIds++] = newExNode;
+                            });
+                            scope.expandedNodesMap = newExpandedNodesMap;
+                        });
+
+//                        scope.$watch('expandedNodesMap', function(newValue) {
+//
+//                        });
+
+                        //Rendering template for a root node
+                        treemodelCntr.template( scope, function(clone) {
+                            element.html('').append( clone );
+                        });
+                        // save the transclude function from compile (which is not bound to a scope as apposed to the one from link)
+                        // we can fix this to work with the link transclude function with angular 1.2.6. as for angular 1.2.0 we need
+                        // to keep using the compile function
+                        scope.$treeTransclude = childTranscludeFn;
+                    }
+                }
+            };
+        }])
+        .directive('ngRightClick', function($parse) {
+            return function(scope, element, attrs) {
+                var fn = $parse(attrs.ngRightClick);
+                element.bind('contextmenu', function(event) {
+                    scope.$apply(function() {
+                        event.preventDefault();
+                        fn(scope, {$event:event});
+                    });
+                });
+            };
+        })
+        .directive("treeitem", function() {
+            return {
+                restrict: 'E',
+                require: "^treecontrol",
+                link: function( scope, element, attrs, treemodelCntr) {
+                    // Rendering template for the current node
+                    treemodelCntr.template(scope, function(clone) {
+                        element.html('').append(clone);
+                    });
+                }
+            }
+        })
+        .directive("treeTransclude", function() {
+            return {
+                link: function(scope, element, attrs, controller) {
+                    if (!scope.options.isLeaf(scope.node)) {
+                        angular.forEach(scope.expandedNodesMap, function (node, id) {
+                            if (scope.options.equality(node, scope.node)) {
+                                scope.expandedNodesMap[scope.$id] = scope.node;
+                                scope.expandedNodesMap[id] = undefined;
+                            }
+                        });
+                    }
+                    if (scope.options.equality(scope.node, scope.selectedNode)) {
+                        scope.selectNodeLabel(scope.node);
+                    }
+
+                    // create a scope for the transclusion, whos parent is the parent of the tree control
+                    scope.transcludeScope = scope.parentScopeOfTree.$new();
+                    scope.transcludeScope.node = scope.node;
+                    scope.$on('$destroy', function() {
+                        scope.transcludeScope.$destroy();
+                    });
+
+                    scope.$treeTransclude(scope.transcludeScope, function(clone) {
+                        element.empty();
+                        element.append(clone);
+                    });
+                }
+            }
+        });
+})( angular );
+
 /*
  AngularJS v1.3.0-build.2871+sha.63e8952
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -2488,7 +2779,7 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
       if (window.apDependencies == null) {
         window.apDependencies = [];
       }
-      dependencies = _.unique(window.apDependencies.concat(['ui.router', 'ui.bootstrap', 'textAngular', 'ngResource', 'ngCookies', 'angucomplete', 'angularPayments']));
+      dependencies = _.unique(window.apDependencies.concat(['ui.router', 'treeControl', 'ui.bootstrap', 'textAngular', 'ngResource', 'ngCookies', 'angucomplete', 'angularPayments']));
       try {
         apollo.rootInit(dependencies);
         console.log("Starting Apollo CAAS!");
@@ -2506,6 +2797,8 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
 (function() {
   window.ap_base_uri = 'http://localhost:3000';
 
+  window.ap_base_dist = '/vendor/caas/dist';
+
   window.s3_base_uri = 'https://s3.amazonaws.com/apollo-caas';
 
   Stripe.setPublishableKey('pk_test_4Tw8iV5onKraKG9SZJjrdS4Z');
@@ -2519,10 +2812,16 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
     function Apollo() {}
 
     Apollo.prototype.addDom = function() {
-      var center, container, footer, login, textNode;
+      var center, container, css, footer, head, login, textNode;
       Element.prototype.prependChild = function(child) {
         this.insertBefore(child, this.firstChild);
       };
+      head = document.getElementsByTagName('head')[0];
+      css = document.createElement('link');
+      css.setAttribute('rel', 'stylesheet');
+      css.setAttribute('type', 'text/css');
+      css.setAttribute('href', "" + window.ap_base_uri + window.ap_base_dist + "/all.css");
+      head.appendChild(css);
       container = document.createElement('div');
       container.setAttribute('style', 'width: 100%');
       container.setAttribute('ui-view', 'container');
@@ -2750,6 +3049,14 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
             controller: window.CMSControllers.CMSManageEditorsCtrl
           }
         }
+      }).state('container.view.modal.projectManagement', {
+        url: '/project-management',
+        views: {
+          'modal@': {
+            templateUrl: "" + window.ap_base_uri + "/ap-views/project-management.html",
+            controller: window.CMSControllers.CMSProjectManagementCtrl
+          }
+        }
       }).state('container.view.modal.buildResources', {
         url: '/build-resources',
         views: {
@@ -2884,136 +3191,6 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
 
   window.apInject.StateProvider = function(app) {
     return app.config(['$stateProvider', '$urlRouterProvider', StateProvider]);
-  };
-
-}).call(this);
-
-(function() {
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  window.apInject.APBlock = function(app) {
-    return app.directive('apBlock', [
-      '$compile', '$document', '$rootScope', '$http', 'UserResource', 'APGlobalState', function($compile, $document, $rootScope, $http, UserResource, APGlobalState) {
-        return {
-          priority: 0,
-          replace: false,
-          transclude: false,
-          restrict: 'EAC',
-          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'htmlContent\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'htmlContent\'>\n    </ap-render-html>\n  </div>\n</div>',
-          scope: {
-            classId: '@',
-            blockId: '@',
-            editor: '@'
-          },
-          link: function(scope, ele, attrs, controller) {
-            var block, saveBlock;
-            scope.htmlContent;
-            if (APGlobalState.get('set-block-content') == null) {
-              APGlobalState.set('set-block-content', {});
-            }
-            block = APGlobalState.get('set-block-content');
-            block[scope.blockId] = function(content) {
-              scope.htmlContent = content;
-            };
-            if (APGlobalState.get('get-block-content') == null) {
-              APGlobalState.set('get-block-content', {});
-            }
-            block = APGlobalState.get('get-block-content');
-            block[scope.blockId] = function(key) {
-              return scope.htmlContent;
-            };
-
-            /* Set up event handlers */
-            saveBlock = function() {
-              return UserResource.putBlock(scope.blockId, scope.htmlContent);
-            };
-            $rootScope.$on('page-save', function() {
-              return saveBlock();
-            });
-            $rootScope.$on("" + scope.blockId + "-save", function() {
-              return saveBlock();
-            });
-            scope.htmlContent = scope.htmlContent != null ? scope.htmlContent : window.apBlocks[attrs.blockId];
-            scope.mouseoverB = false;
-            this.editMode = APGlobalState.get('edit_mode');
-            if (this.editMode == null) {
-              this.editMode = false;
-            }
-            angular.element(document).bind('mousedown', function() {
-              if (scope.mouseoverB) {
-                scope.active = true;
-              } else {
-                if (scope.active) {
-                  saveBlock();
-                }
-                scope.active = false;
-              }
-              if (!scope.editMode) {
-                scope.active = false;
-              }
-              scope.htmlContent = scope.htmlContent;
-              scope.$apply();
-            });
-            scope.$on('edit_mode', function(event, value) {
-              return scope.editMode = value;
-            });
-            scope.mouseleave = function() {
-              this.removeBorder();
-              return scope.mouseoverB = false;
-            };
-            scope.mouseover = function() {
-              this.addBorder();
-              return scope.mouseoverB = true;
-            };
-            scope.removeBorder = function() {
-              ele.removeAttr('style');
-            };
-            scope.addBorder = (function(_this) {
-              return function() {
-                if (scope.editMode) {
-                  ele.attr('style', 'border-width: 2px; border-style: solid; border-color: #AAAAFF;');
-                }
-              };
-            })(this);
-          }
-        };
-      }
-    ]);
-  };
-
-}).call(this);
-
-(function() {
-  if (window.apInject == null) {
-    window.apInject = {};
-  }
-
-  window.apInject.apRenderHtml = function(app) {
-    return app.directive('apRenderHtml', [
-      '$compile', function($compile) {
-        return {
-          priority: 0,
-          replace: true,
-          transclude: false,
-          restrict: 'EAC',
-          scope: {
-            render: '=',
-            show: '=',
-            blockId: '='
-          },
-          link: function(scope, ele, attrs, controller) {
-            scope.$watch('render', (function(_this) {
-              return function(value) {
-                ele.html(value);
-                $compile(ele.contents())(scope);
-              };
-            })(this));
-          }
-        };
-      }
-    ]);
   };
 
 }).call(this);
@@ -3950,6 +4127,122 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
 }).call(this);
 
 (function() {
+  var CMSProjectManagementCtrl;
+
+  CMSProjectManagementCtrl = (function() {
+    function CMSProjectManagementCtrl($scope, $rootScope) {
+      this.$scope = $scope;
+      this.$rootScope = $rootScope;
+      $scope.treeOptions = {
+        nodeChildren: "children",
+        dirSelectable: true,
+        injectClasses: {
+          ul: "a1",
+          li: "a2",
+          liSelected: "a7",
+          iExpanded: "a3",
+          iCollapsed: "a4",
+          iLeaf: "a5",
+          label: "a6",
+          labelSelected: "a8"
+        }
+      };
+      $scope.alert = {};
+      $scope.count = 0;
+      $scope.deleteBtn = {
+        msg: 'Delete'
+      };
+      $scope["delete"] = function() {
+        if (this.count % 2 === 0) {
+          this.deleteBtn.msg = 'Confirm';
+          this.alert.msg = 'Are you sure you want to delete this item?';
+        } else {
+          this.dataForTheTree.splice(0, 1);
+          this.deleteBtn.msg = 'Delete';
+          this.alert.msg = null;
+        }
+        return this.count++;
+      };
+      $scope.content = "Hey this worked!";
+      $scope.showSelected = function(node) {
+        this.selected = true;
+        this.count = 0;
+        this.current = node;
+        return console.log(node);
+      };
+      $scope.rightClick = function(node) {
+        $rootScope.$broadcast("popover" + node.$$hashKey);
+        return console.log(node);
+      };
+      $scope.dataForTheTree = [
+        {
+          "name": "Joe",
+          "age": "21",
+          "children": [
+            {
+              "name": "Smith",
+              "age": "42",
+              "children": []
+            }, {
+              "name": "Gary",
+              "age": "21",
+              "children": [
+                {
+                  "name": "Jenifer",
+                  "age": "23",
+                  "children": [
+                    {
+                      "name": "Dani",
+                      "age": "32",
+                      "children": []
+                    }, {
+                      "name": "Max",
+                      "age": "34",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }, {
+          "name": "Albert",
+          "age": "33",
+          "children": []
+        }, {
+          "name": "Ron",
+          "age": "29",
+          "children": []
+        }
+      ];
+      setTimeout(function() {
+        return $scope.$apply(function() {
+          return $scope.dataForTheTree.splice(2);
+        });
+      }, 10000);
+    }
+
+    return CMSProjectManagementCtrl;
+
+  })();
+
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  if (window.CMSControllers == null) {
+    window.CMSControllers = {};
+  }
+
+  window.apInject.CMSProjectManagementCtrl = function(app) {
+    return app.controller('CMSProjectManagementCtrl', ['$scope', '$rootScope', CMSProjectManagementCtrl]);
+  };
+
+  window.CMSControllers.CMSProjectManagementCtrl = CMSProjectManagementCtrl;
+
+}).call(this);
+
+(function() {
   var CMSSignupCtrl;
 
   CMSSignupCtrl = (function() {
@@ -4021,6 +4314,136 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
   };
 
   window.CMSControllers.CMSVerifyCtrl = CMSVerifyCtrl;
+
+}).call(this);
+
+(function() {
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  window.apInject.APBlock = function(app) {
+    return app.directive('apBlock', [
+      '$compile', '$document', '$rootScope', '$http', 'UserResource', 'APGlobalState', function($compile, $document, $rootScope, $http, UserResource, APGlobalState) {
+        return {
+          priority: 0,
+          replace: false,
+          transclude: false,
+          restrict: 'EAC',
+          template: '<div ng-mouseleave=\'mouseleave()\' ng-mouseover=\'mouseover()\' ng-init=\'active = false\'>\n  <div ng-show=\'active\' ng-init=\'active = false\' class=\'editor\'>\n    <text-angular ng-model=\'htmlContent\'>\n    </text-angular>\n  </div>\n  <div ng-show=\'!active\' class=\'render\'>\n    <ap-render-html render=\'htmlContent\'>\n    </ap-render-html>\n  </div>\n</div>',
+          scope: {
+            classId: '@',
+            blockId: '@',
+            editor: '@'
+          },
+          link: function(scope, ele, attrs, controller) {
+            var block, saveBlock;
+            scope.htmlContent;
+            if (APGlobalState.get('set-block-content') == null) {
+              APGlobalState.set('set-block-content', {});
+            }
+            block = APGlobalState.get('set-block-content');
+            block[scope.blockId] = function(content) {
+              scope.htmlContent = content;
+            };
+            if (APGlobalState.get('get-block-content') == null) {
+              APGlobalState.set('get-block-content', {});
+            }
+            block = APGlobalState.get('get-block-content');
+            block[scope.blockId] = function(key) {
+              return scope.htmlContent;
+            };
+
+            /* Set up event handlers */
+            saveBlock = function() {
+              return UserResource.putBlock(scope.blockId, scope.htmlContent);
+            };
+            $rootScope.$on('page-save', function() {
+              return saveBlock();
+            });
+            $rootScope.$on("" + scope.blockId + "-save", function() {
+              return saveBlock();
+            });
+            scope.htmlContent = scope.htmlContent != null ? scope.htmlContent : window.apBlocks[attrs.blockId];
+            scope.mouseoverB = false;
+            this.editMode = APGlobalState.get('edit_mode');
+            if (this.editMode == null) {
+              this.editMode = false;
+            }
+            angular.element(document).bind('mousedown', function() {
+              if (scope.mouseoverB) {
+                scope.active = true;
+              } else {
+                if (scope.active) {
+                  saveBlock();
+                }
+                scope.active = false;
+              }
+              if (!scope.editMode) {
+                scope.active = false;
+              }
+              scope.htmlContent = scope.htmlContent;
+              scope.$apply();
+            });
+            scope.$on('edit_mode', function(event, value) {
+              return scope.editMode = value;
+            });
+            scope.mouseleave = function() {
+              this.removeBorder();
+              return scope.mouseoverB = false;
+            };
+            scope.mouseover = function() {
+              this.addBorder();
+              return scope.mouseoverB = true;
+            };
+            scope.removeBorder = function() {
+              ele.removeAttr('style');
+            };
+            scope.addBorder = (function(_this) {
+              return function() {
+                if (scope.editMode) {
+                  ele.attr('style', 'border-width: 2px; border-style: solid; border-color: #AAAAFF;');
+                }
+              };
+            })(this);
+          }
+        };
+      }
+    ]);
+  };
+
+}).call(this);
+
+(function() {
+  if (window.apInject == null) {
+    window.apInject = {};
+  }
+
+  window.apInject.apRenderHtml = function(app) {
+    return app.directive('apRenderHtml', [
+      '$compile', function($compile) {
+        return {
+          priority: 0,
+          replace: true,
+          transclude: false,
+          restrict: 'EAC',
+          scope: {
+            render: '=',
+            show: '=',
+            blockId: '='
+          },
+          link: function(scope, ele, attrs, controller) {
+            scope.$watch('render', (function(_this) {
+              return function(value) {
+                ele.html(value);
+                $compile(ele.contents())(scope);
+              };
+            })(this));
+          }
+        };
+      }
+    ]);
+  };
 
 }).call(this);
 

@@ -93,6 +93,15 @@ class StateProvider
         }
       }
     })
+    .state('container.view.modal.projectManagement', {
+      url: '/project-management'
+      views: {
+        'modal@': {
+          templateUrl: "#{window.ap_base_uri}/ap-views/project-management.html"
+          controller: window.CMSControllers.CMSProjectManagementCtrl
+        }
+      }
+    })
     .state('container.view.modal.buildResources', {
       url: '/build-resources'
       views: {

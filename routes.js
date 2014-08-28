@@ -238,17 +238,17 @@ exports = module.exports = function(app, passport) {
 
   // project management /////////////
   // authenticate ///////////////////
-  app.post('/caas/owner/:owner/project/gets', ensureAuthenticatedCaas);
-  app.post('/caas/owner/:owner/project/:project/delete', ensureAuthenticatedCaas);
-  app.post('/caas/owner/:owner/project/:project/page/:page/delete', ensureAuthenticatedCaas);
-  app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', ensureAuthenticatedCaas);
-  app.post('/caas/owner/:owner/project/:project/transfer', ensureAuthenticatedCaas);
+  // app.post('/caas/owner/:owner/project/gets', ensureAuthenticatedCaas);
+  // app.post('/caas/owner/:owner/project/:project/delete', ensureAuthenticatedCaas);
+  // app.post('/caas/owner/:owner/project/:project/page/:page/delete', ensureAuthenticatedCaas);
+  // app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', ensureAuthenticatedCaas);
+  // app.post('/caas/owner/:owner/project/:project/transfer', ensureAuthenticatedCaas);
   //////////////////////////////////
-  app.post('/caas/owner/:owner/project/gets', require('./view/caas/owner/project').gets);
-  app.post('/caas/owner/:owner/project/:project/delete', require('./view/caas/owner/project').delete);
-  app.post('/caas/owner/:owner/project/:project/page/:page/delete', require('./view/caas/owner/project/page').delete);
-  app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', require('./view/caas/owner/project/page/block').delete);
-  app.post('/caas/owner/:owner/project/:project/transfer', ensureAuthenticatedCaas);
+  // app.post('/caas/owner/:owner/project/gets', require('./views/caas/owner/project').gets);
+  // app.post('/caas/owner/:owner/project/:project/delete', require('./views/caas/owner/project').delete);
+  // app.post('/caas/owner/:owner/project/:project/page/:page/delete', require('./views/caas/owner/project/page').delete);
+  // app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', require('./views/caas/owner/project/page/block').delete);
+  // app.post('/caas/owner/:owner/project/:project/transfer', ensureAuthenticatedCaas);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

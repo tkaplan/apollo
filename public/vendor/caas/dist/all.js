@@ -2374,12 +2374,11 @@ angular.module('angucomplete', [] )
                 if ($scope.matchClass) {
                     result.title = result.title.toString().replace(/(<([^>]+)>)/ig, '');
                 }
-                //$scope.searchStr = $scope.lastSearchTerm = result.title;
-                $scope.lastSearchTerm = result.title;
-                $scope.searchStr = '';
+                $scope.searchStr = $scope.lastSearchTerm = result.title;
                 $scope.selectedObject = result;
                 $scope.showDropdown = false;
                 $scope.results = [];
+                //$scope.$apply();
             }
 
             var inputField = elem.find('input');

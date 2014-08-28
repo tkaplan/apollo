@@ -5,7 +5,7 @@ documentStatusId = setInterval () ->
     apollo.getDefaultDom()
 
     if !window.apDependencies?
-    	window.apDependencies = []
+      window.apDependencies = []
 
     dependencies = _.unique window.apDependencies.concat([
       'ui.router'

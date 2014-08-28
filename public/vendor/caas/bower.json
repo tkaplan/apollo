@@ -22,6 +22,7 @@
     "angular-cookies": "~1.2.19",
     "angular-payments": "*",
     "angular-ui-router": "~0.2.10",
-    "angular-tree-control": "git@github.com:tkaplan/angular-tree-control.git"
+    "angular-tree-control": "git@github.com:tkaplan/angular-tree-control.git",
+    "angucomplete": "https://github.com/darylrowland/angucomplete.git"
   }
 }

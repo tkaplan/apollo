@@ -1,0 +1,19 @@
+<div treecontrol class="tree-classic"
+   tree-model="dataForTheTree"
+   options="treeOptions"
+   on-selection="showSelected(node)"
+   on-right-click="rightClick(node)"
+   selected-node="node1"
+   tree-popover-content="content">
+   employee: {{node.name}} age {{node.age}}
+</div>
+<br/>
+<alert ng-show="alert.msg" type="{{alert.type}}">{{alert.msg}}</alert>
+<br ng-hide="alert.msg"/>
+<br ng-hide="alert.msg"/>
+<br ng-hide="alert.msg"/>
+<div style="margin-bottom:0px">
+  <button type="button" class="btn btn-danger" ng-disabled="!selected" ng-click="delete()">{{deleteBtn.msg}}</button>
+  <button type="button" class="btn btn-primary" ng-click="addProject()">Add Project</button>
+  <button type="button" class="btn btn-info" ng-disabled="!selected" ng-click="addItem()">{{deleteBtn.msg}}</button>
+</div>

@@ -3350,7 +3350,7 @@ angular.module("angularPayments",[]),angular.module("angularPayments").factory("
       $scope.createProjectBool = createProject;
       $scope.createPageBool = createPage;
       $scope.createProject = function() {
-        if (parameterMissing) {
+        if ((typeof parameterMissing !== "undefined" && parameterMissing !== null) && parameterMissing) {
           throw new Error("Cannot create project: meta paramter missing");
         }
         return UserResource.createProject().then((function(_this) {

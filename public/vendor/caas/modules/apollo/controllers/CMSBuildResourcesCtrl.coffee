@@ -60,7 +60,7 @@ class CMSBuildResourcesCtrl
     $scope.createPageBool = createPage
 
     $scope.createProject = () ->
-      if parameterMissing
+      if parameterMissing? and parameterMissing
         throw new Error("Cannot create project: meta paramter missing")
       UserResource.createProject().then(
         #resolve

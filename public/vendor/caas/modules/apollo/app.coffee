@@ -31,8 +31,7 @@ class Apollo
     login = document.createElement 'a'
     login.setAttribute 'class', 'ap-login-link'
     login.setAttribute 'ng-controller', 'CMSEditorLoginCtrl'
-    # login.setAttribute 'ng-click', 'login()'
-    login.setAttribute 'ng-show', 'showAdmin'
+    login.setAttribute 'ng-hide', 'edit_mode'
     login.setAttribute 'ui-sref', 'container.view.modal.login'
 
     # Create text node

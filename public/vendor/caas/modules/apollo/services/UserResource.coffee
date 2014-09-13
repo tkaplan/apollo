@@ -15,6 +15,7 @@ class UserResource
     @cardRes = @$resource "#{window.ap_base_uri}/caas/account/card/:action"
     @planRes = @$resource "#{window.ap_base_uri}/caas/account/plan/:action"
     @accountRes = @$resource "#{window.ap_base_uri}/caas/account/:action"
+    @projectListRes = @$resource "#{window.ap_base_uri}/caas/owner/project/list"
     @owner = @APGlobalState.get 'owner'
     @project = @APGlobalState.get 'project'
     @page = @APGlobalState.get 'page'
@@ -43,6 +44,17 @@ class UserResource
     forgotRes = new @forgotRes()
     forgotRes.email = email
     forgotRes.$save()
+
+  customPost: (path) ->
+    CustomPost = @$resource("#{window.ap_base_uri}" + path)
+    customPost = new CustomPost()
+    customPost.apCookie = @APGlobalState.get 'cookie'
+    customPost.$save()
+
+  listProjects: () ->
+    projectListRes = new @projectListRes()
+    projectListRes.apCookie = @APGlobalState.get('cookie')
+    projectListRes.$save()
 
   # Returns a promise
   #owner, projectname

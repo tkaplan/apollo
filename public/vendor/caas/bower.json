@@ -23,6 +23,7 @@
     "angular-payments": "*",
     "angular-ui-router": "~0.2.10",
     "angular-tree-control": "git@github.com:tkaplan/angular-tree-control.git",
-    "angucomplete": "https://github.com/darylrowland/angucomplete.git"
+    "angucomplete": "https://github.com/darylrowland/angucomplete.git",
+    "angular-ui-codemirror": "bower"
   }
 }

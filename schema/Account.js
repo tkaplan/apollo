@@ -441,8 +441,7 @@ exports = module.exports = function(app, mongoose) {
           _this.projectStatistics[key].bytesTransfered += _this.projectStatistics[key].currentBytes;
         }
       } catch(err) {
-        reject(err);
-        return;
+        return _this.createStat(key, ('').toString('utf8'));
       }
 
       _this.markModified('projectStatistics');

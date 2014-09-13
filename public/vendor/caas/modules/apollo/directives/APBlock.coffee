@@ -17,7 +17,7 @@ window.apInject.APBlock = (app) ->
       template: '''
       <div ng-mouseleave='mouseleave()' ng-mouseover='mouseover()' ng-init='active = false'>
         <div ng-show='active' ng-init='active = false' class='editor'>
-          <text-angular ng-model='htmlContent'>
+          <text-angular ng-model='htmlContent' ta-html-editor-setup='textAreaSetup'>
           </text-angular>
         </div>
         <div ng-show='!active' class='render'>
@@ -30,6 +30,18 @@ window.apInject.APBlock = (app) ->
         classId: '@'
         blockId: '@'
         editor: '@'
+      controller: ($scope) ->
+        $scope.textAreaSetup = ($element) ->
+          $element.attr 'ui-codemirror', '{onLoad:$parent.codemirrorLoaded}'
+          return
+
+        $scope.codemirrorLoaded = (_editor) ->
+          _editor.setOption 'lineWrapping', true
+          _editor.setOption 'lineNumbers', true
+          _editor.setOption 'matchBrackets', true
+          _editor.setOption 'theme', 'twilight'
+          mode: 'xml'
+
       link: (scope, ele, attrs, controller) ->
         scope.htmlContent
 

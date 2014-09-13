@@ -263,6 +263,79 @@ exports = module.exports = function(app, mongoose) {
     });
   };
 
+  projectSchema.statics.tree = function(projects) {
+    var _this = this;
+    var tree = [];
+    var map = function(projectId, callback) {
+      app.db.models.Project.findById(projectId).
+      populate('owner').
+      exec(function(err, projectInst) {
+        if(err) {
+          callback(err);
+        } else {
+          var user = _.find(tree, function(owner) {
+                return projectInst.owner.username
+              }),
+              project = {
+                type: 'Project',
+                value: projectInst.name,
+                path: "/caas/owner/" + projectInst.owner.username + "/project/" + projectInst.name,
+                children: []
+              },
+              pages = [],
+              blocks = [],
+              pageKeys = Object.keys(projectInst.pages);
+
+          // Add all pages to project
+          for(var i = 0; i < pageKeys.length; i ++) {
+            var page = {
+              type: 'Page',
+              value: pageKeys[i],
+              path: project.path + '/page/' + pageKeys[i],
+              children: []
+            }
+            var blockKeys = Object.keys(projectInst.pages[pageKeys[i]].blocks);
+            for(var j = 0; j < blockKeys.length; j ++) {
+              var block = {
+                type: 'Block',
+                value: blockKeys[j],
+                path: page.path + '/block/' + blockKeys[j]
+              };
+              page.children.push(block);
+            }
+            project.children.push(page);
+          }
+
+          // Add pages to tree project
+          if(!user) {
+            user = {
+              type: 'Owner',
+              value: projectInst.owner.username,
+              children: []
+            };
+
+            tree.push(user);
+          }
+
+          // At this point we're done
+          user.children.push(project);
+          callback();
+        }
+      });
+    };
+
+    return Q.Promise(function(resolve, reject, notify) {
+      // async in parallel get projects
+      async.map(projects, map, function(err, results) {
+        if(err) {
+          reject(err);
+        } else {
+          resolve({tree:tree});
+        }
+      });
+    });
+  };
+
   projectSchema.statics.getProject = function(ownerName, projectName) {
     var _this = this;
     return Q.Promise(function(resolve, reject, notify) {

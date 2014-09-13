@@ -214,8 +214,9 @@ exports = module.exports = function(app, passport) {
   app.post('/caas/owner/:owner/project/:project/page/:page', require('./views/caas/owner/project/page').createPage);
 
   //caas block
-  app.post('/caas/owner/:owner/project/:project/page/:page/block/:block', ensureAuthenticatedCaas);
+  app.post('/caas/owner/:owner/project/:project/page/:page/block/*', ensureAuthenticatedCaas);
   app.post('/caas/owner/:owner/project/:project/page/:page/block/:block', require('./views/caas/owner/project/page/block').putBlock);
+  app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/get', require('./views/caas/owner/project/page/block').get);
 
   app.all('/caas/account/*', ensureAuthenticatedCaas);
   // Account actions
@@ -238,13 +239,13 @@ exports = module.exports = function(app, passport) {
 
   // project management /////////////
   // authenticate ///////////////////
-  // app.post('/caas/owner/:owner/project/gets', ensureAuthenticatedCaas);
+  app.post('/caas/owner/project/list', ensureAuthenticatedCaas);
   // app.post('/caas/owner/:owner/project/:project/delete', ensureAuthenticatedCaas);
   // app.post('/caas/owner/:owner/project/:project/page/:page/delete', ensureAuthenticatedCaas);
   // app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', ensureAuthenticatedCaas);
   // app.post('/caas/owner/:owner/project/:project/transfer', ensureAuthenticatedCaas);
   //////////////////////////////////
-  // app.post('/caas/owner/:owner/project/gets', require('./views/caas/owner/project').gets);
+  app.post('/caas/owner/project/list', require('./views/caas/owner/project').list);
   // app.post('/caas/owner/:owner/project/:project/delete', require('./views/caas/owner/project').delete);
   // app.post('/caas/owner/:owner/project/:project/page/:page/delete', require('./views/caas/owner/project/page').delete);
   // app.post('/caas/owner/:owner/project/:project/page/:page/block/:block/delete', require('./views/caas/owner/project/page/block').delete);

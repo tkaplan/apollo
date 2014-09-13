@@ -4,6 +4,7 @@ var rootPath = "../../../../../",
     validate = require(rootPath + 'validate/validate'),
     Q = require('q'),
     _ = require('lodash'),
+    aws = require(rootPath + 'aws/aws'),
     pageProcedure = require('../page').pageProcedure;
 
 var hasEditPermissions = function(user, project) {
@@ -29,6 +30,57 @@ var blockProcedure = function(owner, projectName, pageName, blockName, business,
 };
 
 exports.blockProcedure = blockProcedure;
+
+exports.get = function(req, res) {
+  var validatePage, 
+      owner = req.params.owner,
+      projectName = req.params.project,
+      pageName = req.params.page,
+      blockName = req.params.block,
+      business = {
+        rule: 'getBlock',
+        params: {}
+      };
+
+  res.header('Content-Type', 'application/json');
+      
+  blockProcedure(owner, projectName, pageName, blockName, business, req, res).then(
+    function resolve(project) {
+      if(!hasEditPermissions(req.user, project)) {
+        res.status(400).send(JSON.stringify({
+          errors: ['You do not have edit permissions.']
+        }));
+      } else if(!project.pages[pageName]) {
+        res.status(404).send(JSON.stringify({
+          errors: ['Page does not exist']
+        }));
+      } else if(!project.pages[pageName].blocks[blockName]) {
+        res.status(404).send(JSON.stringify({
+          errors: ['Block does not exist']
+        }));
+      } else {
+        aws.getBlock(
+          project.pages[pageName].blocks[blockName],
+          function resolve(content) {
+            res.status(200).send(JSON.stringify(content));
+          },
+          function reject(reason) {
+            res.status(400).send(JSON.stringify(reason));
+          }
+        );
+      }
+    },
+    function reject(reason) {
+      res.status(404).send(
+        {
+          errors: [
+            reason
+          ]
+        }
+      );
+    }
+  );
+}
 
 exports.putBlock = function(req, res){
   var validatePage, 

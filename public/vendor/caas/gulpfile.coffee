@@ -27,9 +27,23 @@ src_files =
   ]
   bower_js: [
     'misc/stripe.js'
+    
+    'bower_components/codemirror/lib/codemirror.js'
+    'bower_components/codemirror/addon/edit/matchbrackets.js'
+    'bower_components/codemirror/mode/htmlmixed/htmlmixed.js'
+    'bower_components/codemirror/mode/xml/xml.js'
+    'bower_components/codemirror/mode/javascript/javascript.js'
+    'bower_components/codemirror/mode/css/css.js'
+    'bower_components/codemirror/fold/brace-fold.js'
+    'bower_components/codemirror/fold/fold-code.js'
+    'bower_components/codemirror/fold/fold-comment.js'
+    'bower_components/codemirror/fold/fold/xml-fold.js'
+    'bower_components/codemirror/keymap/sublime.js'
+
     'bower_components/q/q.js'
     'bower_components/lodash/dist/lodash.min.js'
     'bower_components/angular/angular.min.js'
+    'bower_components/angular-ui-codemirror/ui-codemirror.min.js'
     'bower_components/angucomplete/angucomplete.js'
     'bower_components/angular-tree-control/angular-tree-control.js'
     'bower_components/angular-resource/angular-resource.min.js'
@@ -37,13 +51,18 @@ src_files =
     'bower_components/angular-ui-router/release/angular-ui-router.min.js'
     'bower_components/angular-cookies/angular-cookies.min.js'
     'bower_components/angular-payments/lib/angular-payments.min.js'
-    'bower_components/textAngular/dist/textAngular.min.js'
-    'bower_components/textAngular/dist/textAngular-sanitize.min.js'
+    'bower_components/textAngular/src/textAngularSetup.js'
+    'bower_components/textAngular/src/textAngular-sanitize.js'
+    'bower_components/textAngular/src/textAngular.js'
     'dist/all.js'
   ]
   bower_css: [
     'bower_components/angucomplete/angucomplete.css'
     'bower_components/bootstrap/dist/css/bootstrap.css'
+
+    'bower_components/codemirror/lib/codemirror.css'
+    'bower_components/codemirror/theme/twilight.css'
+    
     'bower_components/angular-tree-control/css/tree-control-attribute.css'
     'assets/font-awesome-4.0.3/css/font-awesome.css'
     'dist/all.css'

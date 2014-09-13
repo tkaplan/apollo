@@ -1,8 +1,8 @@
 class CMSEditorLoginCtrl
   constructor: (@$rootScope, @$scope, @$location, CMSContainerMQ) ->
-    @$scope.showAdmin = true
-    @$scope.$on 'CMSEditorLoginCtrl-showAdmin', (event, value) ->
-      @showAdmin = value
+    @$scope.edit_mode = false
+    @$scope.$on 'edit_mode', (event, value) ->
+      @edit_mode = value
     @$scope.login = () ->
       # Open modal
       CMSContainerMQ.get().openModal()

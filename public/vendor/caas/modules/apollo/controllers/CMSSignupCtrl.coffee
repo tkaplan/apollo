@@ -1,5 +1,5 @@
 class CMSSignupCtrl
-  constructor: (@$scope, @$rootScope, UserResource, @APGlobalState) ->
+  constructor: (@$scope, @$rootScope, $state, UserResource, @APGlobalState) ->
     $scope.signup = (email, username, password) ->
       UserResource.signup(email, username, password).then (u) =>
           APGlobalState.set('cookie', u.cookie.split(';').shift())
@@ -9,8 +9,10 @@ class CMSSignupCtrl
             @alert.email = u.errfor.email
             @alert.password = u.errfor.password
           else
+            APGlobalState.set 'getPageError'
+            APGlobalState.set 'createProjectOnSignin', true
             # Change to state
-            $state.go '^.account.notices'
+            $state.go '^.buildResources'
         , (err) ->
           console.log err
 

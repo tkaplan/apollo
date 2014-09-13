@@ -57,11 +57,9 @@ var rootPath = "../../../",
     projectProcedure: function(owner, projectName, business, req, res) {
       // Reject fxn
       var reject = function(reason) {
-        res.status(400).send({
-            errors: [
-              reason
-            ]
-          });
+        res.status(400).send(JSON.stringify({
+          errors: [reason]
+        }));
       };
 
       // Get models object
@@ -117,6 +115,20 @@ exports.getProject = function(req, res){
       ]
     });
   });
+}
+
+exports.list = function(req, res) {
+  req.app.db.models.Project.tree(req.user.projects).
+  then(
+    function resolve(tree) {
+      res.status(200).send(JSON.stringify(tree));
+    },
+    function reject(reason) {
+      res.status(400).send(JSON.stringify({
+        errors: [reason]
+      }));
+    }
+  );
 }
 
 exports.createProject = function(req, res){

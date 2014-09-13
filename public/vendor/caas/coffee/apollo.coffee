@@ -11,6 +11,7 @@ documentStatusId = setInterval () ->
       'ui.router'
       'treeControl'
       'ui.bootstrap'
+      'ui.codemirror'
       'textAngular'
       'ngResource'
       'ngCookies'

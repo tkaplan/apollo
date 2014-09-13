@@ -1,19 +1,19 @@
 
-		<span ng-init="$parent.page = 'Sign Up'"></span>
-		<label for="ap-signup-email">Email: </label>
-		<input id="ap-signup-email" type="text" class="form-control" ng-model="email" placeholder="Email"></input>
-		<br/>
-		<p class="alert alert-danger" ng-show="alert.email" ng-bind="alert.email"></p>
-		<br/>
-		<label for="ap-signup-username">Username: </label>
-		<input id="ap-signup-username" type="text" class="form-control" ng-model="username" placeholder="Username"></input>
-		<br/>
-		<p class="alert alert-danger" ng-show="alert.username" ng-bind="alert.username"></p>
-		<br/>
-		<label for="ap-signup-password">Password: </label>
-		<input id="ap-signup-password" type="password" class="form-control" ng-model="password" placeholder="Password"></input>
-		<br/>
-		<p class="alert alert-danger" ng-show="alert.password" ng-bind="alert.password"></p>
-		<br/>
-		<button type="button" class="btn btn-primary" ng-click="signup(email, username, password)">Confirm</button>
-		<button type="button" class="btn" style="float:right" ui-sref="^.login">Back</button>
+<span ng-init="$parent.page = 'Sign Up'"></span>
+<label for="ap-signup-email">Email: </label>
+<input id="ap-signup-email" type="text" class="form-control" ng-model="email" placeholder="Email"></input>
+<br/>
+<p class="alert alert-danger" ng-show="alert.email" ng-bind="alert.email"></p>
+<br/>
+<label for="ap-signup-username">Username: </label>
+<input id="ap-signup-username" type="text" class="form-control" ng-model="username" placeholder="Username"></input>
+<br/>
+<p class="alert alert-danger" ng-show="alert.username" ng-bind="alert.username"></p>
+<br/>
+<label for="ap-signup-password">Password: </label>
+<input id="ap-signup-password" type="password" class="form-control" ng-model="password" placeholder="Password"></input>
+<br/>
+<p class="alert alert-danger" ng-show="alert.password" ng-bind="alert.password"></p>
+<br/>
+<button type="button" class="btn btn-primary" ng-click="signup(email, username, password)">Confirm</button>
+<button type="button" class="btn" style="float:right" ui-sref="^.login">Back</button>

@@ -181,7 +181,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 
 	// this global var is used to prevent multiple fires of the drop event. Needs to be global to the textAngular file.
 	var dropFired = false;
-	var textAngular = angular.module("textAngular", ['ngSanitize', 'textAngularSetup']); //This makes ngSanitize required
+	var textAngular = angular.module("textAngular", ['ngSanitize', 'textAngularSetup','ui.ace']); //This makes ngSanitize required
 
 	// setup the global contstant functions for setting up the toolbar
 
@@ -307,7 +307,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						// we still need the hidden input even with a textarea as the textarea may have invalid/old input in it,
 						// wheras the input will ALLWAYS have the correct value.
 						forminput: angular.element("<input type='hidden' tabindex='-1' style='display: none;'>"),
-						html: angular.element("<textarea></textarea>"),
+						html: angular.element("<div></div>"),
 						text: angular.element("<div></div>"),
 						// other toolbased elements
 						scrollWindow: angular.element("<div class='ta-scroll-window'></div>"),
@@ -460,8 +460,8 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					scope.displayElements.html.attr({
 						'id': 'taHtmlElement' + _serial,
 						'ng-show': 'showHtml',
-						'ta-bind': 'ta-bind',
-						'ng-model': 'html'
+						'ng-model': 'html',
+						'ui-ace': '{theme:"twilight",mode:"markdown"}'
 					});
 					scope.displayElements.text.attr({
 						'id': 'taTextElement' + _serial,
@@ -469,6 +469,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						'ta-bind': 'ta-bind',
 						'ng-model': 'html'
 					});
+
 					scope.displayElements.scrollWindow.attr({'ng-hide': 'showHtml'});
 					if(attrs.taDefaultWrap) scope.displayElements.text.attr('ta-default-wrap', attrs.taDefaultWrap);
 					
@@ -476,7 +477,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						scope.displayElements.text.attr('ta-unsafe-sanitizer', attrs.taUnsafeSanitizer);
 						scope.displayElements.html.attr('ta-unsafe-sanitizer', attrs.taUnsafeSanitizer);
 					}
-					
+
 					// add the main elements to the origional element
 					scope.displayElements.scrollWindow.append(scope.displayElements.text);
 					element.append(scope.displayElements.scrollWindow);
@@ -1424,7 +1425,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			// var safe;
 			// unsafe = unsafeElement[0].innerHTML;
 			// try {
-			// 	safe = unsafe;//$sanitize(unsafe);
+			// 	safe = $sanitize(unsafe);
 			// 	// do this afterwards, then the $sanitizer should still throw for bad markup
 			// 	if(ignore) safe = unsafe;
 			// } catch (e){
@@ -1530,11 +1531,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 								// when the button's disabled function/value evaluates to true
 								this.$eval('disabled') || this.$eval('disabled()') ||
 								// all buttons except the HTML Switch button should be disabled in the showHtml (RAW html) mode
-								(this.name !== 'html' && this.$editor().showHtml) ||
-								// if the toolbar is disabled
-								this.$parent.disabled ||
-								// if the current editor is disabled
-								this.$editor().disabled
+								(this.name !== 'html' && this.$editor().showHtml) 
 							);
 						},
 						displayActiveToolClass: function(active){

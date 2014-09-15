@@ -4,7 +4,8 @@
  */
 angular.module('ui.codemirror', []).constant('uiCodemirrorConfig', {}).directive('uiCodemirror', [
   'uiCodemirrorConfig',
-  function (uiCodemirrorConfig) {
+  '$compile',
+  function (uiCodemirrorConfig, $compile) {
     return {
       restrict: 'EA',
       require: '?ngModel',
@@ -19,15 +20,17 @@ angular.module('ui.codemirror', []).constant('uiCodemirrorConfig', {}).directive
           initialTextValue = iElement.text();
           options = uiCodemirrorConfig.codemirror || {};
           opts = angular.extend({ value: initialTextValue }, options, scope.$eval(iAttrs.uiCodemirror), scope.$eval(iAttrs.uiCodemirrorOpts));
-          if (iElement[0].tagName === 'TEXTAREA') {
-            // Might bug but still ...
-            codeMirror = window.CodeMirror.fromTextArea(iElement[0], opts);
-          } else {
-            iElement.html('');
-            codeMirror = new window.CodeMirror(function (cm_el) {
-              iElement.append(cm_el);
-            }, opts);
-          }
+          
+          var div = angular.element('<div ng-show="showHtml"></div>');
+          $compile(div)(scope);
+
+          iElement.css('display','none');
+
+          codeMirror = new window.CodeMirror(function(cm_el) {
+            div.append(cm_el);
+            iElement[0].parentNode.insertBefore(div[0], iElement[0].nextSibling);
+          }, opts);
+          
           if (iAttrs.uiCodemirror || iAttrs.uiCodemirrorOpts) {
             var codemirrorDefaultsKeys = Object.keys(window.CodeMirror.defaults);
             scope.$watch(iAttrs.uiCodemirror || iAttrs.uiCodemirrorOpts, function updateOptions(newValues, oldValue) {

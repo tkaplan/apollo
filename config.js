@@ -25,7 +25,7 @@ exports.smtp = {
   },
   credentials: {
     user: process.env.SMTP_USERNAME || 'tks.universe@gmail.com',
-    password: process.env.SMTP_PASSWORD || 'GK37nZ??',
+    password: process.env.SMTP_PASSWORD || '',
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     ssl: true
   }
